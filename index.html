@@ -373,7 +373,10 @@ img{max-width:100%}
     if (!gateEl) {
       gateEl = document.createElement('div');
       gateEl.id = 'mt-gate';
-      gateEl.style.cssText = 'position:fixed;inset:0;z-index:9998;display:flex;align-items:center;justify-content:center;' +
+      /* This cover hides the trackers until access is settled. It must sit ABOVE the page
+         (highest 132) and BELOW the shared sign-in, whose scrim is 9500 and whose account
+         menu is 9000 — at 9998 it covered the sign-in form and left a blank screen. */
+      gateEl.style.cssText = 'position:fixed;inset:0;z-index:400;display:flex;align-items:center;justify-content:center;' +
         'background:#f1f6fa;color:#0d314c;font:15px/1.5 "IBM Plex Sans",system-ui,sans-serif;text-align:center;padding:24px';
       document.documentElement.appendChild(gateEl);
     }
