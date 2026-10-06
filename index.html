@@ -359,8 +359,11 @@ img{max-width:100%}
   function me() { var s = RS() && RS().current(); return { name: (s && s.name) || '', email: (s && s.email) || '' }; }
   var USER = {
     isOwner: function () { return false; },
-    canEdit: function () { return false; },
-    can: function (what) { return what === 'data.write' ? ready : false; },
+    /* Whether this person may save here comes from their access to this tool, so View
+       access gets the tool's own view-only mode instead of controls the relay would refuse.
+       The relay still decides on every save; this only decides what to show. */
+    canEdit: function () { var rs = RS(); return !!(rs && rs.canEdit && rs.canEdit(PROJECT)); },
+    can: function (what) { return what === 'data.write' ? (ready && USER.canEdit()) : false; },
     id: function () { return Promise.resolve(me().email || ''); },
     me: function () { return Promise.resolve(me()); },
     profile: function () { return Promise.resolve(me()); }
