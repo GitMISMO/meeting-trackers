@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-rs-gate>
+<html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
@@ -492,7 +492,21 @@ img{max-width:100%}
             });
           }).catch(function (e) {
             go.disabled = false;
-            st.textContent = 'It would not save: ' + ((e && (e.message || e.code)) || 'relay error');
+            var c = e && e.code;
+            if (c === 'CONFLICT') {
+              /* something unreadable is already filed there, so the relay will not let a
+                 fresh save replace it \u2014 the old one has to be taken out by hand first */
+              st.innerHTML = '';
+              var w = document.createElement('div');
+              w.style.cssText = 'margin-top:12px;padding:10px 12px;border-radius:6px;background:#fbe9e7;color:#8a2f24;font-size:13px;line-height:1.5';
+              w.innerHTML = 'There is already a file there that cannot be read, and the relay will not ' +
+                'write over it. Open the <b>data</b> folder in the private ' +
+                '<code>meeting-trackers-data</code> repository, delete the file inside it, then reload ' +
+                'this page and load the history again.';
+              st.parentNode.appendChild(w);
+              return;
+            }
+            st.textContent = 'It would not save: ' + ((e && (e.message || c)) || 'relay error');
           });
         };
         rd.readAsText(picked);
@@ -1204,7 +1218,7 @@ c57 -33 76 -84 76 -200 0 -116 -19 -167 -76 -200 -32 -19 -52 -20 -294 -20
   <span class="logoplate"><svg class="wordmark" role="img" aria-label="MISMO" viewBox="0 0 708 108"><use href="#mismo-logo"/></svg><svg class="santa" viewBox="0 0 100 100" aria-hidden="true"><use href="#mismo-hat"/></svg></span>
   <span class="mastrule"></span>
   <span class="hqname">Meeting Trackers</span>
-  <span class="hqtop-r"><span class="eyebrow-m">Programs &amp; Operations</span><div id="rs-account"></div></span>
+  <span class="hqtop-r"><span class="eyebrow-m">Programs &amp; Operations</span></span>
 </header>
 
 <aside class="hq rail" id="rail">
@@ -1466,7 +1480,7 @@ const pairKey=(a,b)=>[a,b].sort().join("|");
 /* Some rows in the trackers were never a person — a set of initials, a line of junk.
    SETASIDE keeps them and their attendance but stops the tool nagging about them.
    GONE is the harder case: the record is removed from every meeting it appears in. */
-const SETASIDE=new Map(), GONE=new Map();
+const SETASIDE=new Map(), GONE=new Map(), MERGEDTO=new Map();
 /* ---- overlay rows the facilitators have added since ---- */
 function applyDbDocs(docs){
   (docs.sched||[]).forEach(d=>{ const k=d.id; if(!k) return;
@@ -1481,9 +1495,11 @@ function applyDbDocs(docs){
     {by:d.by||"",at:d.at||"",a:d.a||"",b:d.b||"",an:d.an||d.a||"",bn:d.bn||d.b||""}); });
   /* people folded into somebody else: drop the old record and hand its names to the keeper */
   M.merges=[];
+  MERGEDTO.clear();
   (docs.people||[]).forEach(d=>{ if(!d.mergedInto) return;
     const k=d.id||nk(d.name), into=d.mergedInto;
     M.merges.push({k:k,name:d.name||k,into:into,by:d.mergedBy||"",at:d.mergedAt||""});
+    MERGEDTO.set(k,into);
     const keep=M.pp.get(into); M.pp.delete(k);
     if(keep){ const alt=(keep.alt||[]).slice();
       [k,nk(d.name||"")].forEach(a=>{ if(a&&alt.indexOf(a)<0) alt.push(a); });
@@ -1496,10 +1512,6 @@ function applyDbDocs(docs){
     const k=d.id||nk(d.name);
     GONE.set(k,{by:d.removedBy||"",at:d.removedAt||"",name:d.name||k,n:d.removedN||0});
     M.pp.delete(k); });
-  if(GONE.size) M.mt.forEach(m=>{ let hit=false;
-    GONE.forEach((v,k)=>{ if(m.p.has&&m.p.has(k)){ m.p.delete(k); hit=true; }
-      else if(Array.isArray(m.p)){ const i=m.p.indexOf(k); if(i>=0){ m.p.splice(i,1); hit=true; } } });
-    if(hit&&!m.src) m.src="db"; });
   (docs.people||[]).forEach(d=>{ if(d.mergedInto||d.removed) return;
     const k=d.id||nk(d.name);
     const prev=M.pp.get(k)||{};
@@ -1522,6 +1534,20 @@ function applyDbDocs(docs){
     if(ex!=null && M.mt[ex].src==="db"){ M.mt[ex]=rec; }
     else if(ex!=null){ if(!rec.cancelled) rec.p=new Set([...M.mt[ex].p,...rec.p]); M.mt[ex]=rec; }
     else { seen.set(key,M.mt.length); M.mt.push(rec); }
+  });
+  /* A saved meeting is merged with the imported one so a facilitator's save adds to the
+     history rather than replacing it. That union would also put back anyone a merge folded
+     away or a removal took out, so those are applied here — after the union, never before. */
+  if(MERGEDTO.size||GONE.size) M.mt.forEach(m=>{
+    const had=m.p.size!=null?m.p.size:(m.p.length||0);
+    const out=new Set();
+    (m.p.forEach?m.p:new Set(m.p)).forEach(k=>{
+      if(GONE.has(k)) return;
+      let t=k, hops=0;
+      while(MERGEDTO.has(t)&&hops++<8) t=MERGEDTO.get(t);   /* a record merged twice */
+      if(!GONE.has(t)) out.add(t); });
+    if(out.size!==had||[...out].some(k=>!(m.p.has?m.p.has(k):false))){ m.p=out; if(!m.src) m.src="db"; }
+    else m.p=out;
   });
   // refresh group first/last
   M.gr.forEach(g=>{ const ds=M.mt.filter(m=>m.gk===g.k).map(m=>m.d).sort();
@@ -1897,6 +1923,12 @@ function renderOverview(root){
     ab.addEventListener("click",()=>setShowArc(!SHOWARC));
     bar.appendChild(ab);
   }
+  if(CANWRITE){
+    const nb2=el("button","btn ghost","Add a Workgroup"); nb2.type="button"; nb2.id="pk-new";
+    nb2.title="Start a new workgroup, forum or community of practice";
+    nb2.addEventListener("click",()=>newGroupPane());
+    bar.appendChild(nb2);
+  }
   const cnt=el("span","count"); cnt.id="pk-c"; bar.appendChild(cnt);
   root.appendChild(bar);
   const host=el("div"); host.id="pk-host"; root.appendChild(host);
@@ -1905,6 +1937,63 @@ function renderOverview(root){
   const mw=el("div"); mw.style.marginTop="30px"; mw.appendChild(manageSection()); root.appendChild(mw);
 }
 
+const GTYPES=["Development Workgroup","Community of Practice","Forum","Workgroup",
+  "Governance","Workshop","Other"];
+/* A new workgroup starts here: a name, what kind it is, and who runs it. Its day, time,
+   cadence and Zoom link are set afterwards in Meeting Schedule and Settings. */
+function newGroupPane(){
+  openPane("Add a Workgroup","It appears straight away on the A\u2013Z list and in the log screen",()=>{
+    const d=el("div");
+    d.appendChild(el("div","hint","Nothing else changes \u2014 no attendance exists for it yet. "+
+      "Once it is here, open it and use Meeting Schedule and Settings to set the day, time, "+
+      "how often it meets and the Zoom link, so it starts appearing in the Today box."));
+    const g=el("div","ctrls"); g.style.marginTop="12px";
+    const fld=(lab,node,wide)=>{ const w=el("div","fld"+(wide?" wide":""));
+      w.appendChild(el("label",null,lab)); w.appendChild(node); g.appendChild(w); return node; };
+    const ni=el("input"); ni.type="text"; ni.placeholder="e.g. Loan Quality DWG";
+    fld("Workgroup Name",ni,true);
+    const ts=el("select");
+    ts.style.cssText="width:100%;border:1px solid var(--border);border-radius:6px;padding:7px 9px;font-size:13px;background:var(--surface);color:var(--ink)";
+    GTYPES.forEach(t=>{ const o=el("option",null,t); o.value=t; ts.appendChild(o); });
+    fld("Type",ts);
+    const fi=el("input"); fi.type="text"; fi.placeholder="Who runs it";
+    fi.setAttribute("list","pk-faclist");
+    const dl=el("datalist"); dl.id="pk-faclist";
+    [...new Set([...M.gr.values()].map(x=>x.facilitator).filter(Boolean))].sort()
+      .forEach(x=>{ const o=el("option"); o.value=x; dl.appendChild(o); });
+    d.appendChild(dl);
+    fld("Facilitator",fi);
+    d.appendChild(g);
+    const warn=el("div"); d.appendChild(warn);
+    const row=el("div","btnrow");
+    const sv=el("button","btn","Add It"); sv.type="button";
+    sv.addEventListener("click",async()=>{
+      const nm=ni.value.trim();
+      warn.textContent="";
+      if(!nm){ toast("Give it a name first.",true); return; }
+      const k=nk(nm);
+      if(!k){ toast("That name cannot be used.",true); return; }
+      const ex=M.gr.get(k);
+      if(ex){
+        const b=el("div","banner warn-b");
+        b.innerHTML="<b>"+esc2(ex.name)+" already exists.</b>"+(ex.archived?" It is archived \u2014 open it and bring it back rather than making a second one.":"");
+        warn.appendChild(b);
+        return; }
+      sv.disabled=true; sv.textContent="Adding\u2026";
+      const okr=await saveDoc("groups",k,{name:nm,type:ts.value,
+        facilitator:fi.value.trim(),archived:false});
+      if(!okr){ sv.disabled=false; sv.textContent="Add It"; return; }
+      M.gr.set(k,{k:k,name:nm,type:ts.value,facilitator:fi.value.trim(),
+        archived:false,first:"",last:""});
+      buildIndexes(); renderAll(true);
+      toast(nm+" added. Open it to set its day, time and cadence.");
+      openGroup(k);
+    });
+    row.appendChild(sv); d.appendChild(row);
+    setTimeout(()=>{ try{ ni.focus(); }catch(e){} },80);
+    return d;
+  });
+}
 function groupCard(gk){
   const g=M.gr.get(gk); if(!g) return null;
   const sc=(M.sched||{})[gk]||{}, pend=pendingFor(gk), last=lastLogged(gk);
@@ -1971,8 +2060,6 @@ function drawPicker(){
       const l=el("span"); l.appendChild(el("b",null,n(gks.length)));
       l.appendChild(document.createTextNode(" workgroup"+(gks.length===1?"":"s")));
       foot.appendChild(l);
-      const mt=gks.reduce((a,k)=>a+liveCount(k),0);
-      foot.appendChild(el("span","pc-ct",n(mt)+" meetings"));
       c.appendChild(foot);
       c.addEventListener("click",()=>{ PICKFAC=nm; drawPicker(); window.scrollTo(0,0); });
       grid.appendChild(c);
@@ -2510,9 +2597,13 @@ async function mergePeople(dupKey,keepKey,after,opts){
     if(a&&alt.indexOf(a)<0) alt.push(a); });
   /* One person who changed firms: keep both companies with the date they moved, so the
      earlier meetings still count for the old one. */
+  /* the record being kept may be the one with no company on it \u2014 take the other's
+     rather than leaving every meeting counting for nobody */
+  const keepHist=histOf(keep).filter(e=>e.ck);
+  const dupHist=histOf(dup).filter(e=>e.ck);
   const hist=(opts&&opts.hist&&opts.hist.length)
     ? opts.hist.map(e=>({ck:e.ck,from:e.from||""}))
-    : histOf(keep).map(e=>({ck:e.ck,from:e.from||""}));
+    : (keepHist.length?keepHist:dupHist).map(e=>({ck:e.ck,from:e.from||""}));
   const nowCk=hist.length?hist[hist.length-1].ck:(keep.ck||dup.ck||"");
   writes.push({c:"people",id:keepKey,data:{name:keep.name,ck:nowCk,role:keep.role||dup.role||"",
     hist:hist,alt:alt}});
@@ -4576,6 +4667,8 @@ function onDay(d,liveSort){
   const out=[];
   Object.keys(M.sched||{}).forEach(gk=>{ const sc2=M.sched[gk];
     if(sc2.status&&sc2.status.toLowerCase()!=="active") return;
+    /* an archived workgroup has stopped meeting, whatever cadence is still on file for it */
+    const g2=M.gr.get(gk); if(g2&&g2.archived) return;
     if(meetsOn(sc2.rule,d)) out.push(Object.assign({gk:gk},sc2)); });
   out.sort((a,b)=>(startOf(a)-startOf(b))||String(a.gk).localeCompare(String(b.gk)));
   if(liveSort){
