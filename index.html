@@ -359,11 +359,8 @@ img{max-width:100%}
   function me() { var s = RS() && RS().current(); return { name: (s && s.name) || '', email: (s && s.email) || '' }; }
   var USER = {
     isOwner: function () { return false; },
-    /* Whether this person may save here comes from their access to this tool, so View
-       access gets the tool's own view-only mode instead of controls the relay would refuse.
-       The relay still decides on every save; this only decides what to show. */
-    canEdit: function () { var rs = RS(); return !!(rs && rs.canEdit && rs.canEdit(PROJECT)); },
-    can: function (what) { return what === 'data.write' ? (ready && USER.canEdit()) : false; },
+    canEdit: function () { return false; },
+    can: function (what) { return what === 'data.write' ? ready : false; },
     id: function () { return Promise.resolve(me().email || ''); },
     me: function () { return Promise.resolve(me()); },
     profile: function () { return Promise.resolve(me()); }
@@ -408,24 +405,59 @@ img{max-width:100%}
     });
   }
   /* ---------- the imported history ---------- */
+  /* The history is 48,000 records. Written out as plain JSON the stored file lands near
+     1.2 MB once the relay formats it, which is past what it can read back in one piece —
+     it comes home truncated and unreadable. So it is squeezed first: the same data as one
+     compressed string, about 130 KB, and formatting cannot inflate a single string. */
+  function gz(obj) {
+    if (typeof CompressionStream !== 'function') return Promise.reject(err('NO_GZIP',
+      'This browser cannot compress the history. Use Chrome, Edge, Firefox or Safari 16.4 or newer.'));
+    var body = new Blob([JSON.stringify(obj)]).stream().pipeThrough(new CompressionStream('gzip'));
+    return new Response(body).arrayBuffer().then(function (buf) {
+      var b = new Uint8Array(buf), s2 = '', CH = 0x8000;
+      for (var i = 0; i < b.length; i += CH) s2 += String.fromCharCode.apply(null, b.subarray(i, i + CH));
+      return btoa(s2);
+    });
+  }
+  function ungz(b64) {
+    if (typeof DecompressionStream !== 'function') return Promise.reject(err('NO_GZIP',
+      'This browser cannot read the stored history. Use Chrome, Edge, Firefox or Safari 16.4 or newer.'));
+    var bin = atob(b64), b = new Uint8Array(bin.length);
+    for (var i = 0; i < bin.length; i++) b[i] = bin.charCodeAt(i);
+    var body = new Blob([b]).stream().pipeThrough(new DecompressionStream('gzip'));
+    return new Response(body).text().then(function (t) { return JSON.parse(t); });
+  }
   var baseLoaded = false;
   function openBaseline() {
     if (baseLoaded) return Promise.resolve();
     var f = file(BASELINE, true);
     return load(f).then(function () {
       var doc = f.server && f.server.doc;
+      if (doc && doc.z) {                     /* the squeezed form */
+        return ungz(doc.z).then(function (full) {
+          baseLoaded = true; baseDone(full);
+        }, function () { return seedGate(f); });
+      }
       if (doc && doc.v) { baseLoaded = true; baseDone(doc); return; }
       return seedGate(f);                     /* nothing there yet \u2014 offer to put it in, once */
+    }, function (e) {
+      /* An earlier attempt left something the relay cannot read back. Rather than a dead
+         end, offer to put the history in again \u2014 the save replaces whatever is there. */
+      if (e && e.status === 404) throw e;
+      return seedGate(f, e);
     });
   }
   /* A one-time step for whoever sets this up: choose the baseline.json that came with the
      tool and it is written into the private data repository. Nobody sees this again. */
-  function seedGate(f) {
+  function seedGate(f, prevErr) {
     return new Promise(function (res, rej) {
       gate('blank');
       gateEl.innerHTML =
         '<div style="max-width:560px;text-align:left">' +
         '<h2 style="margin:0 0 10px;font:600 19px/1.3 \'IBM Plex Sans\',system-ui,sans-serif">The Imported History Is Not Loaded Yet</h2>' +
+        (prevErr ? '<p style="margin:0 0 14px;padding:9px 11px;border-radius:6px;background:#fbe9e7;color:#8a2f24;font-size:13px">' +
+          'What is stored could not be read back (' + String((prevErr.message || prevErr.code || '')).replace(/[<>&]/g, '') +
+          '). Loading it again replaces it.</p>' : '') +
         '<p style="margin:0 0 14px">This is a one-time step. The tracker history is member information, so it is kept in the private ' +
         '<code>meeting-trackers-data</code> repository rather than in this page. Choose the <b>baseline.json</b> that came with the tool and it will be put there.</p>' +
         '<p style="margin:0 0 16px;color:#456179;font-size:13.5px">Everyone else just sees the trackers \u2014 this screen only appears while the history is missing.</p>' +
@@ -449,12 +481,16 @@ img{max-width:100%}
           var doc;
           try { doc = JSON.parse(rd.result); } catch (e) { go.disabled = false; st.textContent = 'That is not a JSON file.'; return; }
           if (!doc || !doc.v || !doc.meetings) { go.disabled = false; st.textContent = 'That does not look like the tracker baseline.'; return; }
-          if (JSON.stringify(doc).length > MAX_FILE) { go.disabled = false; st.textContent = 'That file is too big for one save. Tell Jonna.'; return; }
-          st.textContent = 'Saving to the private repository\u2026';
-          put(BASELINE, { content: { doc: doc }, sha: f.sha }).then(function (b) {
-            f.server = { doc: doc }; f.sha = (b && b.sha) || f.sha; f.view = null;
-            baseLoaded = true; baseDone(doc); res();
-          }, function (e) {
+          st.textContent = 'Squeezing it down\u2026';
+          gz(doc).then(function (z) {
+            if (z.length > MAX_FILE) throw err('TOO_BIG', 'the history is too big for one save even squeezed');
+            st.textContent = 'Saving to the private repository\u2026 (' + Math.round(z.length / 1024) + ' KB)';
+            var packed = { v: 1, z: z };
+            return put(BASELINE, { content: { doc: packed }, sha: f.sha }).then(function (b) {
+              f.server = { doc: packed }; f.sha = (b && b.sha) || f.sha; f.view = null;
+              baseLoaded = true; baseDone(doc); res();
+            });
+          }).catch(function (e) {
             go.disabled = false;
             st.textContent = 'It would not save: ' + ((e && (e.message || e.code)) || 'relay error');
           });
