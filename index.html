@@ -722,7 +722,10 @@ body.railmini .hq .mast-right .theme-btn span{display:none}
 /* the no-company rows carry three controls, so they get their own column rhythm */
 .tl.noco .tli{grid-template-columns:minmax(0,1fr) 84px auto;gap:10px;align-items:center}
 .tl .tli.addrow{grid-template-columns:104px minmax(0,1fr) auto auto;gap:10px;align-items:center}
-@media(max-width:700px){.tl .tli.addrow{grid-template-columns:minmax(0,1fr) auto;row-gap:7px}}
+@media(max-width:700px){.tl .tli.addrow{grid-template-columns:auto minmax(0,1fr);row-gap:6px}
+  .tl .tli.addrow>.d{white-space:nowrap}
+  .tl .tli.addrow>.st{grid-column:1/-1}
+  .tl .tli.addrow>.nocoacts{grid-column:1/-1;justify-content:flex-start}}
 .nocoacts{display:flex;align-items:center;gap:14px;flex-wrap:wrap;justify-content:flex-end}
 @media(max-width:700px){.tl.noco .tli{grid-template-columns:minmax(0,1fr) auto;row-gap:7px}
   .nocoacts{grid-column:1/-1;justify-content:flex-start;gap:16px}}
@@ -1487,15 +1490,20 @@ function loadBaseline(B){
   B.companies.forEach(c=>{ const k=nk(c[0]); if(!M.co.has(k)) M.co.set(k,{k:k,name:c[0],cat:B.cats[c[1]]||"Unknown"}); });
   const pk=[];
   B.people.forEach(p=>{ const k=nk(p[0]); pk.push(k);
-    if(!M.pp.has(k)) M.pp.set(k,{k:k,name:p[0],ck:p[1]>=0?nk(B.companies[p[1]][0]):"",role:p[2]||""}); });
+    const rec0={k:k,name:p[0],ck:p[1]>=0?nk(B.companies[p[1]][0]):"",role:p[2]||""};
+    BASEPP.set(k,rec0);                    /* the record as imported, for taking a merge back */
+    if(!M.pp.has(k)) M.pp.set(k,Object.assign({},rec0)); });
   const gk=[];
   B.groups.forEach(g=>{ const k=nk(g[0]); gk.push(k);
     M.gr.set(k,{k:k,name:g[0],type:g[1],archived:!!g[2],facilitator:g[3]||"",first:g[4],last:g[5]}); });
   B.summits.forEach(s=>{ M.summits.set(nk(s[0]),{k:nk(s[0]),name:s[0],start:s[1],end:s[2]}); });
   M.sched=B.sched||{};
   B.meetings.forEach((m,i)=>{
+    /* p0 is the attendance exactly as the workbooks had it. Nothing ever writes to it, so
+       a merge can be taken back by asking it who was really on a meeting. */
+    const p0=new Set((B.att[i]||[]).map(x=>pk[x]));
     M.mt.push({id:"b"+i,gk:gk[m[0]],d:m[1],sum:(m[2]>=0?nk(B.summits[m[2]][0]):""),label:m[3]||"",
-               p:new Set((B.att[i]||[]).map(x=>pk[x])),src:"base"});
+               p:new Set(p0),p0:p0,src:"base"});
   });
 }
 
@@ -1507,7 +1515,7 @@ const pairKey=(a,b)=>[a,b].sort().join("|");
 /* Some rows in the trackers were never a person — a set of initials, a line of junk.
    SETASIDE keeps them and their attendance but stops the tool nagging about them.
    GONE is the harder case: the record is removed from every meeting it appears in. */
-const SETASIDE=new Map(), GONE=new Map(), MERGEDTO=new Map();
+const SETASIDE=new Map(), GONE=new Map(), MERGEDTO=new Map(), BASEPP=new Map();
 /* ---- overlay rows the facilitators have added since ---- */
 function applyDbDocs(docs){
   (docs.sched||[]).forEach(d=>{ const k=d.id; if(!k) return;
@@ -1557,6 +1565,7 @@ function applyDbDocs(docs){
     const key=d.gk+"|"+d.d, ex=seen.get(key);
     const rec={id:d.id,gk:d.gk,d:d.d,sum:d.sum||"",label:d.label||"",
                p:new Set(d.p||[]),src:"db",by:d.by||"",at:d.at||"",byId:d.byId||"",
+               p0:(ex!=null?M.mt[ex].p0:null),
                cancelled:!!d.cancelled,createdBy:d.createdBy||"",createdAt:d.createdAt||""};
     if(ex!=null && M.mt[ex].src==="db"){ M.mt[ex]=rec; }
     else if(ex!=null){ if(!rec.cancelled) rec.p=new Set([...M.mt[ex].p,...rec.p]); M.mt[ex]=rec; }
@@ -2765,6 +2774,50 @@ function askMove(row,keep,other,after){
   br.appendChild(go2); br.appendChild(cx); box.appendChild(br);
   row.appendChild(box);
   try{ box.scrollIntoView({block:"nearest",behavior:"smooth"}); }catch(e){}
+}
+
+/* Taking a merge back. The imported attendance is still on file untouched, so for every
+   meeting the kept record now sits on, the workbooks say whether it was really the other
+   one. Anything logged in the tool since a merge is left where it is. */
+async function unmergePeople(dupKey,keepKey,dupName,after){
+  const keep=M.pp.get(keepKey); if(!keep) return false;
+  const idxs=(M.byP.get(keepKey)||[]).slice();
+  const writes=[], now=new Date().toISOString(), me=whoAmI();
+  const touched=[]; let moved=0;
+  idxs.forEach(i=>{ const m=M.mt[i], p0=m.p0;
+    if(!p0||!p0.has(dupKey)||m.p.has(dupKey)) return;   /* really the kept one's meeting */
+    const np=new Set(m.p);
+    np.add(dupKey);
+    /* the handful they both attended keep both; the rest go back to the other record */
+    if(!p0.has(keepKey)) np.delete(keepKey);
+    moved++;
+    writes.push({c:"meetings",id:"m_"+m.gk+"_"+String(m.d).replace(/-/g,""),
+      data:{gk:m.gk,d:m.d,sum:m.sum||"",label:m.label||"",cancelled:!!m.cancelled,
+        p:[...np],by:me,byId:(USER&&USER.id)||"",at:now,
+        createdBy:m.createdBy||m.by||me,createdAt:m.createdAt||m.at||now}});
+    touched.push({i:i,p:np}); });
+  /* the kept record stops answering to the other name */
+  const dn=nk(dupName||dupKey);
+  const alt=(keep.alt||[]).filter(a=>a!==dupKey&&a!==dn);
+  writes.push({c:"people",id:keepKey,data:{name:keep.name,ck:keep.ck||"",role:keep.role||"",
+    hist:histOf(keep).map(e=>({ck:e.ck,from:e.from||""})),alt:alt}});
+  const okr=await saveMany(writes);
+  if(!okr) return false;
+  /* and the marker that folded them together goes */
+  const gone=await removeDoc("people",dupKey);
+  if(!gone) return false;
+  touched.forEach(t=>{ M.mt[t.i].p=t.p; M.mt[t.i].src="db"; });
+  keep.alt=alt;
+  /* put them back on the roster now, as the imported history has them */
+  if(!M.pp.has(dupKey)) M.pp.set(dupKey,Object.assign({k:dupKey,name:dupName||dupKey,ck:"",
+    role:"",alt:[],addedBy:"",addedAt:""},BASEPP.get(dupKey)||{}));
+  MERGEDTO.delete(dupKey);
+  M.merges=(M.merges||[]).filter(r=>r.k!==dupKey);
+  buildIndexes();
+  if(after) after();
+  toast(dupName+" is a separate record again \u2014 "+n(moved)+" meeting"+(moved===1?"":"s")+
+    " went back to them. The pair is on the duplicates list once more.");
+  return true;
 }
 
 /* A row that was never a person — initials, a stray line. Keep it and its attendance
@@ -5265,10 +5318,24 @@ function renderIssues(root){
     const w=el("div","tl");
     mg.slice(0,120).forEach(r=>{
       const keep=M.pp.get(r.into);
-      const row=el("div","tli"); row.style.cursor=keep?"pointer":"default";
+      const row=el("div","tli addrow"); row.style.cursor=keep?"pointer":"default";
       row.appendChild(el("span","d",r.at?fmtD(String(r.at).slice(0,10)):""));
       row.appendChild(el("span",null,r.name+" \u2192 "+(keep?keep.name:r.into)));
       row.appendChild(el("span","st",(r.by?"by "+r.by:"")+(r.n!=null?(r.by?" \u00b7 ":"")+n(r.n)+" meeting"+(r.n===1?"":"s")+" moved":"")));
+      if(CANWRITE&&keep){
+        const acts=el("div","nocoacts");
+        const ub=el("button","linkb quiet","Undo This Merge"); ub.type="button";
+        ub.title="Split them back into two records and put the pair on the duplicates list again";
+        let armed=false;
+        ub.addEventListener("click",async ev=>{ ev.stopPropagation();
+          if(!armed){ armed=true; ub.textContent="Split Them Apart?";
+            setTimeout(()=>{ if(!ub.isConnected) return; armed=false; ub.textContent="Undo This Merge"; },7000);
+            return; }
+          ub.disabled=true; ub.textContent="Splitting\u2026";
+          const ok2=await unmergePeople(r.k,r.into,r.name,()=>renderAll(true));
+          if(!ok2){ ub.disabled=false; armed=false; ub.textContent="Undo This Merge"; } });
+        acts.appendChild(ub); row.appendChild(acts);
+      }
       if(keep) row.addEventListener("click",()=>openPerson(r.into));
       w.appendChild(row); });
     d.appendChild(w);
