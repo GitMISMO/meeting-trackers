@@ -529,7 +529,20 @@ img{max-width:100%}
   function hookSession() {
     var rs = RS(); if (!rs) { gate('nosession'); return; }
     rs.onChange(function () { start(); });
+    mountAccount(rs);
     start();
+  }
+  /* The shared sign-in puts the account chip into #rs-account when it loads, but this page
+     is built after it runs, so the spot does not exist yet. Hand it over once it does —
+     the same chip Summit HQ and Team HQ carry, in the same corner. */
+  function mountAccount(rs) {
+    if (!rs || typeof rs.mount !== 'function') return;
+    var tries = 0;
+    (function go() {
+      var el = document.getElementById('rs-account');
+      if (el) { if (!el.getAttribute('data-rs-mount')) { try { rs.mount(el); } catch (e) {} } return; }
+      if (tries++ < 40) setTimeout(go, 120);
+    })();
   }
 
   /* ---------- a quiet line when a save has a problem ---------- */
@@ -845,18 +858,25 @@ body.railmini .hq nav button .navcount{position:absolute;top:3px;right:3px;margi
 .pcard2:focus-visible{outline:2px solid var(--sky);outline-offset:2px}
 .pcard2.on{border-color:var(--sky);box-shadow:0 0 0 1px var(--sky)}
 .pc-body{flex:1 1 auto;display:flex;flex-direction:column;padding:14px 16px 0 18px}
-.pc-top{display:flex;align-items:flex-start;gap:10px;width:100%}
-.pcard2 .pc-n{flex:1 1 auto;min-width:0;font-size:15px;font-weight:600;line-height:1.3;
-  letter-spacing:-.011em;color:var(--ink);overflow-wrap:anywhere}
-.pcard2 .pc-meet{display:flex;align-items:center;gap:6px;margin-top:7px;
-  font-size:12.5px;font-weight:500;line-height:1.4;color:var(--navy-mid);letter-spacing:-.002em}
-.pcard2 .pc-meet svg{width:13px;height:13px;flex:0 0 auto;fill:none;stroke:currentColor;
+.pc-top{display:flex;align-items:flex-start;gap:11px;width:100%}
+.pc-av{flex:0 0 auto;width:38px;height:38px;border-radius:50%;display:flex;align-items:center;
+  justify-content:center;font-size:13px;font-weight:700;letter-spacing:.02em;
+  background:color-mix(in srgb,var(--av) 15%,var(--surface));
+  color:color-mix(in srgb,var(--av) 48%,var(--ink));
+  box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--av) 38%,transparent)}
+.pcard2 .pc-nw{flex:1 1 auto;min-width:0}
+.pcard2 .pc-sub{font-size:11.5px;color:var(--ink-3);margin-top:2px;line-height:1.35}
+.pcard2 .pc-n{flex:1 1 auto;min-width:0;font-size:14.5px;font-weight:600;line-height:1.3;
+  letter-spacing:-.013em;color:var(--ink);overflow-wrap:anywhere;text-wrap:balance}
+.pcard2 .pc-meet{display:inline-flex;align-items:center;gap:5px;
+  font-size:11.5px;font-weight:500;line-height:1.4;color:var(--navy-mid);letter-spacing:-.002em}
+.pcard2 .pc-meet svg{width:12px;height:12px;flex:0 0 auto;fill:none;stroke:currentColor;
   stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round;opacity:.75}
 .pcard2 .pc-meet.none{color:var(--ink-3);font-style:italic;font-weight:400}
 .pcard2 .pc-s{font-size:12.5px;color:var(--ink-2);line-height:1.45;margin-top:7px}
 .pcard2 .pc-s b{color:var(--ink);font-weight:600}
-.pcard2 .pc-sp{flex:1 1 auto;min-height:10px}
-.pc-foot{flex:0 0 auto;display:flex;align-items:baseline;justify-content:space-between;gap:10px;
+.pcard2 .pc-sp{flex:1 1 auto;min-height:8px}
+.pc-foot{flex:0 0 auto;display:flex;align-items:center;justify-content:space-between;gap:10px;
   margin:0;padding:9px 16px 12px 18px;border-top:1px solid var(--rule);
   font-size:11.5px;color:var(--ink-3);line-height:1.4}
 .pc-foot b{color:var(--ink-2);font-weight:600}
@@ -1221,7 +1241,7 @@ c57 -33 76 -84 76 -200 0 -116 -19 -167 -76 -200 -32 -19 -52 -20 -294 -20
   <span class="logoplate"><svg class="wordmark" role="img" aria-label="MISMO" viewBox="0 0 708 108"><use href="#mismo-logo"/></svg><svg class="santa" viewBox="0 0 100 100" aria-hidden="true"><use href="#mismo-hat"/></svg></span>
   <span class="mastrule"></span>
   <span class="hqname">Meeting Trackers</span>
-  <span class="hqtop-r"><span class="eyebrow-m">Programs &amp; Operations</span></span>
+  <span class="hqtop-r"><span class="eyebrow-m">Programs &amp; Operations</span><span id="rs-account"></span></span>
 </header>
 
 <aside class="hq rail" id="rail">
@@ -1997,6 +2017,37 @@ function newGroupPane(){
     return d;
   });
 }
+/* How many of their meetings fall in this working week, Monday to Friday — the number a
+   facilitator actually plans around. */
+function weekCount(gks,now){
+  const d0=new Date(now.getTime());
+  d0.setDate(d0.getDate()-((d0.getDay()+6)%7));        /* back to Monday */
+  let t=0;
+  for(let i=0;i<5;i++){
+    const d=new Date(d0.getTime()); d.setDate(d.getDate()+i);
+    gks.forEach(k=>{ const sc=(M.sched||{})[k];
+      const g=M.gr.get(k); if(g&&g.archived) return;
+      if(sc&&sc.rule&&meetsOn(sc.rule,d)) t++; });
+  }
+  return t;
+}
+/* A circle of initials, coloured from the chart palette by the name itself so the same
+   person is always the same colour. The fill is a tint of it and the letters a deepened
+   version, so both read clearly on the light and the dark surface. */
+function initialsOf(nm){
+  const w=String(nm||"").trim().split(/\s+/).filter(Boolean);
+  if(!w.length) return "?";
+  if(w.length===1) return w[0].slice(0,2).toUpperCase();
+  return (w[0][0]+w[w.length-1][0]).toUpperCase();
+}
+function avatar(nm){
+  let h=0; const s2=String(nm||"");
+  for(let i=0;i<s2.length;i++) h=(h*31+s2.charCodeAt(i))>>>0;
+  const a=el("span","pc-av",initialsOf(nm));
+  a.style.setProperty("--av","var(--c"+((h%6)+1)+")");
+  a.setAttribute("aria-hidden","true");
+  return a;
+}
 function groupCard(gk){
   const g=M.gr.get(gk); if(!g) return null;
   const sc=(M.sched||{})[gk]||{}, pend=pendingFor(gk), last=lastLogged(gk);
@@ -2045,24 +2096,30 @@ function drawPicker(){
     fl.forEach(([nm,gks])=>{
       const pend=gks.reduce((a,k)=>a+pendingFor(k).length,0);
       const now=etNow(), todayN=gks.filter(k=>{ const sc=(M.sched||{})[k]; return sc&&sc.rule&&meetsOn(sc.rule,now); }).length;
+      const wk=weekCount(gks,now);
       const c=el("button","pcard2"); c.type="button";
       c.style.setProperty("--tc", pend?"var(--warn)":todayN?"var(--sky)":"var(--c3)");
       const body=el("div","pc-body");
-      const top=el("div","pc-top"); top.appendChild(el("div","pc-n",nm));
+      const top=el("div","pc-top");
+      top.appendChild(avatar(nm));
+      const nmw=el("div","pc-nw");
+      nmw.appendChild(el("div","pc-n",nm));
+      nmw.appendChild(el("div","pc-sub",n(gks.length)+" workgroup"+(gks.length===1?"":"s")));
+      top.appendChild(nmw);
       top.appendChild(pend?el("div","pc-b",pend+" to log"):el("div","pc-b ok","Up to date"));
       body.appendChild(top);
-      const meet=el("div","pc-meet");
-      meet.innerHTML='<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2.5"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>';
-      meet.appendChild(document.createTextNode(
-        todayN? (todayN+" meeting"+(todayN===1?"":"s")+" today") : "Nothing scheduled today"));
-      if(!todayN) meet.className="pc-meet none";
-      body.appendChild(meet);
       body.appendChild(el("div","pc-sp"));
       c.appendChild(body);
       const foot=el("div","pc-foot");
-      const l=el("span"); l.appendChild(el("b",null,n(gks.length)));
-      l.appendChild(document.createTextNode(" workgroup"+(gks.length===1?"":"s")));
-      foot.appendChild(l);
+      const meet=el("span","pc-meet"+(todayN?"":" none"));
+      meet.innerHTML='<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2.5"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>';
+      meet.appendChild(document.createTextNode(
+        todayN? (todayN+" today") : "Nothing today"));
+      foot.appendChild(meet);
+      const w=el("span","pc-ct");
+      if(wk){ w.appendChild(el("b",null,n(wk))); w.appendChild(document.createTextNode(" this week")); }
+      else w.textContent="None this week";
+      foot.appendChild(w);
       c.appendChild(foot);
       c.addEventListener("click",()=>{ PICKFAC=nm; drawPicker(); window.scrollTo(0,0); });
       grid.appendChild(c);
