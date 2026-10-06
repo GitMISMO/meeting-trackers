@@ -640,6 +640,10 @@ body.railmini .hqtop{margin-left:calc(0px - var(--rail-mini));width:calc(100% + 
 .hqtop .hqname{font-family:var(--display);font-size:15.5px;font-weight:700;letter-spacing:-.005em;color:var(--sky);white-space:nowrap}
 .hqtop-r{margin-left:auto;display:flex;align-items:center;gap:13px}
 .hqtop .eyebrow-m{font-size:10.5px;letter-spacing:.11em;text-transform:uppercase;color:rgba(255,255,255,.62);font-weight:600;white-space:nowrap}
+/* The shared sign-in draws its account chip as a 40px pill. Team HQ and the other MISMO
+   pages square it off to sit with the logo plate, so this one does the same. */
+.hqtop .rs-who{border-radius:7px;height:36px;padding:0 11px 0 6px}
+.hqtop .rs-av{width:24px;height:24px;font-size:10.5px}
 @media(max-width:700px){.hqtop .eyebrow-m{display:none}.hqtop .mastrule{margin-inline:12px}}
 .logoplate{background:#fff;border-radius:7px;padding:8px 14px;display:flex;align-items:center;line-height:0;flex:0 0 auto;position:relative}
 .logoplate .wordmark{height:24px;width:auto;display:block}
@@ -2040,11 +2044,14 @@ function initialsOf(nm){
   if(w.length===1) return w[0].slice(0,2).toUpperCase();
   return (w[0][0]+w[w.length-1][0]).toUpperCase();
 }
-function avatar(nm){
+function avSlot(nm){
   let h=0; const s2=String(nm||"");
   for(let i=0;i<s2.length;i++) h=(h*31+s2.charCodeAt(i))>>>0;
+  return "var(--c"+((h%6)+1)+")";
+}
+function avatar(nm){
   const a=el("span","pc-av",initialsOf(nm));
-  a.style.setProperty("--av","var(--c"+((h%6)+1)+")");
+  a.style.setProperty("--av",avSlot(nm));
   a.setAttribute("aria-hidden","true");
   return a;
 }
@@ -2098,7 +2105,9 @@ function drawPicker(){
       const now=etNow(), todayN=gks.filter(k=>{ const sc=(M.sched||{})[k]; return sc&&sc.rule&&meetsOn(sc.rule,now); }).length;
       const wk=weekCount(gks,now);
       const c=el("button","pcard2"); c.type="button";
-      c.style.setProperty("--tc", pend?"var(--warn)":todayN?"var(--sky)":"var(--c3)");
+      /* the stripe is the person's own colour, the same one their circle carries \u2014 the
+         amber "to log" badge is what says there is a backlog */
+      c.style.setProperty("--tc",avSlot(nm));
       const body=el("div","pc-body");
       const top=el("div","pc-top");
       top.appendChild(avatar(nm));
