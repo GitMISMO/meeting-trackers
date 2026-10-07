@@ -866,6 +866,17 @@ body.railmini .hq nav button .navcount{position:absolute;top:3px;right:3px;margi
 .pcard2.on{border-color:var(--sky);box-shadow:0 0 0 1px var(--sky)}
 .pc-body{flex:1 1 auto;display:flex;flex-direction:column;padding:14px 16px 0 18px}
 .pc-top{display:flex;align-items:flex-start;gap:11px;width:100%}
+/* the longest button on the page \u2014 let it wrap rather than push the screen sideways */
+#lg-cancelall{white-space:normal;text-align:left;max-width:100%;line-height:1.35}
+.vhead h1 .vtitle{display:inline;max-width:100%;overflow-wrap:anywhere;
+  background:none;border:0;padding:0;margin:0;font:inherit;color:inherit;
+  cursor:pointer;text-align:left;text-decoration:underline;text-decoration-color:transparent;
+  text-decoration-thickness:2px;text-underline-offset:5px;transition:text-decoration-color .12s}
+.vhead h1 .vtitle:hover{text-decoration-color:var(--sky)}
+.vhead h1 .vtitle:focus-visible{outline:2px solid var(--sky);outline-offset:3px;border-radius:4px}
+.vhead h1 .vti{margin-left:9px;font-size:.66em;font-weight:500;color:var(--ink-3);vertical-align:2%}
+.vhead h1 .vtitle:hover+.vti{color:var(--navy-mid)}
+@media (prefers-reduced-motion:reduce){.vhead h1 .vtitle{transition:none}}
 .pc-av{flex:0 0 auto;width:38px;height:38px;border-radius:50%;display:flex;align-items:center;
   justify-content:center;font-size:13px;font-weight:700;letter-spacing:.02em;
   background:color-mix(in srgb,var(--av) 15%,var(--surface));
@@ -3456,8 +3467,22 @@ function logScreen(root){
   root.appendChild(back);
   const who=el("span"); who.style.cssText="font-size:12px;color:var(--ink-3)";
   who.textContent=CANWRITE?("Logging as "+whoAmI()):"View only";
-  root.appendChild(vhead(g?g.name:"Log Attendance",
-    "Tap everyone who was there, then save. The list starts with whoever came most recently, so your regulars are at the top.",who));
+  const head=vhead(g?g.name:"Log Attendance",
+    "Tap everyone who was there, then save. The list starts with whoever came most recently, so your regulars are at the top.",who);
+  /* the workgroup's own figures, history and settings are a click away from its name */
+  if(g){
+    const h1=$("h1",head);
+    if(h1){
+      h1.textContent="";
+      const tb=el("button","vtitle",g.name); tb.type="button";
+      tb.title="Open "+g.name+" \u2014 its figures, who attends, meeting history and settings";
+      tb.addEventListener("click",()=>openGroup(g.k));
+      h1.appendChild(tb);
+      const ch=el("span","vti","\u203A"); ch.setAttribute("aria-hidden","true");
+      h1.appendChild(ch);
+    }
+  }
+  root.appendChild(head);
   const rb=readOnlyBanner(); if(rb) root.appendChild(rb);
 
   const pw=el("div"); pw.id="lg-pendwrap"; root.appendChild(pw);
@@ -3568,19 +3593,20 @@ function refreshPending(){
     b.appendChild(ln);
     if(CANWRITE){
       const r=el("div"); r.style.cssText="margin-top:9px;display:flex;gap:8px;flex-wrap:wrap;align-items:center";
-      const ca=el("button","btn ghost","Mark All "+n(pend.length)+" as Cancelled"); ca.type="button"; ca.id="lg-cancelall";
-      ca.title="Record all "+n(pend.length)+" of these as meetings that did not take place";
+      const CAL="Mark All "+n(pend.length)+" Cancelled or Rescheduled";
+      const ca=el("button","btn ghost",CAL); ca.type="button"; ca.id="lg-cancelall";
+      ca.title="For dates where the meeting did not take place, or went ahead on a different day \u2014 either way there is no attendance to log against this one";
       let armed2=false;
       ca.addEventListener("click",()=>{
         if(!armed2){ armed2=true; ca.classList.add("danger"); ca.classList.remove("ghost");
-          ca.textContent="Cancel All "+n(pend.length)+" \u2014 Click Again to Confirm";
+          ca.textContent="Clear All "+n(pend.length)+" \u2014 Click Again to Confirm";
           setTimeout(()=>{ if(!ca.isConnected) return; armed2=false; ca.classList.remove("danger");
-            ca.classList.add("ghost"); ca.textContent="Mark All "+n(pend.length)+" as Cancelled"; },8000);
+            ca.classList.add("ghost"); ca.textContent=CAL; },8000);
           return; }
         cancelAllPending(ca);
       });
       r.appendChild(ca);
-      r.appendChild(el("span","hint","Each one can be reopened later. Any reason typed in the Note box is saved against all of them."));
+      r.appendChild(el("span","hint","For dates the group did not sit, and for ones that moved \u2014 log the meeting on the day it actually happened and clear the scheduled date here. Each can be reopened later, and any reason typed in the Note box is saved against all of them."));
       b.appendChild(r);
     }
     pw.appendChild(b);
