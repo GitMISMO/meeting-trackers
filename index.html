@@ -396,6 +396,9 @@ img{max-width:100%}
     rs.requireAccess(PROJECT, { toolName: 'Meeting Trackers' }).then(function () {
       if (ready) return;
       gate('loading');
+      /* the page asks for these the moment it has the history, so fetch them alongside it
+         rather than after it \u2014 it is the difference between waiting twice and once */
+      warm();
       return openBaseline();
     }).then(function () {
       ready = true; starting = false; gate(null); resumeWrites();
@@ -406,6 +409,19 @@ img{max-width:100%}
       if (e && e.message === 'cancelled') return;
       gate('error', e);
     });
+  }
+  /* Everything the page reads at startup, pulled in while the history is still arriving. */
+  var warmed = false;
+  function warm() {
+    if (warmed) return; warmed = true;
+    try {
+      ensure(file('own-index')).then(function () {
+        var r = viewOf(file('own-index'));
+        if (!r) return;
+        Object.keys(r.docs).forEach(function (p) { ensure(file(place(p).file, true)); });
+      }, function () {});
+      GROUPED.forEach(function (g) { ensure(file(fname(g))).catch(function () {}); });
+    } catch (e) {}
   }
   /* ---------- the imported history ---------- */
   /* The history is 48,000 records. Written out as plain JSON the stored file lands near
@@ -877,6 +893,15 @@ body.railmini .hq nav button .navcount{position:absolute;top:3px;right:3px;margi
 .vhead h1 .vti{margin-left:9px;font-size:.66em;font-weight:500;color:var(--ink-3);vertical-align:2%}
 .vhead h1 .vtitle:hover+.vti{color:var(--navy-mid)}
 @media (prefers-reduced-motion:reduce){.vhead h1 .vtitle{transition:none}}
+.pcard2 .pc-b.wait{background:var(--chip);color:var(--ink-3);font-weight:600}
+.loadline{display:flex;align-items:center;gap:9px;margin:0 0 14px;padding:9px 13px;
+  border:1px solid var(--border);border-left:3px solid var(--sky);border-radius:7px;
+  background:var(--surface);font-size:12.5px;color:var(--ink-2)}
+.loadline .spin{width:13px;height:13px;flex:0 0 auto;border-radius:50%;
+  border:2px solid color-mix(in srgb,var(--sky) 35%,transparent);border-top-color:var(--sky);
+  animation:lspin .7s linear infinite}
+@keyframes lspin{to{transform:rotate(360deg)}}
+@media (prefers-reduced-motion:reduce){.loadline .spin{animation:none}}
 .pc-av{flex:0 0 auto;width:38px;height:38px;border-radius:50%;display:flex;align-items:center;
   justify-content:center;font-size:13px;font-weight:700;letter-spacing:.02em;
   background:color-mix(in srgb,var(--av) 15%,var(--surface));
@@ -1948,6 +1973,12 @@ function renderOverview(root){
   root.appendChild(todayBox());
   if(LOGGK){ logScreen(root); return; }
   const rb0=readOnlyBanner(); if(rb0) root.appendChild(rb0);
+  if(!countsReady()){
+    const lb=el("div","loadline");
+    lb.appendChild(el("span","spin"));
+    lb.appendChild(document.createTextNode("Catching up with everything logged since the history was imported\u2026"));
+    root.appendChild(lb);
+  }
   root.appendChild(vhead("Log Attendance",
     "Pick your card to see your workgroups, or switch to the full A\u2013Z list. Anyone can log for anyone \u2014 whoever saves is recorded on the meeting. Anything not logged yet is flagged."));
 
@@ -2075,6 +2106,9 @@ function avatar(nm){
   a.setAttribute("aria-hidden","true");
   return a;
 }
+/* Until the saves made since the history was imported have arrived, a "to log" count would
+   be the imported figure \u2014 right-looking and wrong. Say it is still being worked out. */
+function countsReady(){ return !M.expectDb||!!M.dbReady; }
 function groupCard(gk){
   const g=M.gr.get(gk); if(!g) return null;
   const sc=(M.sched||{})[gk]||{}, pend=pendingFor(gk), last=lastLogged(gk);
@@ -2086,6 +2120,7 @@ function groupCard(gk){
   const body=el("div","pc-body");
   const top=el("div","pc-top"); top.appendChild(el("div","pc-n",g.name));
   if(g.archived) top.appendChild(el("div","pc-b arch","Archived"));
+  else if(!countsReady()) top.appendChild(el("div","pc-b wait","Checking\u2026"));
   else if(pend.length) top.appendChild(el("div","pc-b",pend.length===1?"1 to log":pend.length+" to log"));
   else if(isToday) top.appendChild(el("div","pc-b now","Today"));
   else top.appendChild(el("div","pc-b ok","Up to date"));
@@ -2135,7 +2170,8 @@ function drawPicker(){
       nmw.appendChild(el("div","pc-n",nm));
       nmw.appendChild(el("div","pc-sub",n(gks.length)+" workgroup"+(gks.length===1?"":"s")));
       top.appendChild(nmw);
-      top.appendChild(pend?el("div","pc-b",pend+" to log"):el("div","pc-b ok","Up to date"));
+      top.appendChild(!countsReady()?el("div","pc-b wait","Checking\u2026")
+        :pend?el("div","pc-b",pend+" to log"):el("div","pc-b ok","Up to date"));
       body.appendChild(top);
       body.appendChild(el("div","pc-sp"));
       c.appendChild(body);
@@ -4690,9 +4726,14 @@ async function saveMany(writes){
 async function loadShared(){
   if(!DB) return {};
   const out={people:[],companies:[],groups:[],summits:[],meetings:[],aliases:[],sched:[],notdup:[]};
-  for(const c of COLLS){
+  /* one round trip per collection, all in flight together \u2014 asked for one after another
+     this took several seconds over the save relay, and the page showed figures from the
+     imported history alone until the last one landed */
+  const snaps=await Promise.all(COLLS.map(c=>
+    DB.collection(c).limit(1000).get().then(x=>[c,x],e=>{ console.warn("load",c,e); return [c,null]; })));
+  for(const [c,snap] of snaps){
+    if(!snap) continue;
     try{
-      const snap=await DB.collection(c).limit(1000).get();
       snap.docs.forEach(d=>{
         const body=d.data()||{}; DBC.set(c+"/"+d.id,body);
         const items=body.items||{};
@@ -4705,7 +4746,7 @@ async function loadShared(){
           else out[c].push(Object.assign({id:k},v));
         });
       });
-    }catch(e){ console.warn("load",c,e); }
+    }catch(e){ console.warn("read",c,e); }
   }
   return out;
 }
@@ -5594,6 +5635,8 @@ function relayStore(base){
     return;
   }
   buildIndexes();
+  /* a shared store is coming, so the counts on screen are not the final ones yet */
+  M.expectDb=!!(window.claude||(window.__mtRelay&&RELAY.url)||RELAY.url);
   setInterval(tickToday,30000);
   go("ov");
   try{
@@ -5619,8 +5662,10 @@ function relayStore(base){
       }catch(e){}
     }
   } else if(!DB){ SELFHOST=true; }
+  /* get the shared data moving before asking who is signed in, so the two wait together */
+  const SHARED=DB?loadShared():Promise.resolve({});
   if(DB){
-    const docs=await loadShared();
+    const docs=await SHARED;
     const any=COLLS.some(c=>(docs[c]||[]).length);
     if(any){ applyDbDocs(docs); buildIndexes(); }
     M.dbReady=true;
