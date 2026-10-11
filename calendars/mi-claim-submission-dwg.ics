@@ -2,7 +2,6 @@ BEGIN:VCALENDAR
 VERSION:2.0
 PRODID:-//MISMO//Workgroup Meetings//EN
 CALSCALE:GREGORIAN
-METHOD:PUBLISH
 X-WR-CALNAME:MI Claim Submission DWG (MISMO)
 X-WR-TIMEZONE:America/New_York
 X-WR-CALDESC:Meeting schedule for MI Claim Submission DWG. Open to anyone
