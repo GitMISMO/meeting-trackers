@@ -3,11 +3,11 @@ VERSION:2.0
 PRODID:-//MISMO//Workgroup Meetings//EN
 CALSCALE:GREGORIAN
 METHOD:PUBLISH
-X-WR-CALNAME:Commercial & Other RE Digital Notes DWG (MISMO)
+X-WR-CALNAME:Commercial and Other Real Estate Digital Notes DWG (MISMO)
 X-WR-TIMEZONE:America/New_York
-X-WR-CALDESC:Meeting schedule for Commercial & Other RE Digital Notes DWG
- . Open to anyone who would like to participate. Maintained and updated b
- y MISMO.
+X-WR-CALDESC:Meeting schedule for Commercial and Other Real Estate Digita
+ l Notes DWG. Open to anyone who would like to participate. Maintained an
+ d updated by MISMO.
 REFRESH-INTERVAL;VALUE=DURATION:PT4H
 X-PUBLISHED-TTL:PT4H
 BEGIN:VTIMEZONE
@@ -28,15 +28,15 @@ RRULE:FREQ=YEARLY;BYMONTH=11;BYDAY=1SU
 END:STANDARD
 END:VTIMEZONE
 BEGIN:VEVENT
-UID:commercial-other-re-digital-notes-dwg@mismo.org
-DTSTAMP:20261011T120000Z
+UID:commercial-and-other-real-estate-digital-notes-dwg@mismo.org
+DTSTAMP:20261011T000000Z
 DTSTART;TZID=America/New_York:20261112T150000
 DTEND;TZID=America/New_York:20261112T160000
 RRULE:FREQ=MONTHLY;BYDAY=2TH
-SUMMARY:Commercial & Other RE Digital Notes DWG
-DESCRIPTION:eMortgage · 2nd Thursday\n\nJoin: https://mba-org.zoom.us/j/8
- 9506376242\n\nOpen to anyone who would like to participate. Maintained a
- nd updated by MISMO.
+SUMMARY:Commercial and Other Real Estate Digital Notes DWG
+DESCRIPTION:2nd Thursday\n\nJoin: https://mba-org.zoom.us/j/89506376242\n
+ \nOpen to anyone who would like to participate. Maintained and updated b
+ y MISMO.
 LOCATION:https://mba-org.zoom.us/j/89506376242
 URL:https://mba-org.zoom.us/j/89506376242
 END:VEVENT

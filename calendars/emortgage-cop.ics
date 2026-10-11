@@ -3,9 +3,9 @@ VERSION:2.0
 PRODID:-//MISMO//Workgroup Meetings//EN
 CALSCALE:GREGORIAN
 METHOD:PUBLISH
-X-WR-CALNAME:eMortgage CoP (MISMO)
+X-WR-CALNAME:eMortgage COP (MISMO)
 X-WR-TIMEZONE:America/New_York
-X-WR-CALDESC:Meeting schedule for eMortgage CoP. Open to anyone who would
+X-WR-CALDESC:Meeting schedule for eMortgage COP. Open to anyone who would
   like to participate. Maintained and updated by MISMO.
 REFRESH-INTERVAL;VALUE=DURATION:PT4H
 X-PUBLISHED-TTL:PT4H
@@ -28,11 +28,11 @@ END:STANDARD
 END:VTIMEZONE
 BEGIN:VEVENT
 UID:emortgage-cop@mismo.org
-DTSTAMP:20261011T120000Z
+DTSTAMP:20261011T000000Z
 DTSTART;TZID=America/New_York:20261105T130000
 DTEND;TZID=America/New_York:20261105T140000
 RRULE:FREQ=MONTHLY;BYDAY=1TH
-SUMMARY:eMortgage CoP
+SUMMARY:eMortgage COP
 DESCRIPTION:eMortgage · 1st Thursday\n\nJoin: https://mba-org.zoom.us/j/8
  6820338874\n\nOpen to anyone who would like to participate. Maintained a
  nd updated by MISMO.

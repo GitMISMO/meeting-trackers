@@ -3,9 +3,9 @@ VERSION:2.0
 PRODID:-//MISMO//Workgroup Meetings//EN
 CALSCALE:GREGORIAN
 METHOD:PUBLISH
-X-WR-CALNAME:Servicing CoP (MISMO)
+X-WR-CALNAME:Servicing COP (MISMO)
 X-WR-TIMEZONE:America/New_York
-X-WR-CALDESC:Meeting schedule for Servicing CoP. Open to anyone who would
+X-WR-CALDESC:Meeting schedule for Servicing COP. Open to anyone who would
   like to participate. Maintained and updated by MISMO.
 REFRESH-INTERVAL;VALUE=DURATION:PT4H
 X-PUBLISHED-TTL:PT4H
@@ -28,14 +28,14 @@ END:STANDARD
 END:VTIMEZONE
 BEGIN:VEVENT
 UID:servicing-cop@mismo.org
-DTSTAMP:20261011T120000Z
-DTSTART;TZID=America/New_York:20261012T130000
-DTEND;TZID=America/New_York:20261012T140000
-RRULE:FREQ=MONTHLY;BYDAY=2MO,4MO
-SUMMARY:Servicing CoP
-DESCRIPTION:Servicing · 2nd & 4th Monday\n\nJoin: https://mba-org.zoom.us
- /j/86066078039\n\nOpen to anyone who would like to participate. Maintain
- ed and updated by MISMO.
+DTSTAMP:20261011T000000Z
+DTSTART;TZID=America/New_York:20261026T130000
+DTEND;TZID=America/New_York:20261026T140000
+RRULE:FREQ=MONTHLY;BYDAY=4MO
+SUMMARY:Servicing COP
+DESCRIPTION:Servicing · 4th Monday\n\nJoin: https://mba-org.zoom.us/j/860
+ 66078039\n\nOpen to anyone who would like to participate. Maintained and
+  updated by MISMO.
 LOCATION:https://mba-org.zoom.us/j/86066078039
 URL:https://mba-org.zoom.us/j/86066078039
 END:VEVENT

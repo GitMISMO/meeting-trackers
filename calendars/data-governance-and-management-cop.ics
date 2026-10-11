@@ -3,11 +3,11 @@ VERSION:2.0
 PRODID:-//MISMO//Workgroup Meetings//EN
 CALSCALE:GREGORIAN
 METHOD:PUBLISH
-X-WR-CALNAME:Data Governance & Management CoP (MISMO)
+X-WR-CALNAME:Data Governance and Management COP (MISMO)
 X-WR-TIMEZONE:America/New_York
-X-WR-CALDESC:Meeting schedule for Data Governance & Management CoP. Open 
- to anyone who would like to participate. Maintained and updated by MISMO
- .
+X-WR-CALDESC:Meeting schedule for Data Governance and Management COP. Ope
+ n to anyone who would like to participate. Maintained and updated by MIS
+ MO.
 REFRESH-INTERVAL;VALUE=DURATION:PT4H
 X-PUBLISHED-TTL:PT4H
 BEGIN:VTIMEZONE
@@ -28,15 +28,15 @@ RRULE:FREQ=YEARLY;BYMONTH=11;BYDAY=1SU
 END:STANDARD
 END:VTIMEZONE
 BEGIN:VEVENT
-UID:data-governance-management-cop@mismo.org
-DTSTAMP:20261011T120000Z
+UID:data-governance-and-management-cop@mismo.org
+DTSTAMP:20261011T000000Z
 DTSTART;TZID=America/New_York:20261021T130000
 DTEND;TZID=America/New_York:20261021T140000
 RRULE:FREQ=MONTHLY;BYDAY=3WE
-SUMMARY:Data Governance & Management CoP
-DESCRIPTION:Governance · 3rd Wednesday\n\nJoin: https://mba-org.zoom.us/j
- /83318613468\n\nOpen to anyone who would like to participate. Maintained
-  and updated by MISMO.
+SUMMARY:Data Governance and Management COP
+DESCRIPTION:3rd Wednesday\n\nJoin: https://mba-org.zoom.us/j/83318613468\
+ n\nOpen to anyone who would like to participate. Maintained and updated 
+ by MISMO.
 LOCATION:https://mba-org.zoom.us/j/83318613468
 URL:https://mba-org.zoom.us/j/83318613468
 END:VEVENT

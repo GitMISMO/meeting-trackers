@@ -3,11 +3,11 @@ VERSION:2.0
 PRODID:-//MISMO//Workgroup Meetings//EN
 CALSCALE:GREGORIAN
 METHOD:PUBLISH
-X-WR-CALNAME:TIE (Technology Impact & Enablement) CoP (MISMO)
+X-WR-CALNAME:Title and Closing Docs to Data DWG (MISMO)
 X-WR-TIMEZONE:America/New_York
-X-WR-CALDESC:Meeting schedule for TIE (Technology Impact & Enablement) Co
- P. Open to anyone who would like to participate. Maintained and updated 
- by MISMO.
+X-WR-CALDESC:Meeting schedule for Title and Closing Docs to Data DWG. Ope
+ n to anyone who would like to participate. Maintained and updated by MIS
+ MO.
 REFRESH-INTERVAL;VALUE=DURATION:PT4H
 X-PUBLISHED-TTL:PT4H
 BEGIN:VTIMEZONE
@@ -28,16 +28,16 @@ RRULE:FREQ=YEARLY;BYMONTH=11;BYDAY=1SU
 END:STANDARD
 END:VTIMEZONE
 BEGIN:VEVENT
-UID:tie-technology-impact-enablement-cop@mismo.org
-DTSTAMP:20261011T120000Z
+UID:title-and-closing-docs-to-data-dwg@mismo.org
+DTSTAMP:20261011T000000Z
 DTSTART;TZID=America/New_York:20261021T140000
 DTEND;TZID=America/New_York:20261021T150000
-RRULE:FREQ=MONTHLY;BYDAY=3WE
-SUMMARY:TIE (Technology Impact & Enablement) CoP
-DESCRIPTION:Governance · 3rd Wednesday\n\nJoin: https://mba-org.zoom.us/j
- /88544460553\n\nOpen to anyone who would like to participate. Maintained
-  and updated by MISMO.
-LOCATION:https://mba-org.zoom.us/j/88544460553
-URL:https://mba-org.zoom.us/j/88544460553
+RRULE:FREQ=MONTHLY;BYDAY=1WE,3WE
+SUMMARY:Title and Closing Docs to Data DWG
+DESCRIPTION:1st & 3rd Wednesday\n\nJoin: https://mba-org.zoom.us/j/848665
+ 28267\n\nOpen to anyone who would like to participate. Maintained and up
+ dated by MISMO.
+LOCATION:https://mba-org.zoom.us/j/84866528267
+URL:https://mba-org.zoom.us/j/84866528267
 END:VEVENT
 END:VCALENDAR

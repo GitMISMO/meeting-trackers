@@ -3,9 +3,9 @@ VERSION:2.0
 PRODID:-//MISMO//Workgroup Meetings//EN
 CALSCALE:GREGORIAN
 METHOD:PUBLISH
-X-WR-CALNAME:Digital Interoperability CoP (MISMO)
+X-WR-CALNAME:Digital Interoperability COP (MISMO)
 X-WR-TIMEZONE:America/New_York
-X-WR-CALDESC:Meeting schedule for Digital Interoperability CoP. Open to a
+X-WR-CALDESC:Meeting schedule for Digital Interoperability COP. Open to a
  nyone who would like to participate. Maintained and updated by MISMO.
 REFRESH-INTERVAL;VALUE=DURATION:PT4H
 X-PUBLISHED-TTL:PT4H
@@ -28,11 +28,11 @@ END:STANDARD
 END:VTIMEZONE
 BEGIN:VEVENT
 UID:digital-interoperability-cop@mismo.org
-DTSTAMP:20261011T120000Z
+DTSTAMP:20261011T000000Z
 DTSTART;TZID=America/New_York:20261112T130000
 DTEND;TZID=America/New_York:20261112T140000
 RRULE:FREQ=MONTHLY;BYDAY=2TH
-SUMMARY:Digital Interoperability CoP
+SUMMARY:Digital Interoperability COP
 DESCRIPTION:eMortgage · 2nd Thursday\n\nJoin: https://mba-org.zoom.us/j/8
  8234890771\n\nOpen to anyone who would like to participate. Maintained a
  nd updated by MISMO.

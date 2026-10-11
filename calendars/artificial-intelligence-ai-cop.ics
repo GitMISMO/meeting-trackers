@@ -3,9 +3,9 @@ VERSION:2.0
 PRODID:-//MISMO//Workgroup Meetings//EN
 CALSCALE:GREGORIAN
 METHOD:PUBLISH
-X-WR-CALNAME:Title & Closing Docs to Data DWG (MISMO)
+X-WR-CALNAME:Artificial Intelligence (AI) COP (MISMO)
 X-WR-TIMEZONE:America/New_York
-X-WR-CALDESC:Meeting schedule for Title & Closing Docs to Data DWG. Open 
+X-WR-CALDESC:Meeting schedule for Artificial Intelligence (AI) COP. Open 
  to anyone who would like to participate. Maintained and updated by MISMO
  .
 REFRESH-INTERVAL;VALUE=DURATION:PT4H
@@ -28,16 +28,16 @@ RRULE:FREQ=YEARLY;BYMONTH=11;BYDAY=1SU
 END:STANDARD
 END:VTIMEZONE
 BEGIN:VEVENT
-UID:title-closing-docs-to-data-dwg@mismo.org
-DTSTAMP:20261011T120000Z
-DTSTART;TZID=America/New_York:20261021T140000
-DTEND;TZID=America/New_York:20261021T150000
-RRULE:FREQ=MONTHLY;BYDAY=1WE,3WE
-SUMMARY:Title & Closing Docs to Data DWG
-DESCRIPTION:Title & Closing · 1st & 3rd Wednesday\n\nJoin: https://mba-or
- g.zoom.us/j/84866528267\n\nOpen to anyone who would like to participate.
-  Maintained and updated by MISMO.
-LOCATION:https://mba-org.zoom.us/j/84866528267
-URL:https://mba-org.zoom.us/j/84866528267
+UID:artificial-intelligence-ai-cop@mismo.org
+DTSTAMP:20261011T000000Z
+DTSTART;TZID=America/New_York:20261012T150000
+DTEND;TZID=America/New_York:20261012T160000
+RRULE:FREQ=MONTHLY;BYDAY=2MO,4MO
+SUMMARY:Artificial Intelligence (AI) COP
+DESCRIPTION:2nd & 4th Monday\n\nJoin: https://mba-org.zoom.us/j/837835879
+ 17\n\nOpen to anyone who would like to participate. Maintained and updat
+ ed by MISMO.
+LOCATION:https://mba-org.zoom.us/j/83783587917
+URL:https://mba-org.zoom.us/j/83783587917
 END:VEVENT
 END:VCALENDAR

@@ -3,9 +3,9 @@ VERSION:2.0
 PRODID:-//MISMO//Workgroup Meetings//EN
 CALSCALE:GREGORIAN
 METHOD:PUBLISH
-X-WR-CALNAME:Decision Modeling CoP (MISMO)
+X-WR-CALNAME:Decision Modeling COP (MISMO)
 X-WR-TIMEZONE:America/New_York
-X-WR-CALDESC:Meeting schedule for Decision Modeling CoP. Open to anyone w
+X-WR-CALDESC:Meeting schedule for Decision Modeling COP. Open to anyone w
  ho would like to participate. Maintained and updated by MISMO.
 REFRESH-INTERVAL;VALUE=DURATION:PT4H
 X-PUBLISHED-TTL:PT4H
@@ -28,11 +28,11 @@ END:STANDARD
 END:VTIMEZONE
 BEGIN:VEVENT
 UID:decision-modeling-cop@mismo.org
-DTSTAMP:20261011T120000Z
+DTSTAMP:20261011T000000Z
 DTSTART;TZID=America/New_York:20261019T160000
 DTEND;TZID=America/New_York:20261019T170000
 RRULE:FREQ=MONTHLY;BYDAY=1MO,3MO
-SUMMARY:Decision Modeling CoP
+SUMMARY:Decision Modeling COP
 DESCRIPTION:Originations · 1st & 3rd Monday\n\nJoin: https://mba-org.zoom
  .us/j/81097644741\n\nOpen to anyone who would like to participate. Maint
  ained and updated by MISMO.

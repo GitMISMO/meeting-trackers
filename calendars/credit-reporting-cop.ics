@@ -3,9 +3,9 @@ VERSION:2.0
 PRODID:-//MISMO//Workgroup Meetings//EN
 CALSCALE:GREGORIAN
 METHOD:PUBLISH
-X-WR-CALNAME:Credit Reporting CoP (MISMO)
+X-WR-CALNAME:Credit Reporting COP (MISMO)
 X-WR-TIMEZONE:America/New_York
-X-WR-CALDESC:Meeting schedule for Credit Reporting CoP. Open to anyone wh
+X-WR-CALDESC:Meeting schedule for Credit Reporting COP. Open to anyone wh
  o would like to participate. Maintained and updated by MISMO.
 REFRESH-INTERVAL;VALUE=DURATION:PT4H
 X-PUBLISHED-TTL:PT4H
@@ -28,11 +28,11 @@ END:STANDARD
 END:VTIMEZONE
 BEGIN:VEVENT
 UID:credit-reporting-cop@mismo.org
-DTSTAMP:20261011T120000Z
+DTSTAMP:20261011T000000Z
 DTSTART;TZID=America/New_York:20261015T160000
 DTEND;TZID=America/New_York:20261015T170000
 RRULE:FREQ=MONTHLY;BYDAY=1TH,3TH
-SUMMARY:Credit Reporting CoP
+SUMMARY:Credit Reporting COP
 DESCRIPTION:Credit Reporting · 1st & 3rd Thursday\n\nJoin: https://mba-or
  g.zoom.us/j/81784509635\n\nOpen to anyone who would like to participate.
   Maintained and updated by MISMO.

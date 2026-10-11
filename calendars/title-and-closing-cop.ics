@@ -3,10 +3,10 @@ VERSION:2.0
 PRODID:-//MISMO//Workgroup Meetings//EN
 CALSCALE:GREGORIAN
 METHOD:PUBLISH
-X-WR-CALNAME:Title & Closing CoP (MISMO)
+X-WR-CALNAME:Title and Closing COP (MISMO)
 X-WR-TIMEZONE:America/New_York
-X-WR-CALDESC:Meeting schedule for Title & Closing CoP. Open to anyone who
-  would like to participate. Maintained and updated by MISMO.
+X-WR-CALDESC:Meeting schedule for Title and Closing COP. Open to anyone w
+ ho would like to participate. Maintained and updated by MISMO.
 REFRESH-INTERVAL;VALUE=DURATION:PT4H
 X-PUBLISHED-TTL:PT4H
 BEGIN:VTIMEZONE
@@ -27,15 +27,15 @@ RRULE:FREQ=YEARLY;BYMONTH=11;BYDAY=1SU
 END:STANDARD
 END:VTIMEZONE
 BEGIN:VEVENT
-UID:title-closing-cop@mismo.org
-DTSTAMP:20261011T120000Z
+UID:title-and-closing-cop@mismo.org
+DTSTAMP:20261011T000000Z
 DTSTART;TZID=America/New_York:20261012T130000
 DTEND;TZID=America/New_York:20261012T140000
 RRULE:FREQ=MONTHLY;BYDAY=2MO
-SUMMARY:Title & Closing CoP
-DESCRIPTION:Title & Closing · 2nd Monday\n\nJoin: https://mba-org.zoom.us
- /j/89444784294\n\nOpen to anyone who would like to participate. Maintain
- ed and updated by MISMO.
+SUMMARY:Title and Closing COP
+DESCRIPTION:2nd Monday\n\nJoin: https://mba-org.zoom.us/j/89444784294\n\n
+ Open to anyone who would like to participate. Maintained and updated by 
+ MISMO.
 LOCATION:https://mba-org.zoom.us/j/89444784294
 URL:https://mba-org.zoom.us/j/89444784294
 END:VEVENT

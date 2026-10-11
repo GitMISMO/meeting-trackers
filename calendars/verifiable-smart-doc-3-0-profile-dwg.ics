@@ -3,11 +3,11 @@ VERSION:2.0
 PRODID:-//MISMO//Workgroup Meetings//EN
 CALSCALE:GREGORIAN
 METHOD:PUBLISH
-X-WR-CALNAME:Verifiable Profile SMART Doc DWG (MISMO)
+X-WR-CALNAME:Verifiable SMART Doc® 3.0 Profile DWG (MISMO)
 X-WR-TIMEZONE:America/New_York
-X-WR-CALDESC:Meeting schedule for Verifiable Profile SMART Doc DWG. Open 
- to anyone who would like to participate. Maintained and updated by MISMO
- .
+X-WR-CALDESC:Meeting schedule for Verifiable SMART Doc® 3.0 Profile DWG. 
+ Open to anyone who would like to participate. Maintained and updated by 
+ MISMO.
 REFRESH-INTERVAL;VALUE=DURATION:PT4H
 X-PUBLISHED-TTL:PT4H
 BEGIN:VTIMEZONE
@@ -28,15 +28,15 @@ RRULE:FREQ=YEARLY;BYMONTH=11;BYDAY=1SU
 END:STANDARD
 END:VTIMEZONE
 BEGIN:VEVENT
-UID:verifiable-profile-smart-doc-dwg@mismo.org
-DTSTAMP:20261011T120000Z
+UID:verifiable-smart-doc-3-0-profile-dwg@mismo.org
+DTSTAMP:20261011T000000Z
 DTSTART;TZID=America/New_York:20261104T110000
 DTEND;TZID=America/New_York:20261104T120000
 RRULE:FREQ=MONTHLY;BYDAY=1WE
-SUMMARY:Verifiable Profile SMART Doc DWG
-DESCRIPTION:eMortgage · 1st Wednesday\n\nJoin: https://mba-org.zoom.us/j/
- 86383676148\n\nOpen to anyone who would like to participate. Maintained 
- and updated by MISMO.
+SUMMARY:Verifiable SMART Doc® 3.0 Profile DWG
+DESCRIPTION:1st Wednesday\n\nJoin: https://mba-org.zoom.us/j/86383676148\
+ n\nOpen to anyone who would like to participate. Maintained and updated 
+ by MISMO.
 LOCATION:https://mba-org.zoom.us/j/86383676148
 URL:https://mba-org.zoom.us/j/86383676148
 END:VEVENT

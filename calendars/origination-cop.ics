@@ -3,9 +3,9 @@ VERSION:2.0
 PRODID:-//MISMO//Workgroup Meetings//EN
 CALSCALE:GREGORIAN
 METHOD:PUBLISH
-X-WR-CALNAME:Origination CoP (MISMO)
+X-WR-CALNAME:Origination COP (MISMO)
 X-WR-TIMEZONE:America/New_York
-X-WR-CALDESC:Meeting schedule for Origination CoP. Open to anyone who wou
+X-WR-CALDESC:Meeting schedule for Origination COP. Open to anyone who wou
  ld like to participate. Maintained and updated by MISMO.
 REFRESH-INTERVAL;VALUE=DURATION:PT4H
 X-PUBLISHED-TTL:PT4H
@@ -28,11 +28,11 @@ END:STANDARD
 END:VTIMEZONE
 BEGIN:VEVENT
 UID:origination-cop@mismo.org
-DTSTAMP:20261011T120000Z
+DTSTAMP:20261011T000000Z
 DTSTART;TZID=America/New_York:20261104T150000
 DTEND;TZID=America/New_York:20261104T160000
 RRULE:FREQ=MONTHLY;BYDAY=1WE
-SUMMARY:Origination CoP
+SUMMARY:Origination COP
 DESCRIPTION:Originations · 1st Wednesday\n\nJoin: https://mba-org.zoom.us
  /j/85990267275\n\nOpen to anyone who would like to participate. Maintain
  ed and updated by MISMO.

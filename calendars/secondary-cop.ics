@@ -3,9 +3,9 @@ VERSION:2.0
 PRODID:-//MISMO//Workgroup Meetings//EN
 CALSCALE:GREGORIAN
 METHOD:PUBLISH
-X-WR-CALNAME:Secondary CoP (MISMO)
+X-WR-CALNAME:Secondary COP (MISMO)
 X-WR-TIMEZONE:America/New_York
-X-WR-CALDESC:Meeting schedule for Secondary CoP. Open to anyone who would
+X-WR-CALDESC:Meeting schedule for Secondary COP. Open to anyone who would
   like to participate. Maintained and updated by MISMO.
 REFRESH-INTERVAL;VALUE=DURATION:PT4H
 X-PUBLISHED-TTL:PT4H
@@ -28,11 +28,11 @@ END:STANDARD
 END:VTIMEZONE
 BEGIN:VEVENT
 UID:secondary-cop@mismo.org
-DTSTAMP:20261011T120000Z
+DTSTAMP:20261011T000000Z
 DTSTART;TZID=America/New_York:20261020T150000
 DTEND;TZID=America/New_York:20261020T160000
 RRULE:FREQ=MONTHLY;BYDAY=3TU
-SUMMARY:Secondary CoP
+SUMMARY:Secondary COP
 DESCRIPTION:Secondary · 3rd Tuesday\n\nJoin: https://mba-org.zoom.us/j/89
  634843815\n\nOpen to anyone who would like to participate. Maintained an
  d updated by MISMO.

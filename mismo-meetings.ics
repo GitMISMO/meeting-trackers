@@ -5,7 +5,8 @@ CALSCALE:GREGORIAN
 METHOD:PUBLISH
 X-WR-CALNAME:MISMO Workgroup Meetings
 X-WR-TIMEZONE:America/New_York
-X-WR-CALDESC:Workgroup and community of practice meetings. Maintained and updated by MISMO.
+X-WR-CALDESC:Workgroup and community of practice meetings. Open to anyone
+  who would like to participate. Maintained and updated by MISMO.
 REFRESH-INTERVAL;VALUE=DURATION:PT4H
 X-PUBLISHED-TTL:PT4H
 BEGIN:VTIMEZONE
@@ -26,21 +27,21 @@ RRULE:FREQ=YEARLY;BYMONTH=11;BYDAY=1SU
 END:STANDARD
 END:VTIMEZONE
 BEGIN:VEVENT
-UID:api-community-of-practice@mismo.org
-DTSTAMP:20261011T120000Z
+UID:api-cop@mismo.org
+DTSTAMP:20261011T000000Z
 DTSTART;TZID=America/New_York:20261027T150000
 DTEND;TZID=America/New_York:20261027T160000
 RRULE:FREQ=MONTHLY;BYDAY=4TU
-SUMMARY:API Community of Practice
-DESCRIPTION:Governance · 4th Tuesday\n\nJoin: https://mba-org.zoom.us/j/8
- 4065426860\n\nOpen to anyone who would like to participate. Maintained a
- nd updated by MISMO.
+SUMMARY:API COP
+DESCRIPTION:4th Tuesday\n\nJoin: https://mba-org.zoom.us/j/84065426860\n\
+ nOpen to anyone who would like to participate. Maintained and updated by
+  MISMO.
 LOCATION:https://mba-org.zoom.us/j/84065426860
 URL:https://mba-org.zoom.us/j/84065426860
 END:VEVENT
 BEGIN:VEVENT
 UID:architecture-workgroup@mismo.org
-DTSTAMP:20261011T120000Z
+DTSTAMP:20261011T000000Z
 DTSTART;TZID=America/New_York:20261022T140000
 DTEND;TZID=America/New_York:20261022T150000
 RRULE:FREQ=MONTHLY;BYDAY=2TH,4TH
@@ -52,12 +53,38 @@ LOCATION:https://mba-org.zoom.us/j/88437195732
 URL:https://mba-org.zoom.us/j/88437195732
 END:VEVENT
 BEGIN:VEVENT
+UID:artificial-intelligence-ai-cop@mismo.org
+DTSTAMP:20261011T000000Z
+DTSTART;TZID=America/New_York:20261012T150000
+DTEND;TZID=America/New_York:20261012T160000
+RRULE:FREQ=MONTHLY;BYDAY=2MO,4MO
+SUMMARY:Artificial Intelligence (AI) COP
+DESCRIPTION:2nd & 4th Monday\n\nJoin: https://mba-org.zoom.us/j/837835879
+ 17\n\nOpen to anyone who would like to participate. Maintained and updat
+ ed by MISMO.
+LOCATION:https://mba-org.zoom.us/j/83783587917
+URL:https://mba-org.zoom.us/j/83783587917
+END:VEVENT
+BEGIN:VEVENT
+UID:automated-valuation-model-dwg@mismo.org
+DTSTAMP:20261011T000000Z
+DTSTART;TZID=America/New_York:20261012T160000
+DTEND;TZID=America/New_York:20261012T170000
+RRULE:FREQ=WEEKLY;BYDAY=MO
+SUMMARY:Automated Valuation Model DWG
+DESCRIPTION:Valuation · Every Monday\n\nJoin: https://mba-org.zoom.us/j/8
+ 6553707201\n\nOpen to anyone who would like to participate. Maintained a
+ nd updated by MISMO.
+LOCATION:https://mba-org.zoom.us/j/86553707201
+URL:https://mba-org.zoom.us/j/86553707201
+END:VEVENT
+BEGIN:VEVENT
 UID:business-glossary-cop@mismo.org
-DTSTAMP:20261011T120000Z
+DTSTAMP:20261011T000000Z
 DTSTART;TZID=America/New_York:20261014T140000
 DTEND;TZID=America/New_York:20261014T150000
 RRULE:FREQ=MONTHLY;BYDAY=2WE,4WE
-SUMMARY:Business Glossary CoP
+SUMMARY:Business Glossary COP
 DESCRIPTION:Governance · 2nd & 4th Wednesday\n\nJoin: https://mba-org.zoo
  m.us/j/87615051998\n\nOpen to anyone who would like to participate. Main
  tained and updated by MISMO.
@@ -66,11 +93,11 @@ URL:https://mba-org.zoom.us/j/87615051998
 END:VEVENT
 BEGIN:VEVENT
 UID:business-process-model-cop@mismo.org
-DTSTAMP:20261011T120000Z
+DTSTAMP:20261011T000000Z
 DTSTART;TZID=America/New_York:20261016T100000
 DTEND;TZID=America/New_York:20261016T110000
 RRULE:FREQ=MONTHLY;BYDAY=1FR,3FR
-SUMMARY:Business Process Model CoP
+SUMMARY:Business Process Model COP
 DESCRIPTION:Governance · 1st & 3rd Friday\n\nJoin: https://mba-org.zoom.u
  s/j/85418710620\n\nOpen to anyone who would like to participate. Maintai
  ned and updated by MISMO.
@@ -78,90 +105,77 @@ LOCATION:https://mba-org.zoom.us/j/85418710620
 URL:https://mba-org.zoom.us/j/85418710620
 END:VEVENT
 BEGIN:VEVENT
-UID:data-governance-management-cop@mismo.org
-DTSTAMP:20261011T120000Z
-DTSTART;TZID=America/New_York:20261021T130000
-DTEND;TZID=America/New_York:20261021T140000
-RRULE:FREQ=MONTHLY;BYDAY=3WE
-SUMMARY:Data Governance & Management CoP
-DESCRIPTION:Governance · 3rd Wednesday\n\nJoin: https://mba-org.zoom.us/j
- /83318613468\n\nOpen to anyone who would like to participate. Maintained
-  and updated by MISMO.
-LOCATION:https://mba-org.zoom.us/j/83318613468
-URL:https://mba-org.zoom.us/j/83318613468
-END:VEVENT
-BEGIN:VEVENT
-UID:hero-cop@mismo.org
-DTSTAMP:20261011T120000Z
-DTSTART;TZID=America/New_York:20261103T100000
-DTEND;TZID=America/New_York:20261103T110000
-RRULE:FREQ=MONTHLY;BYDAY=1TU
-SUMMARY:HERO CoP
-DESCRIPTION:Governance · 1st Tuesday\n\nJoin: https://mba-org.zoom.us/j/8
- 9963965149\n\nOpen to anyone who would like to participate. Maintained a
- nd updated by MISMO.
-LOCATION:https://mba-org.zoom.us/j/89963965149
-URL:https://mba-org.zoom.us/j/89963965149
-END:VEVENT
-BEGIN:VEVENT
-UID:information-management@mismo.org
-DTSTAMP:20261011T120000Z
-DTSTART;TZID=America/New_York:20261012T140000
-DTEND;TZID=America/New_York:20261012T150000
-RRULE:FREQ=WEEKLY;BYDAY=MO
-SUMMARY:Information Management
-DESCRIPTION:Governance · Every Monday\n\nJoin: https://mba-org.zoom.us/j/
- 83911697957\n\nOpen to anyone who would like to participate. Maintained 
- and updated by MISMO.
-LOCATION:https://mba-org.zoom.us/j/83911697957
-URL:https://mba-org.zoom.us/j/83911697957
-END:VEVENT
-BEGIN:VEVENT
-UID:tie-technology-impact-enablement-cop@mismo.org
-DTSTAMP:20261011T120000Z
-DTSTART;TZID=America/New_York:20261021T140000
-DTEND;TZID=America/New_York:20261021T150000
-RRULE:FREQ=MONTHLY;BYDAY=3WE
-SUMMARY:TIE (Technology Impact & Enablement) CoP
-DESCRIPTION:Governance · 3rd Wednesday\n\nJoin: https://mba-org.zoom.us/j
- /88544460553\n\nOpen to anyone who would like to participate. Maintained
-  and updated by MISMO.
-LOCATION:https://mba-org.zoom.us/j/88544460553
-URL:https://mba-org.zoom.us/j/88544460553
-END:VEVENT
-BEGIN:VEVENT
-UID:ai-community-of-practice@mismo.org
-DTSTAMP:20261011T120000Z
-DTSTART;TZID=America/New_York:20261012T150000
-DTEND;TZID=America/New_York:20261012T160000
-RRULE:FREQ=MONTHLY;BYDAY=2MO,4MO
-SUMMARY:AI Community of Practice
-DESCRIPTION:Artificial Intelligence · 2nd & 4th Monday\n\nJoin: https://m
- ba-org.zoom.us/j/83783587917\n\nOpen to anyone who would like to partici
- pate. Maintained and updated by MISMO.
-LOCATION:https://mba-org.zoom.us/j/83783587917
-URL:https://mba-org.zoom.us/j/83783587917
-END:VEVENT
-BEGIN:VEVENT
-UID:commercial-other-re-digital-notes-dwg@mismo.org
-DTSTAMP:20261011T120000Z
+UID:commercial-and-other-real-estate-digital-notes-dwg@mismo.org
+DTSTAMP:20261011T000000Z
 DTSTART;TZID=America/New_York:20261112T150000
 DTEND;TZID=America/New_York:20261112T160000
 RRULE:FREQ=MONTHLY;BYDAY=2TH
-SUMMARY:Commercial & Other RE Digital Notes DWG
-DESCRIPTION:eMortgage · 2nd Thursday\n\nJoin: https://mba-org.zoom.us/j/8
- 9506376242\n\nOpen to anyone who would like to participate. Maintained a
- nd updated by MISMO.
+SUMMARY:Commercial and Other Real Estate Digital Notes DWG
+DESCRIPTION:2nd Thursday\n\nJoin: https://mba-org.zoom.us/j/89506376242\n
+ \nOpen to anyone who would like to participate. Maintained and updated b
+ y MISMO.
 LOCATION:https://mba-org.zoom.us/j/89506376242
 URL:https://mba-org.zoom.us/j/89506376242
 END:VEVENT
 BEGIN:VEVENT
-UID:digital-interoperability-cop@mismo.org
-DTSTAMP:20261011T120000Z
+UID:commercial-cop@mismo.org
+DTSTAMP:20261011T000000Z
 DTSTART;TZID=America/New_York:20261112T130000
 DTEND;TZID=America/New_York:20261112T140000
 RRULE:FREQ=MONTHLY;BYDAY=2TH
-SUMMARY:Digital Interoperability CoP
+SUMMARY:Commercial COP
+DESCRIPTION:Originations · 2nd Thursday\n\nJoin: https://mba-org.zoom.us/
+ j/85450117105\n\nOpen to anyone who would like to participate. Maintaine
+ d and updated by MISMO.
+LOCATION:https://mba-org.zoom.us/j/85450117105
+URL:https://mba-org.zoom.us/j/85450117105
+END:VEVENT
+BEGIN:VEVENT
+UID:credit-reporting-cop@mismo.org
+DTSTAMP:20261011T000000Z
+DTSTART;TZID=America/New_York:20261015T160000
+DTEND;TZID=America/New_York:20261015T170000
+RRULE:FREQ=MONTHLY;BYDAY=1TH,3TH
+SUMMARY:Credit Reporting COP
+DESCRIPTION:Credit Reporting · 1st & 3rd Thursday\n\nJoin: https://mba-or
+ g.zoom.us/j/81784509635\n\nOpen to anyone who would like to participate.
+  Maintained and updated by MISMO.
+LOCATION:https://mba-org.zoom.us/j/81784509635
+URL:https://mba-org.zoom.us/j/81784509635
+END:VEVENT
+BEGIN:VEVENT
+UID:data-governance-and-management-cop@mismo.org
+DTSTAMP:20261011T000000Z
+DTSTART;TZID=America/New_York:20261021T130000
+DTEND;TZID=America/New_York:20261021T140000
+RRULE:FREQ=MONTHLY;BYDAY=3WE
+SUMMARY:Data Governance and Management COP
+DESCRIPTION:3rd Wednesday\n\nJoin: https://mba-org.zoom.us/j/83318613468\
+ n\nOpen to anyone who would like to participate. Maintained and updated 
+ by MISMO.
+LOCATION:https://mba-org.zoom.us/j/83318613468
+URL:https://mba-org.zoom.us/j/83318613468
+END:VEVENT
+BEGIN:VEVENT
+UID:decision-modeling-cop@mismo.org
+DTSTAMP:20261011T000000Z
+DTSTART;TZID=America/New_York:20261019T160000
+DTEND;TZID=America/New_York:20261019T170000
+RRULE:FREQ=MONTHLY;BYDAY=1MO,3MO
+SUMMARY:Decision Modeling COP
+DESCRIPTION:Originations · 1st & 3rd Monday\n\nJoin: https://mba-org.zoom
+ .us/j/81097644741\n\nOpen to anyone who would like to participate. Maint
+ ained and updated by MISMO.
+LOCATION:https://mba-org.zoom.us/j/81097644741
+URL:https://mba-org.zoom.us/j/81097644741
+END:VEVENT
+BEGIN:VEVENT
+UID:digital-interoperability-cop@mismo.org
+DTSTAMP:20261011T000000Z
+DTSTART;TZID=America/New_York:20261112T130000
+DTEND;TZID=America/New_York:20261112T140000
+RRULE:FREQ=MONTHLY;BYDAY=2TH
+SUMMARY:Digital Interoperability COP
 DESCRIPTION:eMortgage · 2nd Thursday\n\nJoin: https://mba-org.zoom.us/j/8
  8234890771\n\nOpen to anyone who would like to participate. Maintained a
  nd updated by MISMO.
@@ -170,7 +184,7 @@ URL:https://mba-org.zoom.us/j/88234890771
 END:VEVENT
 BEGIN:VEVENT
 UID:eheloc-dwg@mismo.org
-DTSTAMP:20261011T120000Z
+DTSTAMP:20261011T000000Z
 DTSTART;TZID=America/New_York:20261022T120000
 DTEND;TZID=America/New_York:20261022T130000
 RRULE:FREQ=MONTHLY;BYDAY=2TH,4TH
@@ -183,11 +197,11 @@ URL:https://mba-org.zoom.us/j/89724557553
 END:VEVENT
 BEGIN:VEVENT
 UID:emortgage-cop@mismo.org
-DTSTAMP:20261011T120000Z
+DTSTAMP:20261011T000000Z
 DTSTART;TZID=America/New_York:20261105T130000
 DTEND;TZID=America/New_York:20261105T140000
 RRULE:FREQ=MONTHLY;BYDAY=1TH
-SUMMARY:eMortgage CoP
+SUMMARY:eMortgage COP
 DESCRIPTION:eMortgage · 1st Thursday\n\nJoin: https://mba-org.zoom.us/j/8
  6820338874\n\nOpen to anyone who would like to participate. Maintained a
  nd updated by MISMO.
@@ -195,60 +209,47 @@ LOCATION:https://mba-org.zoom.us/j/86820338874
 URL:https://mba-org.zoom.us/j/86820338874
 END:VEVENT
 BEGIN:VEVENT
-UID:verifiable-profile-smart-doc-dwg@mismo.org
-DTSTAMP:20261011T120000Z
-DTSTART;TZID=America/New_York:20261104T110000
-DTEND;TZID=America/New_York:20261104T120000
-RRULE:FREQ=MONTHLY;BYDAY=1WE
-SUMMARY:Verifiable Profile SMART Doc DWG
-DESCRIPTION:eMortgage · 1st Wednesday\n\nJoin: https://mba-org.zoom.us/j/
- 86383676148\n\nOpen to anyone who would like to participate. Maintained 
- and updated by MISMO.
-LOCATION:https://mba-org.zoom.us/j/86383676148
-URL:https://mba-org.zoom.us/j/86383676148
+UID:hero-housing-emerging-risks-and-opportunities-cop@mismo.org
+DTSTAMP:20261011T000000Z
+DTSTART;TZID=America/New_York:20261103T100000
+DTEND;TZID=America/New_York:20261103T110000
+RRULE:FREQ=MONTHLY;BYDAY=1TU
+SUMMARY:HERO (Housing Emerging Risks and Opportunities) COP
+DESCRIPTION:1st Tuesday\n\nJoin: https://mba-org.zoom.us/j/89963965149\n\
+ nOpen to anyone who would like to participate. Maintained and updated by
+  MISMO.
+LOCATION:https://mba-org.zoom.us/j/89963965149
+URL:https://mba-org.zoom.us/j/89963965149
 END:VEVENT
 BEGIN:VEVENT
-UID:commercial-cop@mismo.org
-DTSTAMP:20261011T120000Z
-DTSTART;TZID=America/New_York:20261112T130000
-DTEND;TZID=America/New_York:20261112T140000
-RRULE:FREQ=MONTHLY;BYDAY=2TH
-SUMMARY:Commercial CoP
-DESCRIPTION:Originations · 2nd Thursday\n\nJoin: https://mba-org.zoom.us/
- j/85450117105\n\nOpen to anyone who would like to participate. Maintaine
- d and updated by MISMO.
-LOCATION:https://mba-org.zoom.us/j/85450117105
-URL:https://mba-org.zoom.us/j/85450117105
-END:VEVENT
-BEGIN:VEVENT
-UID:decision-modeling-cop@mismo.org
-DTSTAMP:20261011T120000Z
-DTSTART;TZID=America/New_York:20261019T160000
-DTEND;TZID=America/New_York:20261019T170000
-RRULE:FREQ=MONTHLY;BYDAY=1MO,3MO
-SUMMARY:Decision Modeling CoP
-DESCRIPTION:Originations · 1st & 3rd Monday\n\nJoin: https://mba-org.zoom
- .us/j/81097644741\n\nOpen to anyone who would like to participate. Maint
- ained and updated by MISMO.
-LOCATION:https://mba-org.zoom.us/j/81097644741
-URL:https://mba-org.zoom.us/j/81097644741
-END:VEVENT
-BEGIN:VEVENT
-UID:housing-counseling-dwg@mismo.org
-DTSTAMP:20261011T120000Z
-DTSTART;TZID=America/New_York:20261014T150000
-DTEND;TZID=America/New_York:20261014T160000
-RRULE:FREQ=MONTHLY;BYDAY=2WE,4WE
-SUMMARY:Housing Counseling DWG
-DESCRIPTION:Originations · 2nd & 4th Wednesday\n\nJoin: https://mba-org.z
- oom.us/j/85930714859\n\nOpen to anyone who would like to participate. Ma
- intained and updated by MISMO.
+UID:housing-counseling-data-dwg@mismo.org
+DTSTAMP:20261011T000000Z
+DTSTART;TZID=America/New_York:20261028T150000
+DTEND;TZID=America/New_York:20261028T160000
+RRULE:FREQ=MONTHLY;BYDAY=4WE
+SUMMARY:Housing Counseling Data DWG
+DESCRIPTION:4th Wednesday\n\nJoin: https://mba-org.zoom.us/j/85930714859\
+ n\nOpen to anyone who would like to participate. Maintained and updated 
+ by MISMO.
 LOCATION:https://mba-org.zoom.us/j/85930714859
 URL:https://mba-org.zoom.us/j/85930714859
 END:VEVENT
 BEGIN:VEVENT
+UID:information-management@mismo.org
+DTSTAMP:20261011T000000Z
+DTSTART;TZID=America/New_York:20261012T140000
+DTEND;TZID=America/New_York:20261012T150000
+RRULE:FREQ=WEEKLY;BYDAY=MO
+SUMMARY:Information Management
+DESCRIPTION:Governance · Every Monday\n\nJoin: https://mba-org.zoom.us/j/
+ 83911697957\n\nOpen to anyone who would like to participate. Maintained 
+ and updated by MISMO.
+LOCATION:https://mba-org.zoom.us/j/83911697957
+URL:https://mba-org.zoom.us/j/83911697957
+END:VEVENT
+BEGIN:VEVENT
 UID:loan-application-data-exchange-dwg@mismo.org
-DTSTAMP:20261011T120000Z
+DTSTAMP:20261011T000000Z
 DTSTART;TZID=America/New_York:20261027T130000
 DTEND;TZID=America/New_York:20261027T140000
 RRULE:FREQ=MONTHLY;BYDAY=4TU
@@ -260,112 +261,8 @@ LOCATION:https://mba-org.zoom.us/j/88023232957
 URL:https://mba-org.zoom.us/j/88023232957
 END:VEVENT
 BEGIN:VEVENT
-UID:origination-cop@mismo.org
-DTSTAMP:20261011T120000Z
-DTSTART;TZID=America/New_York:20261104T150000
-DTEND;TZID=America/New_York:20261104T160000
-RRULE:FREQ=MONTHLY;BYDAY=1WE
-SUMMARY:Origination CoP
-DESCRIPTION:Originations · 1st Wednesday\n\nJoin: https://mba-org.zoom.us
- /j/85990267275\n\nOpen to anyone who would like to participate. Maintain
- ed and updated by MISMO.
-LOCATION:https://mba-org.zoom.us/j/85990267275
-URL:https://mba-org.zoom.us/j/85990267275
-END:VEVENT
-BEGIN:VEVENT
-UID:reverse-mortgage-dwg@mismo.org
-DTSTAMP:20261011T120000Z
-DTSTART;TZID=America/New_York:20261015T130000
-DTEND;TZID=America/New_York:20261015T140000
-RRULE:FREQ=MONTHLY;BYDAY=1TH,3TH
-SUMMARY:Reverse Mortgage DWG
-DESCRIPTION:Originations · 1st & 3rd Thursday\n\nJoin: https://mba-org.zo
- om.us/j/86180371977\n\nOpen to anyone who would like to participate. Mai
- ntained and updated by MISMO.
-LOCATION:https://mba-org.zoom.us/j/86180371977
-URL:https://mba-org.zoom.us/j/86180371977
-END:VEVENT
-BEGIN:VEVENT
-UID:va-documents-to-data-dwg@mismo.org
-DTSTAMP:20261011T120000Z
-DTSTART;TZID=America/New_York:20261021T150000
-DTEND;TZID=America/New_York:20261021T160000
-RRULE:FREQ=MONTHLY;BYDAY=3WE
-SUMMARY:VA Documents to Data DWG
-DESCRIPTION:Originations · 3rd Wednesday\n\nJoin: https://mba-org.zoom.us
- /j/88489860437\n\nOpen to anyone who would like to participate. Maintain
- ed and updated by MISMO.
-LOCATION:https://mba-org.zoom.us/j/88489860437
-URL:https://mba-org.zoom.us/j/88489860437
-END:VEVENT
-BEGIN:VEVENT
-UID:automated-valuation-model-dwg@mismo.org
-DTSTAMP:20261011T120000Z
-DTSTART;TZID=America/New_York:20261012T160000
-DTEND;TZID=America/New_York:20261012T170000
-RRULE:FREQ=WEEKLY;BYDAY=MO
-SUMMARY:Automated Valuation Model DWG
-DESCRIPTION:Valuation · Every Monday\n\nJoin: https://mba-org.zoom.us/j/8
- 6553707201\n\nOpen to anyone who would like to participate. Maintained a
- nd updated by MISMO.
-LOCATION:https://mba-org.zoom.us/j/86553707201
-URL:https://mba-org.zoom.us/j/86553707201
-END:VEVENT
-BEGIN:VEVENT
-UID:property-valuation-services-cop@mismo.org
-DTSTAMP:20261011T120000Z
-DTSTART;TZID=America/New_York:20261023T130000
-DTEND;TZID=America/New_York:20261023T140000
-RRULE:FREQ=MONTHLY;BYDAY=2FR,4FR
-SUMMARY:Property & Valuation Services CoP
-DESCRIPTION:Valuation · 2nd & 4th Friday\n\nJoin: https://mba-org.zoom.us
- /j/86087635705\n\nOpen to anyone who would like to participate. Maintain
- ed and updated by MISMO.
-LOCATION:https://mba-org.zoom.us/j/86087635705
-URL:https://mba-org.zoom.us/j/86087635705
-END:VEVENT
-BEGIN:VEVENT
-UID:title-closing-cop@mismo.org
-DTSTAMP:20261011T120000Z
-DTSTART;TZID=America/New_York:20261012T130000
-DTEND;TZID=America/New_York:20261012T140000
-RRULE:FREQ=MONTHLY;BYDAY=2MO
-SUMMARY:Title & Closing CoP
-DESCRIPTION:Title & Closing · 2nd Monday\n\nJoin: https://mba-org.zoom.us
- /j/89444784294\n\nOpen to anyone who would like to participate. Maintain
- ed and updated by MISMO.
-LOCATION:https://mba-org.zoom.us/j/89444784294
-URL:https://mba-org.zoom.us/j/89444784294
-END:VEVENT
-BEGIN:VEVENT
-UID:title-closing-docs-to-data-dwg@mismo.org
-DTSTAMP:20261011T120000Z
-DTSTART;TZID=America/New_York:20261021T140000
-DTEND;TZID=America/New_York:20261021T150000
-RRULE:FREQ=MONTHLY;BYDAY=1WE,3WE
-SUMMARY:Title & Closing Docs to Data DWG
-DESCRIPTION:Title & Closing · 1st & 3rd Wednesday\n\nJoin: https://mba-or
- g.zoom.us/j/84866528267\n\nOpen to anyone who would like to participate.
-  Maintained and updated by MISMO.
-LOCATION:https://mba-org.zoom.us/j/84866528267
-URL:https://mba-org.zoom.us/j/84866528267
-END:VEVENT
-BEGIN:VEVENT
-UID:title-pricing-api-dwg@mismo.org
-DTSTAMP:20261011T120000Z
-DTSTART;TZID=America/New_York:20261014T153000
-DTEND;TZID=America/New_York:20261014T163000
-RRULE:FREQ=WEEKLY;BYDAY=WE
-SUMMARY:Title Pricing API DWG
-DESCRIPTION:Title & Closing · Every Wednesday\n\nJoin: https://mba-org.zo
- om.us/j/83150861941\n\nOpen to anyone who would like to participate. Mai
- ntained and updated by MISMO.
-LOCATION:https://mba-org.zoom.us/j/83150861941
-URL:https://mba-org.zoom.us/j/83150861941
-END:VEVENT
-BEGIN:VEVENT
 UID:mi-claim-submission-dwg@mismo.org
-DTSTAMP:20261011T120000Z
+DTSTAMP:20261011T000000Z
 DTSTART;TZID=America/New_York:20261020T150000
 DTEND;TZID=America/New_York:20261020T160000
 RRULE:FREQ=MONTHLY;BYDAY=1TU,3TU
@@ -377,60 +274,8 @@ LOCATION:https://mba-org.zoom.us/j/82404935190
 URL:https://mba-org.zoom.us/j/82404935190
 END:VEVENT
 BEGIN:VEVENT
-UID:mortgage-insurance-cop@mismo.org
-DTSTAMP:20261011T120000Z
-DTSTART;TZID=America/New_York:20261019T130000
-DTEND;TZID=America/New_York:20261019T140000
-RRULE:FREQ=MONTHLY;BYDAY=3MO
-SUMMARY:Mortgage Insurance CoP
-DESCRIPTION:Mortgage Insurance · 3rd Monday\n\nJoin: https://mba-org.zoom
- .us/j/87976028176\n\nOpen to anyone who would like to participate. Maint
- ained and updated by MISMO.
-LOCATION:https://mba-org.zoom.us/j/87976028176
-URL:https://mba-org.zoom.us/j/87976028176
-END:VEVENT
-BEGIN:VEVENT
-UID:servicing-cop@mismo.org
-DTSTAMP:20261011T120000Z
-DTSTART;TZID=America/New_York:20261012T130000
-DTEND;TZID=America/New_York:20261012T140000
-RRULE:FREQ=MONTHLY;BYDAY=2MO,4MO
-SUMMARY:Servicing CoP
-DESCRIPTION:Servicing · 2nd & 4th Monday\n\nJoin: https://mba-org.zoom.us
- /j/86066078039\n\nOpen to anyone who would like to participate. Maintain
- ed and updated by MISMO.
-LOCATION:https://mba-org.zoom.us/j/86066078039
-URL:https://mba-org.zoom.us/j/86066078039
-END:VEVENT
-BEGIN:VEVENT
-UID:servicing-transfers-dwg@mismo.org
-DTSTAMP:20261011T120000Z
-DTSTART;TZID=America/New_York:20261014T130000
-DTEND;TZID=America/New_York:20261014T140000
-RRULE:FREQ=MONTHLY;BYDAY=2WE,4WE
-SUMMARY:Servicing Transfers DWG
-DESCRIPTION:Servicing · 2nd & 4th Wednesday\n\nJoin: https://mba-org.zoom
- .us/j/87030588927\n\nOpen to anyone who would like to participate. Maint
- ained and updated by MISMO.
-LOCATION:https://mba-org.zoom.us/j/87030588927
-URL:https://mba-org.zoom.us/j/87030588927
-END:VEVENT
-BEGIN:VEVENT
-UID:credit-reporting-cop@mismo.org
-DTSTAMP:20261011T120000Z
-DTSTART;TZID=America/New_York:20261015T160000
-DTEND;TZID=America/New_York:20261015T170000
-RRULE:FREQ=MONTHLY;BYDAY=1TH,3TH
-SUMMARY:Credit Reporting CoP
-DESCRIPTION:Credit Reporting · 1st & 3rd Thursday\n\nJoin: https://mba-or
- g.zoom.us/j/81784509635\n\nOpen to anyone who would like to participate.
-  Maintained and updated by MISMO.
-LOCATION:https://mba-org.zoom.us/j/81784509635
-URL:https://mba-org.zoom.us/j/81784509635
-END:VEVENT
-BEGIN:VEVENT
 UID:mortgage-compliance-dataset-dwg@mismo.org
-DTSTAMP:20261011T120000Z
+DTSTAMP:20261011T000000Z
 DTSTART;TZID=America/New_York:20261015T150000
 DTEND;TZID=America/New_York:20261015T160000
 RRULE:FREQ=MONTHLY;BYDAY=1TH,3TH
@@ -442,16 +287,185 @@ LOCATION:https://mba-org.zoom.us/j/88042907892
 URL:https://mba-org.zoom.us/j/88042907892
 END:VEVENT
 BEGIN:VEVENT
+UID:mortgage-insurance-cop@mismo.org
+DTSTAMP:20261011T000000Z
+DTSTART;TZID=America/New_York:20261019T130000
+DTEND;TZID=America/New_York:20261019T140000
+RRULE:FREQ=MONTHLY;BYDAY=3MO
+SUMMARY:Mortgage Insurance COP
+DESCRIPTION:Mortgage Insurance · 3rd Monday\n\nJoin: https://mba-org.zoom
+ .us/j/87976028176\n\nOpen to anyone who would like to participate. Maint
+ ained and updated by MISMO.
+LOCATION:https://mba-org.zoom.us/j/87976028176
+URL:https://mba-org.zoom.us/j/87976028176
+END:VEVENT
+BEGIN:VEVENT
+UID:origination-cop@mismo.org
+DTSTAMP:20261011T000000Z
+DTSTART;TZID=America/New_York:20261104T150000
+DTEND;TZID=America/New_York:20261104T160000
+RRULE:FREQ=MONTHLY;BYDAY=1WE
+SUMMARY:Origination COP
+DESCRIPTION:Originations · 1st Wednesday\n\nJoin: https://mba-org.zoom.us
+ /j/85990267275\n\nOpen to anyone who would like to participate. Maintain
+ ed and updated by MISMO.
+LOCATION:https://mba-org.zoom.us/j/85990267275
+URL:https://mba-org.zoom.us/j/85990267275
+END:VEVENT
+BEGIN:VEVENT
+UID:property-and-valuation-services-cop@mismo.org
+DTSTAMP:20261011T000000Z
+DTSTART;TZID=America/New_York:20261023T130000
+DTEND;TZID=America/New_York:20261023T140000
+RRULE:FREQ=MONTHLY;BYDAY=2FR,4FR
+SUMMARY:Property and Valuation Services COP
+DESCRIPTION:2nd & 4th Friday\n\nJoin: https://mba-org.zoom.us/j/860876357
+ 05\n\nOpen to anyone who would like to participate. Maintained and updat
+ ed by MISMO.
+LOCATION:https://mba-org.zoom.us/j/86087635705
+URL:https://mba-org.zoom.us/j/86087635705
+END:VEVENT
+BEGIN:VEVENT
+UID:remote-online-notarization-dwg@mismo.org
+DTSTAMP:20261011T000000Z
+DTSTART;TZID=America/New_York:20261013T130000
+DTEND;TZID=America/New_York:20261013T140000
+RRULE:FREQ=MONTHLY;BYDAY=2TU,4TU
+SUMMARY:Remote Online Notarization DWG
+DESCRIPTION:eMortgage · 2nd & 4th Tuesday\n\nJoin: https://mba-org.zoom.u
+ s/j/83944523098\n\nOpen to anyone who would like to participate. Maintai
+ ned and updated by MISMO.
+LOCATION:https://mba-org.zoom.us/j/83944523098
+URL:https://mba-org.zoom.us/j/83944523098
+END:VEVENT
+BEGIN:VEVENT
+UID:reverse-mortgage-dwg@mismo.org
+DTSTAMP:20261011T000000Z
+DTSTART;TZID=America/New_York:20261015T130000
+DTEND;TZID=America/New_York:20261015T140000
+RRULE:FREQ=MONTHLY;BYDAY=1TH,3TH
+SUMMARY:Reverse Mortgage DWG
+DESCRIPTION:Originations · 1st & 3rd Thursday\n\nJoin: https://mba-org.zo
+ om.us/j/86180371977\n\nOpen to anyone who would like to participate. Mai
+ ntained and updated by MISMO.
+LOCATION:https://mba-org.zoom.us/j/86180371977
+URL:https://mba-org.zoom.us/j/86180371977
+END:VEVENT
+BEGIN:VEVENT
 UID:secondary-cop@mismo.org
-DTSTAMP:20261011T120000Z
+DTSTAMP:20261011T000000Z
 DTSTART;TZID=America/New_York:20261020T150000
 DTEND;TZID=America/New_York:20261020T160000
 RRULE:FREQ=MONTHLY;BYDAY=3TU
-SUMMARY:Secondary CoP
+SUMMARY:Secondary COP
 DESCRIPTION:Secondary · 3rd Tuesday\n\nJoin: https://mba-org.zoom.us/j/89
  634843815\n\nOpen to anyone who would like to participate. Maintained an
  d updated by MISMO.
 LOCATION:https://mba-org.zoom.us/j/89634843815
 URL:https://mba-org.zoom.us/j/89634843815
+END:VEVENT
+BEGIN:VEVENT
+UID:servicing-cop@mismo.org
+DTSTAMP:20261011T000000Z
+DTSTART;TZID=America/New_York:20261026T130000
+DTEND;TZID=America/New_York:20261026T140000
+RRULE:FREQ=MONTHLY;BYDAY=4MO
+SUMMARY:Servicing COP
+DESCRIPTION:Servicing · 4th Monday\n\nJoin: https://mba-org.zoom.us/j/860
+ 66078039\n\nOpen to anyone who would like to participate. Maintained and
+  updated by MISMO.
+LOCATION:https://mba-org.zoom.us/j/86066078039
+URL:https://mba-org.zoom.us/j/86066078039
+END:VEVENT
+BEGIN:VEVENT
+UID:servicing-transfers-dwg@mismo.org
+DTSTAMP:20261011T000000Z
+DTSTART;TZID=America/New_York:20261014T130000
+DTEND;TZID=America/New_York:20261014T140000
+RRULE:FREQ=MONTHLY;BYDAY=2WE,4WE
+SUMMARY:Servicing Transfers DWG
+DESCRIPTION:Servicing · 2nd & 4th Wednesday\n\nJoin: https://mba-org.zoom
+ .us/j/87030588927\n\nOpen to anyone who would like to participate. Maint
+ ained and updated by MISMO.
+LOCATION:https://mba-org.zoom.us/j/87030588927
+URL:https://mba-org.zoom.us/j/87030588927
+END:VEVENT
+BEGIN:VEVENT
+UID:tie-technology-impact-and-enablement-cop@mismo.org
+DTSTAMP:20261011T000000Z
+DTSTART;TZID=America/New_York:20261021T140000
+DTEND;TZID=America/New_York:20261021T150000
+RRULE:FREQ=MONTHLY;BYDAY=3WE
+SUMMARY:TIE (Technology Impact and Enablement) COP
+DESCRIPTION:3rd Wednesday\n\nJoin: https://mba-org.zoom.us/j/88544460553\
+ n\nOpen to anyone who would like to participate. Maintained and updated 
+ by MISMO.
+LOCATION:https://mba-org.zoom.us/j/88544460553
+URL:https://mba-org.zoom.us/j/88544460553
+END:VEVENT
+BEGIN:VEVENT
+UID:title-and-closing-cop@mismo.org
+DTSTAMP:20261011T000000Z
+DTSTART;TZID=America/New_York:20261012T130000
+DTEND;TZID=America/New_York:20261012T140000
+RRULE:FREQ=MONTHLY;BYDAY=2MO
+SUMMARY:Title and Closing COP
+DESCRIPTION:2nd Monday\n\nJoin: https://mba-org.zoom.us/j/89444784294\n\n
+ Open to anyone who would like to participate. Maintained and updated by 
+ MISMO.
+LOCATION:https://mba-org.zoom.us/j/89444784294
+URL:https://mba-org.zoom.us/j/89444784294
+END:VEVENT
+BEGIN:VEVENT
+UID:title-and-closing-docs-to-data-dwg@mismo.org
+DTSTAMP:20261011T000000Z
+DTSTART;TZID=America/New_York:20261021T140000
+DTEND;TZID=America/New_York:20261021T150000
+RRULE:FREQ=MONTHLY;BYDAY=1WE,3WE
+SUMMARY:Title and Closing Docs to Data DWG
+DESCRIPTION:1st & 3rd Wednesday\n\nJoin: https://mba-org.zoom.us/j/848665
+ 28267\n\nOpen to anyone who would like to participate. Maintained and up
+ dated by MISMO.
+LOCATION:https://mba-org.zoom.us/j/84866528267
+URL:https://mba-org.zoom.us/j/84866528267
+END:VEVENT
+BEGIN:VEVENT
+UID:title-pricing-api-dwg@mismo.org
+DTSTAMP:20261011T000000Z
+DTSTART;TZID=America/New_York:20261014T153000
+DTEND;TZID=America/New_York:20261014T163000
+RRULE:FREQ=WEEKLY;BYDAY=WE
+SUMMARY:Title Pricing API DWG
+DESCRIPTION:Title & Closing · Every Wednesday\n\nJoin: https://mba-org.zo
+ om.us/j/83150861941\n\nOpen to anyone who would like to participate. Mai
+ ntained and updated by MISMO.
+LOCATION:https://mba-org.zoom.us/j/83150861941
+URL:https://mba-org.zoom.us/j/83150861941
+END:VEVENT
+BEGIN:VEVENT
+UID:va-docs-to-data-dwg@mismo.org
+DTSTAMP:20261011T000000Z
+DTSTART;TZID=America/New_York:20261021T150000
+DTEND;TZID=America/New_York:20261021T160000
+RRULE:FREQ=MONTHLY;BYDAY=3WE
+SUMMARY:VA Docs to Data DWG
+DESCRIPTION:3rd Wednesday\n\nJoin: https://mba-org.zoom.us/j/88489860437\
+ n\nOpen to anyone who would like to participate. Maintained and updated 
+ by MISMO.
+LOCATION:https://mba-org.zoom.us/j/88489860437
+URL:https://mba-org.zoom.us/j/88489860437
+END:VEVENT
+BEGIN:VEVENT
+UID:verifiable-smart-doc-3-0-profile-dwg@mismo.org
+DTSTAMP:20261011T000000Z
+DTSTART;TZID=America/New_York:20261104T110000
+DTEND;TZID=America/New_York:20261104T120000
+RRULE:FREQ=MONTHLY;BYDAY=1WE
+SUMMARY:Verifiable SMART Doc® 3.0 Profile DWG
+DESCRIPTION:1st Wednesday\n\nJoin: https://mba-org.zoom.us/j/86383676148\
+ n\nOpen to anyone who would like to participate. Maintained and updated 
+ by MISMO.
+LOCATION:https://mba-org.zoom.us/j/86383676148
+URL:https://mba-org.zoom.us/j/86383676148
 END:VEVENT
 END:VCALENDAR
