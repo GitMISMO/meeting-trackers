@@ -34,9 +34,9 @@ DTSTART;TZID=America/New_York:20261021T140000
 DTEND;TZID=America/New_York:20261021T150000
 RRULE:FREQ=MONTHLY;BYDAY=1WE,3WE
 SUMMARY:Title and Closing Docs to Data DWG
-DESCRIPTION:1st & 3rd Wednesday\n\nJoin: https://mba-org.zoom.us/j/848665
- 28267\n\nOpen to anyone who would like to participate. Maintained and up
- dated by MISMO.
+DESCRIPTION:Title & Closing · 1st & 3rd Wednesday\n\nJoin: https://mba-or
+ g.zoom.us/j/84866528267\n\nOpen to anyone who would like to participate.
+  Maintained and updated by MISMO.
 LOCATION:https://mba-org.zoom.us/j/84866528267
 URL:https://mba-org.zoom.us/j/84866528267
 END:VEVENT

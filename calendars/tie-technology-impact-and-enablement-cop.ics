@@ -34,9 +34,9 @@ DTSTART;TZID=America/New_York:20261021T140000
 DTEND;TZID=America/New_York:20261021T150000
 RRULE:FREQ=MONTHLY;BYDAY=3WE
 SUMMARY:TIE (Technology Impact and Enablement) COP
-DESCRIPTION:3rd Wednesday\n\nJoin: https://mba-org.zoom.us/j/88544460553\
- n\nOpen to anyone who would like to participate. Maintained and updated 
- by MISMO.
+DESCRIPTION:Governance · 3rd Wednesday\n\nJoin: https://mba-org.zoom.us/j
+ /88544460553\n\nOpen to anyone who would like to participate. Maintained
+  and updated by MISMO.
 LOCATION:https://mba-org.zoom.us/j/88544460553
 URL:https://mba-org.zoom.us/j/88544460553
 END:VEVENT

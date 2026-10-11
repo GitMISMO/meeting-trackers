@@ -4,7 +4,7 @@
   "groups": [
     {
       "name": "API COP",
-      "topic": "",
+      "topic": "Governance",
       "day": "Tuesday",
       "cadence": "4th Tuesday",
       "time": "3–4pm ET",
@@ -20,7 +20,7 @@
     },
     {
       "name": "Artificial Intelligence (AI) COP",
-      "topic": "",
+      "topic": "Artificial Intelligence",
       "day": "Monday",
       "cadence": "2nd & 4th Monday",
       "time": "3–4pm ET",
@@ -52,7 +52,7 @@
     },
     {
       "name": "Commercial and Other Real Estate Digital Notes DWG",
-      "topic": "",
+      "topic": "eMortgage",
       "day": "Thursday",
       "cadence": "2nd Thursday",
       "time": "3–4pm ET",
@@ -76,7 +76,7 @@
     },
     {
       "name": "Data Governance and Management COP",
-      "topic": "",
+      "topic": "Governance",
       "day": "Wednesday",
       "cadence": "3rd Wednesday",
       "time": "1–2pm ET",
@@ -116,7 +116,7 @@
     },
     {
       "name": "HERO (Housing Emerging Risks and Opportunities) COP",
-      "topic": "",
+      "topic": "Governance",
       "day": "Tuesday",
       "cadence": "1st Tuesday",
       "time": "10–11am ET",
@@ -124,7 +124,7 @@
     },
     {
       "name": "Housing Counseling Data DWG",
-      "topic": "",
+      "topic": "Originations",
       "day": "Wednesday",
       "cadence": "4th Wednesday",
       "time": "3–4pm ET",
@@ -180,7 +180,7 @@
     },
     {
       "name": "Property and Valuation Services COP",
-      "topic": "",
+      "topic": "Valuation",
       "day": "Friday",
       "cadence": "2nd & 4th Friday",
       "time": "1–2pm ET",
@@ -228,7 +228,7 @@
     },
     {
       "name": "TIE (Technology Impact and Enablement) COP",
-      "topic": "",
+      "topic": "Governance",
       "day": "Wednesday",
       "cadence": "3rd Wednesday",
       "time": "2–3pm ET",
@@ -236,7 +236,7 @@
     },
     {
       "name": "Title and Closing COP",
-      "topic": "",
+      "topic": "Title & Closing",
       "day": "Monday",
       "cadence": "2nd Monday",
       "time": "1–2pm ET",
@@ -244,7 +244,7 @@
     },
     {
       "name": "Title and Closing Docs to Data DWG",
-      "topic": "",
+      "topic": "Title & Closing",
       "day": "Wednesday",
       "cadence": "1st & 3rd Wednesday",
       "time": "2–3pm ET",
@@ -260,7 +260,7 @@
     },
     {
       "name": "VA Docs to Data DWG",
-      "topic": "",
+      "topic": "Originations",
       "day": "Wednesday",
       "cadence": "3rd Wednesday",
       "time": "3–4pm ET",
@@ -268,7 +268,7 @@
     },
     {
       "name": "Verifiable SMART Doc® 3.0 Profile DWG",
-      "topic": "",
+      "topic": "eMortgage",
       "day": "Wednesday",
       "cadence": "1st Wednesday",
       "time": "11am–12pm ET",

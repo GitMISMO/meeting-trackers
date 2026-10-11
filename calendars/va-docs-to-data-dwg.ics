@@ -33,9 +33,9 @@ DTSTART;TZID=America/New_York:20261021T150000
 DTEND;TZID=America/New_York:20261021T160000
 RRULE:FREQ=MONTHLY;BYDAY=3WE
 SUMMARY:VA Docs to Data DWG
-DESCRIPTION:3rd Wednesday\n\nJoin: https://mba-org.zoom.us/j/88489860437\
- n\nOpen to anyone who would like to participate. Maintained and updated 
- by MISMO.
+DESCRIPTION:Originations · 3rd Wednesday\n\nJoin: https://mba-org.zoom.us
+ /j/88489860437\n\nOpen to anyone who would like to participate. Maintain
+ ed and updated by MISMO.
 LOCATION:https://mba-org.zoom.us/j/88489860437
 URL:https://mba-org.zoom.us/j/88489860437
 END:VEVENT
