@@ -758,7 +758,7 @@ h3.ssub:first-of-type{margin-top:4px}
 .railhits .rh-log:hover{background:var(--sky);color:var(--navy-deep);border-color:var(--sky)}
 .railhits .rh-log:focus-visible{outline:2px solid var(--sky);outline-offset:1px}
 .railhits .rh-log .rh-n{font-family:var(--mono);font-size:9.5px;font-weight:700;line-height:1.6;
-  background:var(--warn);color:#fff;border-radius:999px;padding:0 5px}
+  background:var(--warn);color:#fff;border-radius:5px;padding:0 5px}
 .hq nav{display:flex;flex-direction:column;gap:1px;padding:8px 8px 4px;flex:0 0 auto}
 .hq nav button{position:relative;display:flex;align-items:center;gap:10px;width:100%;text-align:left;background:none;border:0;border-radius:6px;color:rgba(255,255,255,.76);padding:8px 10px;font-size:13px;font-weight:500;cursor:pointer;white-space:nowrap}
 .hq nav button svg{width:17px;height:17px;flex:0 0 auto;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round;opacity:.85}
@@ -768,7 +768,7 @@ h3.ssub:first-of-type{margin-top:4px}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .hq nav button[aria-current]{background:#14486e}}
 .hq nav button[aria-current] svg{opacity:1;stroke:var(--sky)}
 .hq nav button .navcount{margin-left:auto;font-family:var(--mono);font-size:10px;font-weight:700;
-  background:var(--warn);color:#0d314c;border-radius:999px;padding:1px 7px;flex:0 0 auto}
+  background:var(--warn);color:#0d314c;border-radius:5px;padding:1px 7px;flex:0 0 auto}
 .hq nav button .navcount[hidden]{display:none}
 body.railmini .hq nav button .navcount{position:absolute;top:3px;right:3px;margin:0;font-size:9px;padding:0 5px}
 .hq nav button:focus-visible{outline:2px solid var(--sky);outline-offset:-2px}
@@ -813,7 +813,7 @@ body.railmini .hq nav button .navcount{position:absolute;top:3px;right:3px;margi
 .td-i.now{background:rgba(116,191,235,.2);border-color:var(--sky);box-shadow:0 0 0 1px rgba(116,191,235,.35)}
 .td-i.done{opacity:.46}
 .td-i .td-n{max-width:min(290px,38vw);overflow:hidden;text-overflow:ellipsis}
-.td-st{font-family:var(--mono);font-size:10px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;border-radius:999px;padding:2px 8px;white-space:nowrap;background:rgba(255,255,255,.14);color:rgba(255,255,255,.78)}
+.td-st{font-family:var(--mono);font-size:10px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;border-radius:5px;padding:2px 8px;white-space:nowrap;background:rgba(255,255,255,.14);color:rgba(255,255,255,.78)}
 .td-st.s-now{background:var(--sky);color:var(--navy-deep);display:inline-flex;align-items:center;gap:5px}
 .td-st.s-now::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--navy-deep);animation:tdpulse 1.8s ease-in-out infinite}
 @keyframes tdpulse{0%,100%{opacity:1}50%{opacity:.25}}
@@ -829,7 +829,7 @@ body.railmini .hq nav button .navcount{position:absolute;top:3px;right:3px;margi
     font-size:13px;cursor:pointer;text-align:left}
   .td-fold b{font-weight:600}
   .td-fold .td-livec{font-family:var(--mono);font-size:9.5px;font-weight:700;letter-spacing:.05em;
-    text-transform:uppercase;background:var(--sky);color:var(--navy-deep);border-radius:999px;padding:2px 8px}
+    text-transform:uppercase;background:var(--sky);color:var(--navy-deep);border-radius:5px;padding:2px 8px}
   .td-fold .td-car{margin-left:auto;font-size:15px;color:var(--sky);line-height:1}
   .td-fold:focus-visible{outline:2px solid var(--sky);outline-offset:2px}
   .today.folded .td-m,.today.folded .td-rule,.today.folded .td-x,.today.folded .td-l{display:none}
@@ -931,6 +931,9 @@ body.railmini .hq nav button .navcount{position:absolute;top:3px;right:3px;margi
 .pcard2 .pc-b.ok{background:color-mix(in srgb,var(--good) 12%,transparent);color:var(--good);
   border-color:color-mix(in srgb,var(--good) 26%,transparent)}
 .pcard2 .pc-b.now{background:var(--sky);color:var(--navy-deep);border-color:var(--sky)}
+.pcard2 .pc-b.hold{background:color-mix(in srgb,var(--c1) 13%,transparent);color:var(--c1);
+  border-color:color-mix(in srgb,var(--c1) 30%,transparent)}
+.pill.hold{background:color-mix(in srgb,var(--c1) 13%,transparent);color:var(--c1)}
 .pcard2 .pc-b.arch{background:var(--surface-3);color:var(--ink-3);border-color:var(--border)}
 .pcard2.arch .pc-n{color:var(--ink-2)}
 @media (prefers-reduced-motion:reduce){.pcard2{transition:none}.pcard2:hover{transform:none}}
@@ -985,7 +988,7 @@ details.sect>summary{list-style:none;cursor:pointer;padding:13px 16px;font-weigh
 details.sect>summary::-webkit-details-marker{display:none}
 details.sect>summary::before{content:"\25B8";color:var(--ink-3);font-size:11px;transition:transform .15s;flex:0 0 auto}
 details.sect[open]>summary::before{transform:rotate(90deg)}
-details.sect>summary .cnt{margin-left:auto;font-family:var(--mono);font-size:11px;font-weight:500;color:var(--ink-3);background:var(--chip);border-radius:999px;padding:1px 9px}
+details.sect>summary .cnt{margin-left:auto;font-family:var(--mono);font-size:11px;font-weight:500;color:var(--ink-3);background:var(--chip);border-radius:5px;padding:1px 9px}
 details.sect>summary:focus-visible{outline:2px solid var(--sky);outline-offset:-2px;border-radius:8px}
 details.sect>summary:hover{background:var(--surface-2);border-radius:8px}
 .sbody{padding:2px 16px 18px}
@@ -1069,13 +1072,13 @@ details.sect>summary:hover{background:var(--surface-2);border-radius:8px}
 .empty{padding:26px;text-align:center;color:var(--ink-3);font-size:13px}
 
 /* ---------- pills / tags ---------- */
-.pill{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:600;padding:2px 9px;border-radius:999px;white-space:nowrap;background:var(--chip);color:var(--ink-2)}
+.pill{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:600;padding:2px 9px;border-radius:5px;white-space:nowrap;background:var(--chip);color:var(--ink-2)}
 .pill::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--pc,var(--ink-3))}
 .pill.t-cop{--pc:var(--c1)}.pill.t-dwg{--pc:var(--c2)}.pill.t-wg{--pc:var(--c3)}
 .pill.t-gov{--pc:var(--c4)}.pill.t-other{--pc:var(--ink-3)}
 .pill.arch{--pc:var(--ink-3);background:var(--surface-3)}
 .pill.live{--pc:var(--good);background:var(--good-soft);color:var(--good)}
-.tag{display:inline-block;font-size:10px;text-transform:uppercase;letter-spacing:.05em;padding:2px 7px;border-radius:999px;background:var(--chip);color:var(--ink-2);white-space:nowrap;margin:0 4px 3px 0}
+.tag{display:inline-block;font-size:10px;text-transform:uppercase;letter-spacing:.05em;padding:2px 7px;border-radius:5px;background:var(--chip);color:var(--ink-2);white-space:nowrap;margin:0 4px 3px 0}
 
 /* ---------- right-hand pane (Summit HQ pattern) ---------- */
 .hqpane{position:fixed;top:calc(var(--hq-h) + env(safe-area-inset-top,0px));right:0;bottom:0;width:min(680px,calc(100vw - 56px));z-index:120;background:var(--surface);border-left:1px solid var(--border-strong);box-shadow:-10px 0 34px rgba(6,32,47,.18);display:flex;flex-direction:column;overflow:hidden;transform:translateX(100%);transition:transform .2s cubic-bezier(.4,0,.2,1);visibility:hidden}
@@ -1593,6 +1596,7 @@ function applyDbDocs(docs){
     const prev=M.gr.get(k)||{first:"",last:""};
     M.gr.set(k,{k:k,name:d.name||prev.name,type:d.type||prev.type||"Other",
       archived:d.archived!=null?!!d.archived:!!prev.archived,
+      hold:d.hold!=null?!!d.hold:!!prev.hold,
       facilitator:d.facilitator!=null?d.facilitator:(prev.facilitator||""),
       first:prev.first,last:prev.last}); });
   const seen=new Map(); M.mt.forEach((m,i)=>seen.set(m.gk+"|"+m.d,i));
@@ -1941,6 +1945,7 @@ function facList(){
 }
 /* scheduled dates in the last 60 days with nothing logged against them */
 function pendingFor(gk){
+  const g0=M.gr.get(gk); if(g0&&g0.hold) return [];   /* on hold: nothing is owed */
   const sc=(M.sched||{})[gk]; if(!sc||!sc.rule) return [];
   const have=new Set((M.byG.get(gk)||[]).map(i=>M.mt[i].d));
   const now=etNow(), out=[];
@@ -2081,7 +2086,7 @@ function weekCount(gks,now){
   for(let i=0;i<5;i++){
     const d=new Date(d0.getTime()); d.setDate(d.getDate()+i);
     gks.forEach(k=>{ const sc=(M.sched||{})[k];
-      const g=M.gr.get(k); if(g&&g.archived) return;
+      const g=M.gr.get(k); if(g&&(g.archived||g.hold)) return;
       if(sc&&sc.rule&&meetsOn(sc.rule,d)) t++; });
   }
   return t;
@@ -2120,6 +2125,7 @@ function groupCard(gk){
   const body=el("div","pc-body");
   const top=el("div","pc-top"); top.appendChild(el("div","pc-n",g.name));
   if(g.archived) top.appendChild(el("div","pc-b arch","Archived"));
+  else if(g.hold) top.appendChild(el("div","pc-b hold","On Hold"));
   else if(!countsReady()) top.appendChild(el("div","pc-b wait","Checking\u2026"));
   else if(pend.length) top.appendChild(el("div","pc-b",pend.length===1?"1 to log":pend.length+" to log"));
   else if(isToday) top.appendChild(el("div","pc-b now","Today"));
@@ -2129,7 +2135,8 @@ function groupCard(gk){
   const ms=schedShort(gk);
   const meet=el("div","pc-meet"+(ms?"":" none"));
   meet.innerHTML='<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2.5"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>';
-  meet.appendChild(document.createTextNode(ms?(ms+" ET"):"No cadence set"));
+  meet.appendChild(document.createTextNode(g.hold?"Not meeting at the moment":(ms?(ms+" ET"):"No cadence set")));
+  if(g.hold) meet.className="pc-meet none";
   body.appendChild(meet);
   body.appendChild(el("div","pc-sp"));
   c.appendChild(body);
@@ -2447,9 +2454,10 @@ function openGroup(gk,openSched){
     m.p.forEach(pk=>{ ppl.set(pk,(ppl.get(pk)||0)+1);
       const ck=ckAt(pk,m.d); if(ck) cos.set(ck,(cos.get(ck)||0)+1);
       const c=catAt(pk,m.d); cats.set(c,(cats.get(c)||0)+1); }); });
-  openPane(g.name, gtypeShort(g.type)+(g.archived?" · Archived":"")+(g.facilitator?" · "+g.facilitator:"")+(rangeOn()?" · "+rangeLabel():""), ()=>{
+  openPane(g.name, gtypeShort(g.type)+(g.archived?" · Archived":g.hold?" · On Hold":"")+(g.facilitator?" · "+g.facilitator:"")+(rangeOn()?" · "+rangeLabel():""), ()=>{
     const box=el("div");
-    const st=el("span","pill "+(g.archived?"arch":"live"),g.archived?"Archived":"Active");
+    const st=el("span","pill "+(g.archived?"arch":g.hold?"hold":"live"),
+      g.archived?"Archived":g.hold?"On Hold":"Active");
     box.appendChild(facts([
       ["Type",g.type],["Status",st],["Facilitator",g.facilitator||"—"],
       ["Meetings",n(idxs.length)],["People",n(ppl.size)],["Attendance Records",n(recs)],
@@ -2469,6 +2477,21 @@ function openGroup(gk,openSched){
       return barList(arr.map(([c,v],i)=>({label:c,value:v,color:ramp(i,arr.length)})),{labelWidth:"190px"});
     }));
     box.appendChild(sect("Meeting History",idxs.length,()=>mtgList(idxs,false)));
+    if(CANWRITE&&!g.archived) box.appendChild(sect(g.hold?"Start This Workgroup Up Again":"Put This Workgroup on Hold",null,()=>{
+      const d=el("div");
+      d.appendChild(el("div","hint",g.hold
+        ? "It is on hold, so it is off the facilitator cards, the Today box and every still-to-log count. Starting it up again puts it back on those screens from its usual cadence."
+        : "For a workgroup that still exists but has paused \u2014 between phases, waiting on a decision, or just not meeting for a while. It stops asking to be logged and drops out of the Today box, but it stays an active workgroup: it keeps its facilitator, its cadence and its place in the totals, and it is not archived. Attendance can still be logged against it if a meeting does happen."));
+      const row=el("div","btnrow");
+      const bt=el("button","btn"+(g.hold?"":" ghost"),g.hold?"Start It Up Again":"Put It on Hold");
+      bt.type="button";
+      bt.addEventListener("click",async()=>{ bt.disabled=true;
+        bt.textContent=g.hold?"Starting\u2026":"Pausing\u2026";
+        const r2=await setHold(gk,!g.hold,()=>{ renderAll(true); openGroup(gk); });
+        if(!r2){ bt.disabled=false; bt.textContent=g.hold?"Start It Up Again":"Put It on Hold"; } });
+      row.appendChild(bt); d.appendChild(row);
+      return d;
+    }));
     if(CANWRITE) box.appendChild(sect(g.archived?"Bring This Workgroup Back":"Archive This Workgroup",null,()=>{
       const d=el("div");
       d.appendChild(el("div","hint",g.archived
@@ -2499,7 +2522,8 @@ function openGroup(gk,openSched){
         return t; }
 
       const iFac=fld("Facilitator",inp("text",g.facilitator,"Who runs this group"));
-      const iSt =fld("Status",sel([["0","Active"],["1","Archived"]],g.archived?"1":"0"));
+      const iSt =fld("Status",sel([["0","Active"],["h","On Hold"],["1","Archived"]],
+        g.archived?"1":g.hold?"h":"0"));
       const iDay=fld("Meeting Day",sel([["","\u2014 Not Scheduled \u2014"],["Monday","Monday"],["Tuesday","Tuesday"],
         ["Wednesday","Wednesday"],["Thursday","Thursday"],["Friday","Friday"]],sc.day||""));
       const cur=spanOf(sc)||[];
@@ -2571,7 +2595,7 @@ function openGroup(gk,openSched){
         sv.disabled=true;
         const r=rule(), t=fmtSpan(iFrom.value,iTo.value);
         const writes=[{c:"groups",id:gk,data:{name:g.name,type:g.type,
-          facilitator:iFac.value.trim(),archived:iSt.value==="1"}}];
+          facilitator:iFac.value.trim(),archived:iSt.value==="1",hold:iSt.value==="h"}}];
         if(r) writes.push({c:"sched",id:gk,data:{fac:iFac.value.trim(),day:iDay.value,
           st:iFrom.value||"",en:iTo.value||"",time:t,cadence:cadenceText(r,iDay.value),
           zoom:iZoom.value.trim(),status:"Active",rule:r,removed:false}});
@@ -2579,7 +2603,7 @@ function openGroup(gk,openSched){
         const okr=await saveMany(writes);
         sv.disabled=false;
         if(!okr) return;
-        g.facilitator=iFac.value.trim(); g.archived=iSt.value==="1";
+        g.facilitator=iFac.value.trim(); g.archived=iSt.value==="1"; g.hold=iSt.value==="h";
         if(r) M.sched[gk]={fac:g.facilitator,day:iDay.value,st:iFrom.value||"",en:iTo.value||"",
           time:t,cadence:cadenceText(r,iDay.value),zoom:iZoom.value.trim(),status:"Active",rule:r};
         else delete M.sched[gk];
@@ -2757,10 +2781,25 @@ async function mergePeople(dupKey,keepKey,after,opts){
 
 /* A workgroup that has stopped meeting is archived, never deleted: it drops out of the
    logging screens but every meeting, person and company it ever had stays in the totals. */
+/* A workgroup that still exists but has stopped meeting for now. It is left out of the
+   logging screens and the Today box, like an archived one, but it is still a live group:
+   it keeps its facilitator, stays in the active counts, and comes back with one click. */
+async function setHold(gk,on,after){
+  const g=M.gr.get(gk); if(!g) return false;
+  const okr=await saveDoc("groups",gk,{name:g.name,type:g.type,
+    facilitator:g.facilitator||"",archived:!!g.archived,hold:!!on});
+  if(!okr) return false;
+  g.hold=!!on;
+  buildIndexes();
+  if(after) after();
+  toast(g.name+(on?" is on hold \u2014 it will stop asking to be logged until it meets again."
+                  :" is meeting again \u2014 it is back on the logging screens."));
+  return true;
+}
 async function setArchived(gk,on,after){
   const g=M.gr.get(gk); if(!g) return false;
   const okr=await saveDoc("groups",gk,{name:g.name,type:g.type,
-    facilitator:g.facilitator||"",archived:!!on});
+    facilitator:g.facilitator||"",archived:!!on,hold:!!g.hold});
   if(!okr) return false;
   g.archived=!!on;
   buildIndexes();
@@ -3229,6 +3268,7 @@ function renderGroupList(){
   pager(box,gs,g=>{
     const st=el("span"); st.appendChild(el("span","pill "+gtypeCls(g.type),gtypeShort(g.type)));
     if(g.archived){ const a=el("span","pill arch","Archived"); a.style.marginLeft="5px"; st.appendChild(a); }
+    else if(g.hold){ const a=el("span","pill hold","On Hold"); a.style.marginLeft="5px"; st.appendChild(a); }
     addRow(box,GGRID,"g:"+g.k,[
       nmCell(g.name,null), st,
       el("span","muted hide-sm",g.facilitator||"—"),
@@ -3406,7 +3446,7 @@ function manageSection(){
         go2.disabled=true; go2.textContent="Saving\u2026";
         const writes=[];
         gks.forEach(k=>{ const g=M.gr.get(k);
-          writes.push({c:"groups",id:k,data:{name:g.name,type:g.type,archived:!!g.archived,facilitator:nm}});
+          writes.push({c:"groups",id:k,data:{name:g.name,type:g.type,archived:!!g.archived,hold:!!g.hold,facilitator:nm}});
           writes.push({c:"sched",id:k,data:{fac:nm}}); });
         const okr=await saveMany(writes);
         go2.disabled=false;
@@ -3419,7 +3459,7 @@ function manageSection(){
         setUndo("<b>"+n(gks.length)+" workgroup"+(gks.length===1?"":"s")+"</b> handed to "+esc(nm)+".",async()=>{
           const back=[];
           was.forEach(w=>{ const g2=M.gr.get(w.k); if(!g2) return;
-            back.push({c:"groups",id:w.k,data:{name:g2.name,type:g2.type,archived:!!g2.archived,facilitator:w.gfac}});
+            back.push({c:"groups",id:w.k,data:{name:g2.name,type:g2.type,archived:!!g2.archived,hold:!!g2.hold,facilitator:w.gfac}});
             back.push({c:"sched",id:w.k,data:{fac:w.fac}}); });
           const okr2=await saveMany(back);
           if(!okr2) return false;
@@ -4856,8 +4896,8 @@ function onDay(d,liveSort){
   const out=[];
   Object.keys(M.sched||{}).forEach(gk=>{ const sc2=M.sched[gk];
     if(sc2.status&&sc2.status.toLowerCase()!=="active") return;
-    /* an archived workgroup has stopped meeting, whatever cadence is still on file for it */
-    const g2=M.gr.get(gk); if(g2&&g2.archived) return;
+    /* archived, or on hold: not meeting, whatever cadence is still on file for it */
+    const g2=M.gr.get(gk); if(g2&&(g2.archived||g2.hold)) return;
     if(meetsOn(sc2.rule,d)) out.push(Object.assign({gk:gk},sc2)); });
   out.sort((a,b)=>(startOf(a)-startOf(b))||String(a.gk).localeCompare(String(b.gk)));
   if(liveSort){
