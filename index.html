@@ -1612,7 +1612,9 @@ function applyDbDocs(docs){
   MERGEDTO.clear();
   (docs.people||[]).forEach(d=>{ if(!d.mergedInto) return;
     const k=d.id||nk(d.name), into=d.mergedInto;
-    M.merges.push({k:k,name:d.name||k,into:into,by:d.mergedBy||"",at:d.mergedAt||""});
+    M.merges.push({k:k,name:d.name||k,into:into,by:d.mergedBy||"",at:d.mergedAt||"",
+      prev:(d.prevCk!==undefined||d.prevHist)
+        ?{ck:d.prevCk||"",hist:(d.prevHist||[]).map(e=>({ck:e.ck||"",from:e.from||""}))}:null});
     MERGEDTO.set(k,into);
     const keep=M.pp.get(into); M.pp.delete(k);
     if(keep){ const alt=(keep.alt||[]).slice();
@@ -2769,6 +2771,9 @@ function openCompany(ck){
 async function mergePeople(dupKey,keepKey,after,opts){
   const dup=M.pp.get(dupKey), keep=M.pp.get(keepKey);
   if(!dup||!keep||dupKey===keepKey) return false;
+  /* what the kept record's own company was before any of this — a record with none takes
+     the other's below, and taking the merge back has to put it the way it was */
+  const keepWas={ck:keep.ck||"",hist:(keep.hist||[]).map(e=>({ck:e.ck||"",from:e.from||""}))};
   const idxs=(M.byP.get(dupKey)||[]).slice();
   const writes=[], now=new Date().toISOString(), me=whoAmI();
   const touched=[];
@@ -2800,7 +2805,8 @@ async function mergePeople(dupKey,keepKey,after,opts){
      Deleting the shared-data record would not remove them — so leave a marker saying
      "this one is now that one", which the loader applies over the history. */
   writes.push({c:"people",id:dupKey,data:{name:dup.name,mergedInto:keepKey,
-    mergedBy:whoAmI(),mergedAt:new Date().toISOString()}});
+    mergedBy:whoAmI(),mergedAt:new Date().toISOString(),
+    prevCk:keepWas.ck,prevHist:keepWas.hist}});
   const okr=await saveMany(writes);
   if(!okr) return false;
   touched.forEach(t=>{ M.mt[t.i].p=t.p; M.mt[t.i].src="db"; });
@@ -2808,7 +2814,8 @@ async function mergePeople(dupKey,keepKey,after,opts){
     hist:hist,alt:alt,
     addedBy:keep.addedBy||"",addedAt:keep.addedAt||""});
   M.pp.delete(dupKey);
-  (M.merges=M.merges||[]).push({k:dupKey,name:dup.name,into:keepKey,by:me,at:now,n:idxs.length});
+  (M.merges=M.merges||[]).push({k:dupKey,name:dup.name,into:keepKey,by:me,at:now,n:idxs.length,
+    prev:keepWas});
   buildIndexes();
   if(after) after();
   toast(dup.name+" folded into "+keep.name+" \u2014 "+n(idxs.length)+" meeting"+
@@ -2907,7 +2914,7 @@ function askMove(row,keep,other,after){
 /* Taking a merge back. The imported attendance is still on file untouched, so for every
    meeting the kept record now sits on, the workbooks say whether it was really the other
    one. Anything logged in the tool since a merge is left where it is. */
-async function unmergePeople(dupKey,keepKey,dupName,after){
+async function unmergePeople(dupKey,keepKey,dupName,after,prev){
   const keep=M.pp.get(keepKey); if(!keep) return false;
   const idxs=(M.byP.get(keepKey)||[]).slice();
   const writes=[], now=new Date().toISOString(), me=whoAmI();
@@ -2927,15 +2934,24 @@ async function unmergePeople(dupKey,keepKey,dupName,after){
   /* the kept record stops answering to the other name */
   const dn=nk(dupName||dupKey);
   const alt=(keep.alt||[]).filter(a=>a!==dupKey&&a!==dn);
-  writes.push({c:"people",id:keepKey,data:{name:keep.name,ck:keep.ck||"",role:keep.role||"",
-    hist:histOf(keep).map(e=>({ck:e.ck,from:e.from||""})),alt:alt}});
+  /* and its company goes back to its own. A record with no company takes the other's when
+     they are folded together — left alone, it would keep it, and never show up on the
+     people-with-no-company list again. Older folds have no record of what it was, so the
+     imported trackers answer for them. */
+  const was=prev||(BASEPP.has(keepKey)?{ck:BASEPP.get(keepKey).ck||"",hist:[]}:null);
+  const bkCk=was?(was.ck||""):(keep.ck||"");
+  const bkHist=(was&&was.hist&&was.hist.length)
+    ? was.hist.map(e=>({ck:e.ck||"",from:e.from||""}))
+    : (was?[]:histOf(keep).map(e=>({ck:e.ck,from:e.from||""})));
+  writes.push({c:"people",id:keepKey,data:{name:keep.name,ck:bkCk,role:keep.role||"",
+    hist:bkHist,alt:alt}});
   const okr=await saveMany(writes);
   if(!okr) return false;
   /* and the marker that folded them together goes */
   const gone=await removeDoc("people",dupKey);
   if(!gone) return false;
   touched.forEach(t=>{ M.mt[t.i].p=t.p; M.mt[t.i].src="db"; });
-  keep.alt=alt;
+  keep.alt=alt; keep.ck=bkCk; keep.hist=bkHist;
   /* put them back on the roster now, as the imported history has them */
   if(!M.pp.has(dupKey)) M.pp.set(dupKey,Object.assign({k:dupKey,name:dupName||dupKey,ck:"",
     role:"",alt:[],addedBy:"",addedAt:""},BASEPP.get(dupKey)||{}));
@@ -2944,7 +2960,9 @@ async function unmergePeople(dupKey,keepKey,dupName,after){
   buildIndexes();
   if(after) after();
   toast(dupName+" is a separate record again \u2014 "+n(moved)+" meeting"+(moved===1?"":"s")+
-    " went back to them. The pair is on the duplicates list once more.");
+    " went back to them"+(bkCk?(", and "+keep.name+" is back at "+coNameOf(bkCk)):
+      (", and "+keep.name+" has no company again"))+
+    ". The pair is on the duplicates list once more.");
   return true;
 }
 
@@ -3038,6 +3056,7 @@ function personEditor(pk,after){
 
   const f2=el("div","fld"); f2.appendChild(el("label",null,"Company"));
   let ck=p.ck||""; f2.appendChild(coPicker(p.ck||"",k=>{ ck=k; draw(); })); g.appendChild(f2);
+  if(p.ck) f2.appendChild(el("div","hint","Clear the box to leave them with no company."));
 
   const f3=el("div","fld"); f3.id="pe-whenwrap"; f3.appendChild(el("label",null,"They Moved On"));
   const di=el("input"); di.type="date"; di.className="pe-from"; di.value=todayISO();
@@ -3159,9 +3178,13 @@ function personEditor(pk,after){
   d.appendChild(mw);
 
   function draw(){
-    const moved=ck&&ck!==(p.ck||"");
-    f3.hidden=!moved; f4.hidden=!moved;
-    why.textContent=moved
+    const moved=ck!==(p.ck||"");
+    const cleared=moved&&!ck;
+    f3.hidden=!moved||cleared; f4.hidden=!moved||cleared;
+    why.textContent=cleared
+      ? ("Was "+coNameOf(p.ck)+". Saving leaves them with no company, and puts them back on the "+
+         "people-with-no-company list.")
+      : moved
       ? ("Was "+coNameOf(p.ck)+", now "+coNameOf(ck)+". Pick which it is so the numbers for both companies stay right.")
       : "";
   }
@@ -3170,7 +3193,7 @@ function personEditor(pk,after){
   sv.addEventListener("click",async()=>{
     const nm=ni.value.trim();
     if(!nm){ toast("A name cannot be blank.",true); return; }
-    const moved=ck&&ck!==(p.ck||"");
+    const moved=ck!==(p.ck||"");
     const renamed=nm!==p.name;
     if(!moved&&!renamed){ toast("Nothing has changed.",true); return; }
     /* typing an existing person's name would otherwise make two records of the same human */
@@ -3185,7 +3208,8 @@ function personEditor(pk,after){
     if(renamed){ [nk(p.name),nk(nm)].forEach(a=>{ if(a&&alt.indexOf(a)<0) alt.push(a); }); }
     let hist=histOf(p).map(e=>({ck:e.ck,from:e.from||""}));
     if(moved){
-      if(sel.value==="fix") hist=[{ck:ck,from:""}];
+      if(!ck) hist=[{ck:"",from:""}];
+      else if(sel.value==="fix") hist=[{ck:ck,from:""}];
       else {
         const from=di.value||todayISO();
         hist=hist.filter(e=>String(e.from||"")!==from);
@@ -3204,15 +3228,16 @@ function personEditor(pk,after){
     if(after) after();
     const bits=[];
     if(renamed) bits.push("<b>"+esc(before.name)+"</b> is now <b>"+esc(nm)+"</b>");
-    if(moved) bits.push("<b>"+esc(coNameOf(before.ck))+"</b> \u2192 <b>"+esc(coNameOf(ck))+"</b>"+
-      (sel.value==="fix"?" for every meeting":" from "+esc(fmtD(di.value||todayISO()))));
+    if(moved) bits.push("<b>"+esc(before.ck?coNameOf(before.ck):"no company")+"</b> \u2192 <b>"+
+      esc(ck?coNameOf(ck):"no company")+"</b>"+
+      (!ck?"":(sel.value==="fix"?" for every meeting":" from "+esc(fmtD(di.value||todayISO())))));
     setUndo(bits.join(", ")+".",async()=>{
       const okr2=await saveDoc("people",pk,{name:before.name,ck:before.ck,role:data.role,
         hist:before.hist,alt:before.alt});
       if(!okr2) return false;
       M.pp.set(pk,{k:pk,name:before.name,ck:before.ck,role:data.role,hist:before.hist,alt:before.alt});
       buildIndexes(); if(after) after();
-      toast("Put back to "+before.name+" at "+coNameOf(before.ck)+".");
+      toast("Put back to "+before.name+(before.ck?(" at "+coNameOf(before.ck)):" with no company")+".");
       return true;
     });
   });
@@ -3250,7 +3275,11 @@ function coPicker(initCk,onPick){
     floatAC(list,inp); trackAC(list,inp);
   }
   let t=null;
-  inp.addEventListener("input",()=>{ clearTimeout(t); t=setTimeout(run,120); });
+  /* emptying the box means no company — otherwise a company put on by mistake can only
+     ever be swapped for another one, never taken off */
+  inp.addEventListener("input",()=>{ clearTimeout(t); t=setTimeout(()=>{
+    if(!inp.value.trim()){ if(chosen){ chosen=""; onPick(""); } close(); return; }
+    run(); },120); });
   inp.addEventListener("focus",run);
   document.addEventListener("click",e=>{ if(!wrap.contains(e.target)) close(); });
   wrap.append(inp,list);
@@ -5534,7 +5563,9 @@ function renderIssues(root){
             setTimeout(()=>{ if(!ub.isConnected) return; armed=false; ub.textContent="Undo This Merge"; },7000);
             return; }
           ub.disabled=true; ub.textContent="Splitting\u2026";
-          const ok2=await unmergePeople(r.k,r.into,r.name,()=>renderAll(true));
+          const ok2=await withProgress((d2,t2)=>{
+            ub.textContent=(t2&&d2<t2)?("Splitting\u2026 "+n(d2)+" of "+n(t2)):"Finishing\u2026";
+          },()=>unmergePeople(r.k,r.into,r.name,()=>renderAll(true),r.prev));
           if(!ok2){ ub.disabled=false; armed=false; ub.textContent="Undo This Merge"; } });
         acts.appendChild(ub); row.appendChild(acts);
       }
