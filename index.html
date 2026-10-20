@@ -1166,6 +1166,10 @@ body.paneon .pane-scrim{display:block}
 .addp .sechead{margin-bottom:7px}
 .addp .ag{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1.5fr) auto;gap:9px 14px;align-items:end}
 @media(max-width:760px){.addp .ag{grid-template-columns:1fr}}
+/* Pinned to the screen rather than to the box it hangs off, so the panel it sits in cannot
+   clip it. Without this, a list of matches longer than the room below the input runs off the
+   bottom of the window and those matches cannot be clicked. */
+.ac.acfix{position:fixed;left:0;right:auto;z-index:140}
 .ac{position:absolute;z-index:60;left:14px;right:14px;top:auto;background:var(--surface);border:1px solid var(--border-strong);border-radius:6px;box-shadow:0 10px 26px rgba(6,32,47,.24);max-height:260px;overflow:auto}
 .ac button{display:block;width:100%;text-align:left;background:none;border:0;border-bottom:1px solid var(--line);padding:7px 11px;font:inherit;font-size:12.5px;color:var(--ink);cursor:pointer}
 .ac button:last-child{border-bottom:0}
@@ -1378,6 +1382,26 @@ c57 -33 76 -84 76 -200 0 -116 -19 -167 -76 -200 -32 -19 -52 -20 -294 -20
 /* ======================= helpers ======================= */
 const $=(s,r)=>(r||document).querySelector(s), $$=(s,r)=>Array.from((r||document).querySelectorAll(s));
 const nk=s=>String(s||"").toLowerCase().replace(/[^a-z0-9]/g,"");
+/* Put a match list where it can actually be reached: anchored to the input on screen,
+   no taller than the room there is, and flipped above the box when below is too tight. */
+function floatAC(list,input){
+  if(!list||!input||list.hidden) return;
+  const r=input.getBoundingClientRect();
+  const below=window.innerHeight-r.bottom-12, above=r.top-12;
+  const up=below<170&&above>below;
+  list.classList.add("acfix");
+  list.style.left=Math.round(r.left)+"px";
+  list.style.width=Math.round(r.width)+"px";
+  list.style.maxHeight=Math.max(110,Math.min(300,Math.round(up?above:below)))+"px";
+  if(up){ list.style.top="auto"; list.style.bottom=Math.round(window.innerHeight-r.top+4)+"px"; }
+  else { list.style.bottom="auto"; list.style.top=Math.round(r.bottom+4)+"px"; }
+}
+function trackAC(list,input){
+  if(list.__ac) return;
+  list.__ac=()=>{ if(list.isConnected&&!list.hidden) floatAC(list,input); };
+  window.addEventListener("scroll",list.__ac,true);
+  window.addEventListener("resize",list.__ac);
+}
 const esc=s=>String(s==null?"":s);
 const MON=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
 function fmtD(iso){ if(!iso) return ""; const p=String(iso).split("-");
@@ -3085,6 +3109,7 @@ function personEditor(pk,after){
             await mergePeople(o.k,pk,after); });
           pl.appendChild(b2); });
       pl.hidden=!pl.children.length;
+      floatAC(pl,pi); trackAC(pl,pi);
     },140); });
     mw.appendChild(pick);
   }
@@ -3180,6 +3205,7 @@ function coPicker(initCk,onPick){
       list.appendChild(b);
     }
     list.hidden=!list.children.length;
+    floatAC(list,inp); trackAC(list,inp);
   }
   let t=null;
   inp.addEventListener("input",()=>{ clearTimeout(t); t=setTimeout(run,120); });
@@ -3767,6 +3793,7 @@ function openAddPane(){
             acl.appendChild(b); });
       }
       acl.hidden=!acl.children.length;
+      floatAC(acl,ai); trackAC(acl,ai);
     }
     ai.addEventListener("input",()=>{ clearTimeout(at); at=setTimeout(runAdd,120); });
     ab.addEventListener("click",async()=>{
