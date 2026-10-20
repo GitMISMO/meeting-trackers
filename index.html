@@ -254,6 +254,13 @@ img{max-width:100%}
     });
   }
   function anyPending() { return Object.keys(F).some(function (k) { return F[k].pending.length; }); }
+  /* how many files are still waiting to be committed — the page shows this during a long
+     save so a minute of work does not look like nothing happening */
+  function pendingCount() {
+    var n = 0;
+    Object.keys(F).forEach(function (k) { if (F[k].pending.length) n++; });
+    return n;
+  }
   window.addEventListener('beforeunload', function (e) {
     if (anyPending()) { e.preventDefault(); e.returnValue = 'Attendance is still saving.'; return e.returnValue; }
   });
@@ -588,7 +595,8 @@ img{max-width:100%}
       return Promise.resolve(null);
     }
   };
-  window.__mtRelay = { files: F, place: place, poll: poll, pending: anyPending, status: status,
+  window.__mtRelay = { files: F, place: place, poll: poll, pending: anyPending,
+    pendingCount: pendingCount, status: status,
     config: { RELAY_URL: RELAY_URL, PROJECT: PROJECT, POLL_MS: POLL_MS } };
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', hookSession); else hookSession();
@@ -1175,6 +1183,14 @@ body.paneon .pane-scrim{display:block}
 .ac button:last-child{border-bottom:0}
 .ac button:hover,.ac button.on{background:var(--accent-soft)}
 .ac button b{display:block;font-weight:600}
+.ac .acwait{display:flex;align-items:center;gap:9px;padding:11px 13px;font-size:12.5px;
+  color:var(--ink-2);line-height:1.45}
+.ac .acwait.bad{color:var(--bad)}
+.ac .acwait .acn{font-family:var(--mono);font-size:11.5px;color:var(--ink-3);white-space:nowrap}
+.ac .acwait .spin{width:13px;height:13px;flex:0 0 auto;border-radius:50%;
+  border:2px solid color-mix(in srgb,var(--sky) 35%,transparent);border-top-color:var(--sky);
+  animation:lspin .7s linear infinite}
+@media (prefers-reduced-motion:reduce){.ac .acwait .spin{animation:none}}
 .ac button i{display:block;font-style:normal;font-size:11px;color:var(--ink-3)}
 
 .copyfall{margin-top:12px;border:1px solid var(--border-strong);border-left:3px solid var(--warn);border-radius:8px;padding:12px 14px;background:var(--surface)}
@@ -2878,7 +2894,9 @@ function askMove(row,keep,other,after){
     const hist=rMove.checked
       ? [{ck:fromCk,from:""},{ck:toCk,from:di.value||suggested}]
       : [{ck:keep.ck,from:""}];
-    const ok2=await mergePeople(other.k,keep.k,after,{hist:hist});
+    const ok2=await withProgress((d2,t2)=>{
+      go2.textContent=(t2&&d2<t2)?("Folding\u2026 "+n(d2)+" of "+n(t2)):"Finishing\u2026";
+    },()=>mergePeople(other.k,keep.k,after,{hist:hist}));
     if(!ok2){ go2.disabled=false; cx.disabled=false; go2.textContent="Fold Them Together"; }
   });
   br.appendChild(go2); br.appendChild(cx); box.appendChild(br);
@@ -3082,7 +3100,9 @@ function personEditor(pk,after){
             setTimeout(()=>{ if(!bb.isConnected) return; armed=false; bb.textContent="Same Person"; bb.classList.remove("danger"); },7000);
             return; }
           bb.disabled=true; bb.textContent="Folding\u2026";
-          const ok2=await mergePeople(o.k,pk,after);
+          const ok2=await withProgress((d2,t2)=>{
+            bb.textContent=(t2&&d2<t2)?("Folding\u2026 "+n(d2)+" of "+n(t2)):"Finishing\u2026";
+          },()=>mergePeople(o.k,pk,after));
           if(!ok2){ bb.disabled=false; bb.textContent="Same Person"; bb.classList.remove("danger"); }
         });
         r.appendChild(bb); tl.appendChild(r);
@@ -3105,8 +3125,30 @@ function personEditor(pk,after){
           const b2=el("button"); b2.type="button";
           b2.appendChild(el("b",null,o.name));
           b2.appendChild(el("i",null,compName(o.k)+" \u00b7 "+n((M.byP.get(o.k)||[]).length)+" meetings \u00b7 fold into "+p.name));
-          b2.addEventListener("click",async()=>{ pl.hidden=true; pi.value="";
-            await mergePeople(o.k,pk,after); });
+          b2.addEventListener("click",async()=>{
+            /* folding 70-odd meetings together is a lot of saving, and it used to happen in
+               silence \u2014 the list just vanished and nothing seemed to come of it */
+            const nmv=(M.byP.get(o.k)||[]).length;
+            pl.textContent=""; pl.hidden=false;
+            const wait=el("div","acwait");
+            wait.appendChild(el("span","spin"));
+            wait.appendChild(document.createTextNode("Folding "+o.name+" into "+p.name+
+              " \u2014 "+n(nmv)+" meeting"+(nmv===1?"":"s")+" to move. This can take a moment."));
+            const cnt=el("span","acn");
+            wait.appendChild(cnt);
+            pl.appendChild(wait);
+            floatAC(pl,pi);
+            pi.disabled=true;
+            const okm=await withProgress((d2,t2)=>{
+              cnt.textContent=(t2&&d2<t2)?(" "+n(d2)+" of "+n(t2)+" saved"):" finishing\u2026";
+            },()=>mergePeople(o.k,pk,after));
+            pi.disabled=false;
+            if(okm){ pl.hidden=true; pi.value=""; }
+            else { pl.textContent="";
+              const bad=el("div","acwait bad");
+              bad.textContent="That did not save. Nothing was changed \u2014 try again in a moment.";
+              pl.appendChild(bad); floatAC(pl,pi); }
+          });
           pl.appendChild(b2); });
       pl.hidden=!pl.children.length;
       floatAC(pl,pi); trackAC(pl,pi);
@@ -4723,23 +4765,47 @@ function dbErr(e){
   if(c==="revoked") return "Your access to this page changed. Reload and sign in again.";
   return "That could not be saved just now. Try again in a moment.";
 }
+/* Folding one person into another rewrites every meeting they ever attended, and on the
+   self-hosted copy each one is its own commit — a minute of silence otherwise. Whoever
+   started the save sets SAVEPROG and hears how far along it is. */
+let SAVEPROG=null;
+function withProgress(fn,run){
+  const prev=SAVEPROG; SAVEPROG=fn;
+  return Promise.resolve().then(run).finally(()=>{ SAVEPROG=prev; });
+}
 async function writeBuckets(groupsMap){
   if(!DB){ toast("Shared data is not available in this view, so nothing was saved.",true); return false; }
   const paths=[...groupsMap.keys()];
-  try{
-    for(const path of paths){
-      const ref=DB.doc(path);
-      let cur={};
-      try{ const s=await ref.get(); if(s.exists) cur=JSON.parse(JSON.stringify(s.data()||{})); }catch(e){}
-      const items=Object.assign({},cur.items||{},groupsMap.get(path));
-      const body={items:items,updated:new Date().toISOString()};
-      const seg=path.split("/");
-      if(seg[0]==="meetings"){ const gy=seg[1].split("__"); body.gk=gy[0]; body.year=gy[1]; }
-      await ref.set(body);
-      DBC.set(path,body);
+  const rep=SAVEPROG; let done=0;
+  if(rep) try{ rep(0,paths.length); }catch(e){}
+  /* The self-hosted copy commits one file at a time whatever we do, but it groups together
+     everything handed to it at once — so asking for all the pieces up front turns scores
+     of commits into a couple of dozen. The hosted copy limits how many saves it will take
+     at once, so there we keep a handful in flight instead. */
+  const lim=window.__mtRelay?paths.length:6;
+  let bad=null, next=0;
+  const one=async(path)=>{
+    const ref=DB.doc(path);
+    let cur={};
+    try{ const s=await ref.get(); if(s.exists) cur=JSON.parse(JSON.stringify(s.data()||{})); }catch(e){}
+    const items=Object.assign({},cur.items||{},groupsMap.get(path));
+    const body={items:items,updated:new Date().toISOString()};
+    const seg=path.split("/");
+    if(seg[0]==="meetings"){ const gy=seg[1].split("__"); body.gk=gy[0]; body.year=gy[1]; }
+    await ref.set(body);
+    DBC.set(path,body);
+    done++;
+    if(rep) try{ rep(done,paths.length); }catch(e){}
+  };
+  const worker=async()=>{
+    while(next<paths.length&&!bad){
+      const path=paths[next++];
+      try{ await one(path); }catch(e){ bad=bad||e; }
     }
-    return true;
-  }catch(e){ toast(dbErr(e),true); return false; }
+  };
+  await Promise.all(Array.from({length:Math.max(1,Math.min(lim,paths.length))},worker));
+  if(bad){ toast(dbErr(bad),true); return false; }
+  return true;
 }
 async function saveDoc(kind,id,data){
   const path=bucketOf(kind,id,data), m=new Map();
@@ -5307,7 +5373,9 @@ function renderIssues(root){
               setTimeout(()=>{ if(!kb.isConnected) return; armed=false;
                 kb.textContent="Keep This One"; kb.classList.remove("danger"); },7000); return; }
             kb.disabled=true; kb.textContent="Folding\u2026";
-            const ok2=await mergePeople(other.k,who.k,land());
+            const ok2=await withProgress((d2,t2)=>{
+              kb.textContent=(t2&&d2<t2)?("Folding\u2026 "+n(d2)+" of "+n(t2)):"Finishing\u2026";
+            },()=>mergePeople(other.k,who.k,land()));
             if(!ok2){ kb.disabled=false; kb.textContent="Keep This One"; kb.classList.remove("danger"); }
           });
           c.appendChild(kb);
