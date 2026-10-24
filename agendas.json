@@ -13,8 +13,10 @@
       ["In Progress", "Electronic Note Vault Definition", "Reviewing a proposed change to the Electronic Note Vault definition."],
       ["In Progress", "SMART Doc® iGuide V1.02", "Working through open discussion items, including eNotes with trusts, signature validation and dollar amounts."],
       ["New", "15/15 ARM and MISMO Version ID", "New discussion items on 15/15 ARM mapping and the MISMO Version ID."]]},
-    "tri-party-enote-bailee": {"date": "", "items": [
-      ["In Progress", "Industry Template Master Bailee Agreement", "A consensus-based template that aligns lenders, warehouse lenders and investors on a core set of terms."]]},
+    "tri-party-enote-bailee": {"date": "2026-10-22", "items": [
+      ["In Progress", "Draft Master Control Agreement Standard", "Gathering ideas and drafting the standard, starting from the major negotiated terms summary."],
+      ["Open", "Agreement Drafting Questions", "Working through open questions, such as making the agreement work no matter which party funds first."],
+      ["Open", "Leadership and Sponsor", "Chair, vice chair and education representative roles are open, and MISMO is seeking a workgroup sponsor."]]},
     "verifiable-smart-doc": {"date": "", "items": [
       ["In Progress", "Mapping Specification and Samples", "Working with industry participants, government agencies and other stakeholders to analyze, map and prepare Verifiable Profile samples of the Security Instrument, Loan Modification and Power of Attorney."],
       ["Open", "New Use Cases", "Always looking for further use cases for Verifiable Profile specifications and samples."],
