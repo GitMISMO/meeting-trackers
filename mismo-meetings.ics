@@ -325,19 +325,6 @@ LOCATION:https://mba-org.zoom.us/j/86087635705
 URL:https://mba-org.zoom.us/j/86087635705
 END:VEVENT
 BEGIN:VEVENT
-UID:remote-online-notarization-dwg@mismo.org
-DTSTAMP:20261024T000000Z
-DTSTART;TZID=America/New_York:20261027T130000
-DTEND;TZID=America/New_York:20261027T140000
-RRULE:FREQ=MONTHLY;BYDAY=2TU,4TU
-SUMMARY:Remote Online Notarization DWG
-DESCRIPTION:eMortgage · 2nd & 4th Tuesday\n\nJoin: https://mba-org.zoom.u
- s/j/83944523098\n\nOpen to anyone who would like to participate. Maintai
- ned and updated by MISMO.
-LOCATION:https://mba-org.zoom.us/j/83944523098
-URL:https://mba-org.zoom.us/j/83944523098
-END:VEVENT
-BEGIN:VEVENT
 UID:reverse-mortgage-dwg@mismo.org
 DTSTAMP:20261024T000000Z
 DTSTART;TZID=America/New_York:20261105T130000
