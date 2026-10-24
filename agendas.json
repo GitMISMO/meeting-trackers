@@ -1,0 +1,140 @@
+{
+  "note": "What each MISMO workgroup is working on, from its latest posted meeting agenda. Shown in the What We Are Working On Now boxes on the workgroup pages. Refreshed monthly.",
+  "updated": "2026-10-24",
+  "groups": {
+    "digital-interoperability": {"date": "2026-10-08", "items": [
+      ["In Progress", "Use Case Matrix", "Reviewing the digital interoperability use case matrix."],
+      ["In Progress", "Signature Validation", "Working through signature validation for digital documents."]]},
+    "remote-online-notarization": {"date": "", "items": [
+      ["In Progress", "RON Standard V2", "Clarifying RON Standard V1 and investigating the updates that would make a V2."],
+      ["In Progress", "Credential Analysis", "Updated guidelines on credential analysis and on system requirements for electronic records and signatures."],
+      ["Open", "eJournal Storage", "Changes that would allow modifications to the notarial certificate and better storage of an eJournal."]]},
+    "emortgage": {"date": "2026-10-01", "items": [
+      ["In Progress", "Electronic Note Vault Definition", "Reviewing a proposed change to the Electronic Note Vault definition."],
+      ["In Progress", "SMART Doc® iGuide V1.02", "Working through open discussion items, including eNotes with trusts, signature validation and dollar amounts."],
+      ["New", "15/15 ARM and MISMO Version ID", "New discussion items on 15/15 ARM mapping and the MISMO Version ID."]]},
+    "tri-party-enote-bailee": {"date": "", "items": [
+      ["In Progress", "Industry Template Master Bailee Agreement", "A consensus-based template that aligns lenders, warehouse lenders and investors on a core set of terms."]]},
+    "verifiable-smart-doc": {"date": "", "items": [
+      ["In Progress", "Mapping Specification and Samples", "Working with industry participants, government agencies and other stakeholders to analyze, map and prepare Verifiable Profile samples of the Security Instrument, Loan Modification and Power of Attorney."],
+      ["Open", "New Use Cases", "Always looking for further use cases for Verifiable Profile specifications and samples."],
+      ["Published", "SMART Doc V3 Verifiable Profile", "The specification that lets document data travel with the PDF and be verified against the image."]]},
+    "commercial-digital-notes": {"date": "2026-10-08", "items": [
+      ["Under Review", "CORE Digital Notes FAQ", "Reviewing the draft FAQ for Commercial and Other Real Estate (CORE) digital notes."],
+      ["In Progress", "Commercial Note Glossary", "Developing a standardized glossary of common commercial note and UCC legal terms and definitions."],
+      ["In Progress", "Process Requirements", "Working out the requirements and process changes needed before eNotes can work in commercial origination."]]},
+    "eheloc": {"date": "", "items": [
+      ["In Progress", "eHELOC Dataset", "Building the dataset for an electronic Home Equity Line of Credit agreement."],
+      ["In Progress", "SMART Doc V3 Specification", "A SMART Doc V3 specification for the HELOC agreement."],
+      ["Open", "Transferability", "Opening a path where this asset class could be sold or transferred between parties."]]},
+    "mortgage-compliance-dataset": {"date": "2026-10-15", "items": [
+      ["Up Next", "Next Version of the MCD", "Discussing scope for the next version of the Mortgage Compliance Dataset."],
+      ["In Progress", "MCD Response File", "Update from the MCD Response File subgroup."],
+      ["In Progress", "Implementations and Q&A", "Identifying implementation status and documenting MCD questions and answers."]]},
+    "mortgage-insurance": {"date": "2026-10-19", "items": [
+      ["In Progress", "Estimated JSON Rate Quote", "Status update on the Estimated JSON Rate Quote."],
+      ["In Progress", "Details JSON Rate Quote", "Progress update on the Details JSON Rate Quote."],
+      ["Up Next", "Prioritization and Research", "Reviewing the brainstorming list for prioritization and research volunteers."]]},
+    "property-valuation-services": {"date": "2026-10-23", "items": [
+      ["Working Session", "PaVS Procurement Dataset White Paper", "Working session on the white paper for the PaVS Procurement Dataset Specification."],
+      ["In Progress", "Completion Dates for Current Work", "Reviewing estimated completion dates for work in progress."],
+      ["Ongoing", "Workgroup Updates", "Updates from the IM, AWG and AVM DWG representatives."]]},
+    "servicing": {"date": "2026-10-05", "items": [
+      ["In Progress", "GSE Reference Model Changes", "Fannie Mae and Freddie Mac changes, including data points to support the Fannie Mae Cash Position future state."],
+      ["In Progress", "Digital Identity Matrix", "Working with the TIE CoP on the Digital Identity Matrix."],
+      ["Under Review", "Reference Model v3.6.4 Build Package", "The v3.6.4 build package is ready for workgroup review."]]},
+    "artificial-intelligence": {"date": "2026-10-26", "items": [
+      ["Up Next", "2027 Roadmap Planning", "Planning the 2027 roadmap, including agent communication standards and a book and article club."],
+      ["Ongoing", "FRAME and Regulatory Updates", "Updates from MBA Annual and MBA Tech on FRAME, plus the MBA regulatory update."],
+      ["Working Session", "Use Case Deep Dive", "A deep dive into an AI use case, along with a glossary update."]]},
+    "business-glossary": {"date": "2026-10-14", "items": [
+      ["In Progress", "2026.02 Release", "Confirming submissions for the 2026.02 Business Glossary release."],
+      ["New", "Business Glossary Console", "Introducing the new Business Glossary Console."],
+      ["Working Session", "Glossary Backlog", "Working through the Business Glossary backlog."]]},
+    "origination": {"date": "2026-09-16", "items": [
+      ["In Progress", "Loan Estimate Mapping Specification", "Updates to the Loan Estimate mapping specification."],
+      ["Under Review", "Reference Model v3.6.4 Build Package", "The v3.6.4 build package is ready for workgroup review."],
+      ["In Progress", "Business Glossary 2026.02 Release", "Preparing submissions for the 2026.02 Business Glossary release."]]},
+    "title-closing": {"date": "2026-09-14", "items": [
+      ["Discovery", "SMART Doc for Title Commitment", "New discovery effort on a SMART Doc for the title commitment."],
+      ["Discovery", "Transactional Closing Instructions", "New discovery effort to revamp transactional closing instructions."],
+      ["In Progress", "Property Fraud and PRIA Collaboration", "Next steps on property fraud work with PRIA."]]},
+    "housing-counseling": {"date": "2026-09-23", "items": [
+      ["In Progress", "Housing Counseling Dataset Adoption", "Reviewing the adoption matrix and planning a webinar."],
+      ["In Progress", "Intake Form Update", "Gathering feedback and updating the intake form."],
+      ["Under Review", "Meeting Cadence", "Discussing how often the group meets."]]},
+    "credit-reporting": {"date": "2026-10-01", "items": [
+      ["In Progress", "New Credit Scoring Models", "FHA implementation of new credit scoring models and finalizing the related work request."],
+      ["Up Next", "Non-Credit \"Tear Offs\" Analysis", "Confirming next steps on the analysis of non-credit-specific items."],
+      ["Working Session", "Undisclosed Credit File Monitoring", "Identifying the data points the UCFM response needs for creditor, liability detail and public record containers."]]},
+    "hero": {"date": "2026-10-06", "items": [
+      ["In Progress", "Insurance Data Standardization", "Standardizing insurance data and reporting."],
+      ["In Progress", "Flood Disclosure Guide Revisions", "Revising the Flood Risk Disclosure Guide."],
+      ["Ongoing", "Emerging Risks", "Tracking emerging risks for housing finance."]]},
+    "api": {"date": "", "items": [
+      ["In Progress", "Design Guidelines", "Guidelines for designing APIs that follow MISMO data standards."],
+      ["In Progress", "Recommended Practices", "Recommended practices for the technical design and implementation of APIs."],
+      ["In Progress", "Tools and Resources", "Other tools and resources that help APIs stay true to MISMO standards."]]},
+    "decision-modeling": {"date": "2026-10-19", "items": [
+      ["In Progress", "Servicing Default Waterfall", "Update on the servicing default waterfall work."],
+      ["Up Next", "Winter Summit Planning", "Planning Summit sessions on the 2027 roadmap, DMN 1.8, a decision table primer and AI and DMN education."],
+      ["New", "State Rules on Automated Decisions", "Looking at Colorado and New Jersey laws that address automated decision making."]]},
+    "business-process-model": {"date": "2026-10-16", "items": [
+      ["Working Session", "2026.02 Life of Loan Release", "Working session on the 2026.02 Life of Loan release."],
+      ["In Progress", "BPM Engineering", "Update on BPM engineering work."],
+      ["Ongoing", "Workgroup Collaboration", "Coordinating with Title and Closing, and with PaVS on the Common Confidence Score testing narrative."]]},
+    "tie": {"date": "2026-10-21", "items": [
+      ["In Progress", "Mortgage Stack Visualization", "Adding systems, participants and services to the mortgage technology stack visual, with the next review on November 18."],
+      ["In Progress", "Digital Identity Matrix", "Continuing the Digital Identity Matrix and asking other communities for input."],
+      ["Ongoing", "Emerging Risks", "Tracking AI, quantum computing and disaster-prediction topics."]]},
+    "secondary": {"date": "2026-10-20", "items": [
+      ["In Progress", "Commitment Dataset Mapping Review", "Answering mapping questions in each meeting; the specification is published after each meeting for offline review."],
+      ["In Progress", "Commitment Dataset Use Cases", "Reviewing the use cases drafted at the Spring Summit with members who were not there."],
+      ["In Progress", "Adoption Outreach", "Working with Marketing on an outreach message and LinkedIn meeting reminders."]]},
+    "data-governance": {"date": "2026-10-21", "items": [
+      ["In Progress", "DG&M Framework Update", "Updating the Data Governance and Management framework, with updated artifacts reviewed on November 18 and publication planned for early 2027."],
+      ["Up Next", "Winter Summit Planning", "Reviewing the updated framework at the Summit, including the role of AI and how it ties to FRAME."],
+      ["New", "FRAME Analysis", "Looking at the group’s role with FRAME, which may lead to a general guidelines cheat sheet."]]},
+    "architecture": {"date": "2026-10-22", "items": [
+      ["Under Review", "ALTA Settlement Statement Dataset Revisions", "Review and decision on work request WR2026_11."],
+      ["Under Review", "Title and Closing Order Reference Model Change", "Review and decision on work request WR2025_22."],
+      ["In Progress", "MEG 45 Care and Feeding", "Finalizing the MEG 45 Care and Feeding work request."]]},
+    "avm": {"date": "2026-10-26", "items": [
+      ["Working Session", "AVM Fairness Testing Guidance Document", "Working session on the AVM Fairness Testing guidance document."],
+      ["In Progress", "Common Confidence Score Testing", "Finalizing the Common Confidence Score testing section."]]},
+    "commercial": {"date": "", "items": [
+      ["In Progress", "Adoption Support", "Helping firms put the published MISMO commercial standards into practice."],
+      ["In Progress", "Recent Work Products", "Ongoing support for the Green Utility Dataset, Financial Operating Statements, and Appraisal Phases 1 and 2."],
+      ["Open", "Education and Outreach", "Industry education on where standards help commercial and multifamily real estate."]]},
+    "loan-application-data-exchange": {"date": "2026-09-22", "items": [
+      ["In Progress", "USDA Changes", "Discussing additional USDA changes."],
+      ["In Progress", "Fannie Mae DU Specification", "Reviewing the Fannie Mae DU specification."],
+      ["Under Review", "Reference Model v3.6.4 Build Package", "The v3.6.4 build package is ready for workgroup review."]]},
+    "mi-claim-submission": {"date": "2026-10-20", "items": [
+      ["Working Session", "JSON MI Claim API iGuide", "Working sessions on the MISMO 3.6.0 JSON MI Claim API Implementation Guide."],
+      ["In Progress", "Freddie Mac Enumeration Feedback", "Reviewing Freddie Mac feedback on enumerations and missing X12 sort IDs."],
+      ["In Progress", "Schema Validation and Sample Files", "Addressing JSON and xPath errors, schema validation questions and sample JSON files."]]},
+    "servicing-transfers": {"date": "2026-10-14", "items": [
+      ["In Progress", "Financial Transactions and Investor Reporting", "Working on financial transactions and investor reporting for servicing transfers."],
+      ["Published", "Servicing Transfer Catalog", "A validated set of instructions and best practices for servicers planning and executing a transfer."],
+      ["Open", "Industry Participation", "More than 100 members, with the GSEs, advocacy groups, the CFPB and FHFA all engaged."]]},
+    "title-closing-docs-to-data": {"date": "", "items": [
+      ["In Progress", "ALTA Settlement Statement", "Creating the dataset for the ALTA Settlement Statement."],
+      ["In Progress", "Title Policy", "Creating the dataset for the Title Policy."],
+      ["Published", "Four Datasets Delivered", "Title Commitment, Endorsements, Fee Sheet and Closing Protection Letter are published and in use."]]},
+    "title-pricing-api": {"date": "", "items": [
+      ["In Progress", "Request and Response Fields", "Identifying the fields an API request and response need, including conditionality requirements and available enumerations."],
+      ["In Progress", "Fee Coverage", "Working through closing and escrow fees, commitment fees, endorsements, policy premium, closing protection letters, and recording fees and taxes."],
+      ["Open", "Implementer Input", "Open to title providers and vendors who will build against the specification."]]},
+    "va-docs-to-data": {"date": "", "items": [
+      ["In Progress", "Phase I: Loan Disbursement", "Dataset specification and implementation guidance for VA Form 26-1820."],
+      ["Next", "Phase II: Eligibility", "Updating Form 26-1880 and creating a specification for Form 26-1817."],
+      ["Next", "Phase III: Reasonable Value", "A dataset specification and implementation guidance for VA Form 26-1805."]]},
+    "information-management": {"date": "2026-10-26", "items": [
+      ["Under Review", "Servicing Reference Model Changes", "Review and decision on the re-submitted work request WR2025_13."],
+      ["Ongoing", "IM Queue", "Reviewing the upcoming Information Management queue."]]},
+    "reverse-mortgage": {"date": "2026-10-15", "items": [
+      ["Working Session", "Reverse Secondary Marketing Analysis", "Continued working sessions on the secondary marketing data analysis."],
+      ["Up Next", "MISMO Winter Summit", "Planning the group's Winter Summit session."]]}
+  }
+}
