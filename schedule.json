@@ -152,7 +152,10 @@
       "day": "Tuesday",
       "cadence": "4th Tuesday",
       "time": "1–2pm ET",
-      "join": "https://mba-org.zoom.us/j/88023232957"
+      "join": "https://mba-org.zoom.us/j/88023232957",
+      "cancelled": [
+        "2026-10-27"
+      ]
     },
     {
       "name": "MI Claim Submission DWG",
