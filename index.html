@@ -53,7 +53,7 @@ img{max-width:100%}
   var MAX_FILE = 940000;        /* the relay takes at most 1,000,000 bytes a save */
   /* every collection but meetings is a handful of bucket documents, so each collection
      sits in one file; meetings grow without end, so each group-year gets its own */
-  var GROUPED = ['people', 'companies', 'groups', 'summits', 'aliases', 'sched', 'notdup'];
+  var GROUPED = ['people', 'companies', 'groups', 'summits', 'aliases', 'sched', 'notdup', 'voters'];
   var BASELINE = 'baseline';    /* the imported history, kept out of the public page */
 
   /* ---------- browser storage: every tool shares this web address ---------- */
@@ -1169,6 +1169,57 @@ body.paneon .pane-scrim{display:block}
 .rp.newp{background:var(--warn-soft)}
 @media(max-width:820px){.rp{grid-template-columns:20px minmax(0,1fr) auto;row-gap:3px;padding:8px 12px}.rp .pc{grid-column:2}.rp .pk{display:none}}
 
+/* voting representatives */
+.vreps{border:1px solid var(--border);border-radius:8px;overflow:hidden;background:var(--surface)}
+.vrhead,.vrow{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1.2fr) minmax(0,1.1fr) auto;
+  gap:10px;align-items:center;padding:7px 12px}
+.vrhead{font-size:11px;text-transform:uppercase;letter-spacing:.07em;color:var(--ink-3);
+  font-weight:600;background:var(--surface-2);border-bottom:1px solid var(--border)}
+.vrow{border-bottom:1px solid var(--rule);font-size:13px}
+.vrow:last-child{border-bottom:0}
+.vrow .vco{color:var(--ink-2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.vrow .vcop{border:1px solid var(--border);border-radius:5px;padding:4px 7px;font:inherit;
+  font-size:12.5px;background:var(--surface);color:var(--ink);width:100%}
+.vrow .vcop:disabled{background:var(--surface-2);color:var(--ink-2)}
+.vquor{display:flex;align-items:baseline;gap:9px;flex-wrap:wrap;margin:13px 0 4px}
+.vquor b{font-family:var(--mono);font-size:19px;font-weight:600}
+.vquor span{font-size:12.5px;color:var(--ink-2)}
+.vpick{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:9px;font-size:13px}
+.vpick span{color:var(--ink-2)}
+@media(max-width:700px){.vrhead{display:none}
+  .vrow{grid-template-columns:minmax(0,1fr) auto;row-gap:5px;padding:10px 12px}
+  .vrow .vco{text-align:right}
+  .vrow .vcop{grid-column:1/-1}
+  .vrow .rowx{grid-column:1/-1;justify-self:start}}
+/* the voting seat a person holds, on the roster and in the room */
+.vtag{display:inline-block;border-radius:4px;padding:1px 6px;font-size:10.5px;font-weight:600;
+  letter-spacing:.02em;white-space:nowrap;background:color-mix(in srgb,var(--sky) 22%,transparent);
+  color:var(--navy-mid);border:1px solid color-mix(in srgb,var(--sky) 42%,transparent)}
+/* plain sky on the tinted chip comes to 4.26:1 against a ticked row — under the bar — so
+   dark mode gets a paler text and a lighter tint */
+:root[data-theme="dark"] .vtag{color:#c9e6f7;
+  background:color-mix(in srgb,var(--sky) 16%,transparent);
+  border-color:color-mix(in srgb,var(--sky) 34%,transparent)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .vtag{color:#c9e6f7;
+  background:color-mix(in srgb,var(--sky) 16%,transparent);
+  border-color:color-mix(in srgb,var(--sky) 34%,transparent)}}
+.rp .vtag{margin-left:0}
+.rosterbar .qz{display:flex;flex-direction:column;gap:2px;padding-left:16px;
+  border-left:1px solid var(--border)}
+.rosterbar .qz .qn{font-family:var(--mono);font-size:20px;font-weight:600}
+.rosterbar .qz .qs{font-size:11px;font-weight:600;letter-spacing:.03em}
+.rosterbar .qz .qs.met{color:var(--good)}
+.rosterbar .qz .qs.no{color:var(--ink-3)}
+/* stacked on a phone the rule reads as a stray line down the left, so it goes on top */
+@media(max-width:700px){.rosterbar .qz{padding:9px 0 0;border-left:0;border-top:1px solid var(--border);
+  width:100%}}
+.qbanner{display:flex;align-items:center;gap:10px;flex-wrap:wrap;border:1px solid var(--border);
+  border-left:3px solid var(--border-strong);border-radius:8px;padding:9px 13px;margin:0 0 12px;
+  background:var(--surface);font-size:13px}
+.qbanner.met{border-left-color:var(--good)}
+.qbanner b{font-family:var(--mono);font-size:15px}
+.qbanner .qw{color:var(--ink-2)}
+
 /* add person */
 .addp{position:relative;margin:0 0 12px;background:var(--surface);border:1px dashed var(--border-strong);border-radius:8px;padding:10px 14px 12px}
 .addp .sechead{margin-bottom:7px}
@@ -1595,12 +1646,54 @@ const pairKey=(a,b)=>[a,b].sort().join("|");
    SETASIDE keeps them and their attendance but stops the tool nagging about them.
    GONE is the harder case: the record is removed from every meeting it appears in. */
 const SETASIDE=new Map(), GONE=new Map(), MERGEDTO=new Map(), BASEPP=new Map();
+/* Voting representatives. A workgroup like Information Management or the Architecture
+   Workgroup has one named rep per Community of Practice, and business is only done when
+   enough of them are in the room. Each workgroup keeps its own list; everything below is
+   general, and the two starting lists further down are only a shortcut for setting them up. */
+const VOTERS=new Map();   /* gk -> {reps:[{k,cop}], map:Map(k->cop), need:0, by:"", at:""} */
+function mkVoters(reps,need,by,at){
+  const list=(reps||[]).filter(r=>r&&r.k).map(r=>({k:r.k,cop:r.cop||""}));
+  const mp=new Map(); list.forEach(r=>mp.set(r.k,r.cop));
+  return {reps:list,map:mp,need:Number(need)||0,by:by||"",at:at||""};
+}
+function votersOf(gk){ const v=VOTERS.get(gk); return (v&&v.reps.length)?v:null; }
+function isVoter(gk,pk){ const v=VOTERS.get(gk); return !!(v&&v.map.has(pk)); }
+function copOf(gk,pk){ const v=VOTERS.get(gk); return (v&&v.map.get(pk))||""; }
+/* more than half of the named reps, unless a number has been set for this workgroup */
+function quorumNeed(gk){ const v=votersOf(gk); if(!v) return 0;
+  return (v.need>0)?Math.min(v.need,v.reps.length):(Math.floor(v.reps.length/2)+1); }
+function quorumOf(gk,present){
+  const v=votersOf(gk); if(!v) return null;
+  const has=k=>present&&(present.has?present.has(k):(present.indexOf?present.indexOf(k)>=0:false));
+  const here=v.reps.filter(r=>has(r.k)).length, need=quorumNeed(gk);
+  return {here:here,total:v.reps.length,need:need,met:here>=need,
+    short:Math.max(0,need-here),custom:v.need>0};
+}
+/* The lists Jonna gave for the two workgroups that work this way, used once to set them
+   up. Sandra Griebe-Martz is Sandra Griebe in the trackers, so her record is named too. */
+const VOTESEED={
+  architectureworkgroup:[["Todd White","API CoP"],["Wayne Spencer","Credit Reporting CoP"],
+    ["Mark Friend","Secondary CoP"],["Amy Ketterling","MI CoP"],["Chris Williams","PaVS CoP"],
+    ["Eric Litwin","AI CoP"],["Bryan Bedard","Title and Closing CoP"],
+    ["Simon Ringuette","Decision Modeling CoP"],["Michael Zannetti","Origination CoP"]],
+  informationmanagement:[["Ron Carlson","Credit Reporting CoP"],["Karen Baldwin","Decision Modeling CoP"],
+    ["Christopher Vos","Title & Closing CoP"],["Kenneth Chenault","Business Process Model CoP"],
+    ["Joseph Fernandes","Secondary CoP"],["Sherry Gajeski","Mortgage Insurance CoP"],
+    ["Angela Sella","Artificial Intelligence CoP"],["Jay Arneja","Servicing CoP"],
+    ["Tim Cooper","eMortgage CoP"],["Michael McCarthy","API CoP"],
+    ["Justin Greer","PaVS CoP"],["Kristie Flores","Business Glossary CoP"],
+    ["Sandeep Gupta","Digital Interoperability CoP"],
+    ["Sandra Griebe-Martz","Origination CoP","Sandra Griebe"]]
+};
 /* ---- overlay rows the facilitators have added since ---- */
 function applyDbDocs(docs){
   (docs.sched||[]).forEach(d=>{ const k=d.id; if(!k) return;
     if(d.removed){ delete M.sched[k]; return; }
     M.sched[k]=Object.assign({},M.sched[k]||{},d); });
   (docs.summits||[]).forEach(d=>{ const k=d.id||nk(d.name); M.summits.set(k,{k:k,name:d.name,start:d.start||"",end:d.end||""}); });
+  VOTERS.clear();
+  (docs.voters||[]).forEach(d=>{ const k=d.id; if(!k) return;
+    VOTERS.set(k,mkVoters(d.reps||[],d.need,d.by,d.at)); });
   (docs.companies||[]).forEach(d=>{ const k=d.id||nk(d.name);
     M.co.set(k,{k:k,name:d.name,cat:d.cat||"Unknown"}); });
   /* pairs somebody has already looked at and said are two different people */
@@ -2321,10 +2414,16 @@ function mtgList(idxs,showGroup){
 }
 /* ---- a Word-ready attendance table on the clipboard ---- */
 function esc2(x){ return String(x==null?"":x).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
-function attendanceTable(pks){
+function attendanceTable(pks,gk){
+  /* a workgroup that votes gets a third column saying which Community of Practice each
+     representative speaks for, and a line above the table recording the quorum */
+  const q=gk?quorumOf(gk,pks):null;
+  const cols=q?["Name","Company","Represents"]:["Name","Company"];
   const rows=pks.map(pk=>M.pp.get(pk)).filter(Boolean)
     .sort((a,b)=>a.name.localeCompare(b.name))
-    .map(p=>[p.name, compName(p.k)==="\u2014"?"":compName(p.k)]);
+    .map(p=>{ const r=[p.name, compName(p.k)==="\u2014"?"":compName(p.k)];
+      if(q) r.push(isVoter(gk,p.k)?(copOf(gk,p.k)||"Voting representative"):"");
+      return r; });
   /* Word turns each cell into a paragraph and gives it the document's space-after,
      which is where the gaps come from — so each cell carries its own zero-margin paragraph. */
   const F="font-family:Aptos,'Aptos Display',Calibri,Arial,sans-serif;font-size:11.0pt";
@@ -2334,12 +2433,16 @@ function attendanceTable(pks){
   const HEAD=CELL+";background:#F2F2F2";
   const td=(v,h)=>"<"+(h?"th":"td")+' style="'+(h?HEAD:CELL)+'"><p style="'+(h?PH:P)+'">'+
     esc2(v)+"</p></"+(h?"th":"td")+">";
-  const html='<table cellspacing="0" cellpadding="0" style="border-collapse:collapse;'+F+'">'+
-    "<thead><tr>"+td("Name",1)+td("Company",1)+"</tr></thead><tbody>"+
-    rows.map(r=>"<tr>"+td(r[0])+td(r[1])+"</tr>").join("")+
+  const qline=q?("Voting representatives present: "+n(q.here)+" of "+n(q.total)+
+    " \u2014 quorum "+(q.met?"met":"not met")+" ("+n(q.need)+" needed)"):"";
+  const html=(q?('<p style="'+PH+'">'+esc2(qline)+"</p>"):"")+
+    '<table cellspacing="0" cellpadding="0" style="border-collapse:collapse;'+F+'">'+
+    "<thead><tr>"+cols.map(c=>td(c,1)).join("")+"</tr></thead><tbody>"+
+    rows.map(r=>"<tr>"+r.map(v=>td(v)).join("")+"</tr>").join("")+
     "</tbody></table>";
-  const text=["Name\tCompany"].concat(rows.map(r=>r[0]+"\t"+r[1])).join("\n");
-  return {html:html,text:text,rows:rows};
+  const text=(q?(qline+"\n\n"):"")+
+    [cols.join("\t")].concat(rows.map(r=>r.join("\t"))).join("\n");
+  return {html:html,text:text,rows:rows,quorum:q};
 }
 async function putOnClipboard(html,text){
   try{
@@ -2373,15 +2476,18 @@ function showFallback(host,html){
   try{ const r=document.createRange(); r.selectNodeContents(w);
     const sel=window.getSelection(); sel.removeAllRanges(); sel.addRange(r); }catch(e){}
 }
-function copyBtn(getPks,host,label){
+function copyBtn(getPks,host,label,gk){
   const b=el("button","btn ghost",label||"Copy for the Minutes"); b.type="button";
   b.title="Copies a Name and Company table you can paste straight into Word";
   b.addEventListener("click",async()=>{
     const pks=getPks();
     if(!pks.length){ toast("Nobody is marked present yet.",true); return; }
-    const t=attendanceTable(pks);
+    const t=attendanceTable(pks,(typeof gk==="function")?gk():gk);
     const okc=await putOnClipboard(t.html,t.text);
-    if(okc){ b.textContent="Copied \u2014 Paste Into Word"; toast(n(t.rows.length)+" names copied as a table.");
+    if(okc){ b.textContent="Copied \u2014 Paste Into Word";
+      toast(n(t.rows.length)+" names copied as a table."+
+        (t.quorum?(" "+n(t.quorum.here)+" of "+n(t.quorum.total)+" voting reps \u2014 quorum "+
+          (t.quorum.met?"met":"not met")+"."):""));
       setTimeout(()=>{ b.textContent=label||"Copy for the Minutes"; },3500); }
     else showFallback(host||b.parentNode,t.html);
   });
@@ -2408,6 +2514,19 @@ function openMeeting(gk,d){
       ["First Recorded By",(m.createdBy&&m.createdBy!==m.by)?m.createdBy:""],
       ["Summit",sm],["Note",m.label||""]
     ]));
+    /* what the minutes will say about quorum for this meeting */
+    if(!isCancelled(m)){
+      const q=quorumOf(gk,m.p);
+      if(q){
+        const qb=el("div","qbanner"+(q.met?" met":""));
+        qb.appendChild(el("b",null,n(q.here)+" of "+n(q.total)));
+        qb.appendChild(el("span",null,"voting representatives were here."));
+        qb.appendChild(el("span","qw",q.met
+          ? ("Quorum is "+n(q.need)+", so it was met.")
+          : ("Quorum is "+n(q.need)+", so it was not met.")));
+        box.appendChild(qb);
+      }
+    }
     if(CANWRITE){
       const row=el("div","btnrow"); row.style.marginTop="2px";
       const b=el("button","btn",isCancelled(m)?"Open It to Reopen or Edit":"Open This Meeting to Edit"); b.type="button";
@@ -2440,14 +2559,18 @@ function openMeeting(gk,d){
     if(!isCancelled(m)){
       const cw=el("div"); cw.style.cssText="margin:2px 0 14px";
       const crow=el("div","btnrow"); crow.style.marginTop="0";
-      crow.appendChild(copyBtn(()=>[...m.p],cw));
+      crow.appendChild(copyBtn(()=>[...m.p],cw,null,gk));
       cw.appendChild(crow);
-      cw.appendChild(el("div","hint","Copies a Name and Company table for your meeting minutes. It pastes into Word as a real table you can restyle."));
+      cw.appendChild(el("div","hint",votersOf(gk)
+        ? "Copies a Name, Company and Represents table for your minutes, with the quorum count above it. It pastes into Word as a real table you can restyle."
+        : "Copies a Name and Company table for your meeting minutes. It pastes into Word as a real table you can restyle."));
       box.appendChild(cw);
     }
     if(!isCancelled(m)) box.appendChild(sect("Who Was There",m.p.size,()=>{
       const w=el("div","tblwrap"), t=el("table","tbl"), th=el("thead"), tr=el("tr");
-      ["Name","Company","Category"].forEach(x=>tr.appendChild(el("th",null,x)));
+      const vg=votersOf(gk);
+      (vg?["Name","Company","Category","Represents"]:["Name","Company","Category"])
+        .forEach(x=>tr.appendChild(el("th",null,x)));
       th.appendChild(tr); t.appendChild(th);
       if(CANWRITE) tr.appendChild(el("th",null,""));
       const tb=el("tbody");
@@ -2460,6 +2583,9 @@ function openMeeting(gk,d){
           cod.addEventListener("click",()=>openPerson(pp.k)); r.appendChild(cod);
           const cad=el("td",null,catAt(pp.k,m.d));
           cad.addEventListener("click",()=>openPerson(pp.k)); r.appendChild(cad);
+          if(vg){ const vd=el("td");
+            if(isVoter(gk,pp.k)) vd.appendChild(el("span","vtag",copOf(gk,pp.k)||"Voting Rep"));
+            vd.addEventListener("click",()=>openPerson(pp.k)); r.appendChild(vd); }
           /* put the wrong person in a meeting? take them straight back out from here */
           if(CANWRITE){
             const xd=el("td"); xd.style.textAlign="right";
@@ -2485,6 +2611,164 @@ function openMeeting(gk,d){
     }));
     return box;
   });
+}
+
+/* ---- voting representatives, and the quorum they make ---- */
+function pickPerson(onPick,skip){
+  const wrap=el("div"); wrap.style.position="relative";
+  const inp=el("input"); inp.type="text"; inp.autocomplete="off";
+  inp.placeholder="Start typing a name";
+  inp.style.cssText="width:100%;border:1px solid var(--border);border-radius:6px;padding:7px 9px;font-size:13px;background:var(--surface);color:var(--ink)";
+  const list=el("div","ac"); list.hidden=true; list.style.top="100%";
+  function close(){ list.hidden=true; list.textContent=""; }
+  function run(){
+    const q=nk(inp.value); list.textContent="";
+    if(q.length<2){ close(); return; }
+    const out=(skip&&skip())||[];
+    [...M.pp.values()].filter(p=>out.indexOf(p.k)<0&&!SETASIDE.has(p.k)&&
+        (nk(p.name).indexOf(q)>=0||(p.alt||[]).some(a=>a.indexOf(q)>=0)))
+      .sort((a,b)=>nk(a.name).indexOf(q)-nk(b.name).indexOf(q)||a.name.localeCompare(b.name))
+      .slice(0,20).forEach(p=>{
+        const b=el("button"); b.type="button";
+        b.appendChild(el("b",null,p.name));
+        b.appendChild(el("i",null,compName(p.k)));
+        b.addEventListener("click",()=>{ inp.value=""; close(); onPick(p); });
+        list.appendChild(b); });
+    list.hidden=!list.children.length;
+    floatAC(list,inp); trackAC(list,inp);
+  }
+  let t=null;
+  inp.addEventListener("input",()=>{ clearTimeout(t); t=setTimeout(run,120); });
+  inp.addEventListener("focus",run);
+  document.addEventListener("click",e=>{ if(!wrap.contains(e.target)) close(); });
+  wrap.append(inp,list);
+  return wrap;
+}
+function votersSection(gk,after){
+  const g=M.gr.get(gk)||{name:gk};
+  const v=VOTERS.get(gk);
+  /* edited here, saved in one go — a half-saved list would mean a wrong quorum */
+  let work=(v?v.reps:[]).map(r=>({k:r.k,cop:r.cop||""}));
+  let need=v?v.need:0;
+  const d=el("div");
+  d.appendChild(el("div","hint","Name the one person who votes for each Community of Practice. "+
+    "While attendance is being logged, the tool counts how many of them are in the room and says "+
+    "whether you have quorum, and Copy for the Minutes puts what each one represents next to their name."));
+  const body=el("div"); d.appendChild(body);
+
+  function need0(){ return work.length?(Math.floor(work.length/2)+1):0; }
+  function draw(){
+    body.textContent="";
+    if(!work.length){
+      body.appendChild(el("div","empty","No voting representatives named for "+g.name+" yet."));
+      const seed=VOTESEED[gk];
+      if(seed&&CANWRITE){
+        const sb=el("button","btn","Set Up the Starting List — "+n(seed.length)+" Representatives");
+        sb.type="button";
+        sb.addEventListener("click",()=>{
+          const miss=[];
+          seed.forEach(row=>{
+            const pk=personKeyFor(row[0])||(row[2]?personKeyFor(row[2]):"");
+            if(!pk){ miss.push(row[0]); return; }
+            if(!work.some(w=>w.k===pk)) work.push({k:pk,cop:row[1]});
+          });
+          draw();
+          if(miss.length) toast("No record yet for "+miss.join(", ")+" — add them by hand below.",true);
+          else toast("Filled in. Check it over, then Save the List.");
+        });
+        const r0=el("div","btnrow"); r0.appendChild(sb); body.appendChild(r0);
+        body.appendChild(el("div","hint","Fills in the list you gave, matched to the records already "+
+          "in the trackers. Nothing is saved until you click Save the List."));
+      }
+    } else {
+      const w=el("div","vreps");
+      const h=el("div","vrhead");
+      ["Representative","Company","Represents",""].forEach(x=>h.appendChild(el("span",null,x)));
+      w.appendChild(h);
+      work.forEach((r,i)=>{
+        const p=M.pp.get(r.k);
+        const row=el("div","vrow");
+        const nmb=el("button","linkb",p?p.name:r.k); nmb.type="button";
+        nmb.addEventListener("click",()=>openPerson(r.k));
+        row.appendChild(nmb);
+        row.appendChild(el("span","vco",compName(r.k)));
+        const ci=el("input"); ci.type="text"; ci.value=r.cop; ci.placeholder="e.g. API CoP";
+        ci.className="vcop"; ci.disabled=!CANWRITE;
+        ci.addEventListener("input",()=>{ work[i].cop=ci.value; });
+        row.appendChild(ci);
+        if(CANWRITE){
+          const x=el("button","rowx","Remove"); x.type="button";
+          x.title="Take "+(p?p.name:r.k)+" off the voting list";
+          x.addEventListener("click",()=>{ work.splice(i,1); draw(); });
+          row.appendChild(x);
+        } else row.appendChild(el("span"));
+        w.appendChild(row); });
+      body.appendChild(w);
+    }
+    /* what quorum comes to */
+    const qn=need>0?Math.min(need,work.length):need0();
+    const qb=el("div","vquor");
+    qb.appendChild(el("b",null,work.length?(n(qn)+" of "+n(work.length)):"—"));
+    qb.appendChild(el("span",null,work.length
+      ? (need>0?"representatives needed for quorum (set by hand)":"representatives needed for quorum — more than half")
+      : "name some representatives and the quorum follows"));
+    body.appendChild(qb);
+    if(CANWRITE&&work.length){
+      const qf=el("div","fld"); qf.style.maxWidth="260px";
+      qf.appendChild(el("label",null,"Quorum Needed"));
+      const qi=el("input"); qi.type="number"; qi.min="1"; qi.max=String(work.length);
+      qi.value=need>0?String(Math.min(need,work.length)):"";
+      qi.placeholder="More than half ("+n(need0())+")";
+      qi.addEventListener("input",()=>{ need=Number(qi.value)||0; });
+      qf.appendChild(qi); body.appendChild(qf);
+      body.appendChild(el("div","hint","Leave it empty for more than half. Put a number in only if "+
+        "this workgroup's rules say something else."));
+    }
+    if(CANWRITE){
+      const add=el("div"); add.style.marginTop="14px";
+      add.appendChild(el("div","sechead","Add a Representative"));
+      const grid=el("div","ctrls");
+      const f1=el("div","fld"); f1.appendChild(el("label",null,"Person"));
+      let picked=null;
+      const pf=pickPerson(p=>{ picked=p; cop.focus(); drawPick(); },()=>work.map(x=>x.k));
+      f1.appendChild(pf); grid.appendChild(f1);
+      const f2=el("div","fld"); f2.appendChild(el("label",null,"Represents"));
+      const cop=el("input"); cop.type="text"; cop.placeholder="e.g. API CoP"; f2.appendChild(cop);
+      grid.appendChild(f2);
+      add.appendChild(grid);
+      const pk2=el("div","vpick"); add.appendChild(pk2);
+      function drawPick(){ pk2.textContent="";
+        if(!picked) return;
+        pk2.appendChild(el("b",null,picked.name));
+        pk2.appendChild(el("span",null,compName(picked.k)));
+        const go=el("button","btn ghost","Add to the List"); go.type="button";
+        go.addEventListener("click",()=>{
+          if(!picked) return;
+          work.push({k:picked.k,cop:cop.value.trim()});
+          picked=null; cop.value=""; draw(); });
+        pk2.appendChild(go); }
+      body.appendChild(add);
+      const row=el("div","btnrow");
+      const sv=el("button","btn","Save the List"); sv.type="button";
+      sv.addEventListener("click",async()=>{
+        sv.disabled=true; sv.textContent="Saving…";
+        const okr=await saveVoters(gk,work,need,after);
+        sv.disabled=false; sv.textContent="Save the List";
+        if(okr) toast(work.length
+          ? (n(work.length)+" voting representative"+(work.length===1?"":"s")+" saved for "+g.name+
+             " — quorum is "+n(quorumNeed(gk))+".")
+          : "The voting list for "+g.name+" is now empty.");
+      });
+      row.appendChild(sv);
+      const rs=el("button","btn ghost","Undo My Changes"); rs.type="button";
+      rs.addEventListener("click",()=>{ const v2=VOTERS.get(gk);
+        work=(v2?v2.reps:[]).map(r=>({k:r.k,cop:r.cop||""})); need=v2?v2.need:0; draw(); });
+      row.appendChild(rs);
+      body.appendChild(row);
+    }
+  }
+  draw();
+  return d;
 }
 
 /* ---- group pane ---- */
@@ -2519,6 +2803,11 @@ function openGroup(gk,openSched){
       return barList(arr.map(([c,v],i)=>({label:c,value:v,color:ramp(i,arr.length)})),{labelWidth:"190px"});
     }));
     box.appendChild(sect("Meeting History",idxs.length,()=>mtgList(idxs,false)));
+    {
+      const vv=votersOf(gk);
+      box.appendChild(sect("Voting Representatives",vv?vv.reps.length:null,
+        ()=>votersSection(gk,()=>{ renderAll(true); openGroup(gk); }),false,"grp-voters-"+gk));
+    }
     if(CANWRITE&&!g.archived) box.appendChild(sect(g.hold?"Start This Workgroup Up Again":"Put This Workgroup on Hold",null,()=>{
       const d=el("div");
       d.appendChild(el("div","hint",g.hold
@@ -2841,6 +3130,17 @@ async function setHold(gk,on,after){
   if(after) after();
   toast(g.name+(on?" is on hold \u2014 it will stop asking to be logged until it meets again."
                   :" is meeting again \u2014 it is back on the logging screens."));
+  return true;
+}
+/* Saving the whole list at once — one record per workgroup, so adding, removing and
+   renaming a seat are all the same write and the list can never be half-saved. */
+async function saveVoters(gk,reps,need,after){
+  const list=(reps||[]).filter(r=>r&&r.k).map(r=>({k:r.k,cop:(r.cop||"").trim()}));
+  const now=new Date().toISOString(), me=whoAmI();
+  const okr=await saveDoc("voters",gk,{reps:list,need:Number(need)||0,by:me,at:now});
+  if(!okr) return false;
+  VOTERS.set(gk,mkVoters(list,need,me,now));
+  if(after) after();
   return true;
 }
 async function setArchived(gk,on,after){
@@ -3997,22 +4297,30 @@ function loadRoster(){
   const bar=el("div","rosterbar");
   const nb=el("div"); nb.appendChild(el("div","nl","Marked Present")); const nn=el("div","n","0"); nn.id="lg-n"; nb.appendChild(nn);
   bar.appendChild(nb);
+  /* for a workgroup that votes, the count that actually matters while the room fills up */
+  if(votersOf(LOGGK)){
+    const qz=el("div","qz"); qz.id="lg-quor";
+    qz.appendChild(el("div","nl","Voting Reps Present"));
+    qz.appendChild(el("div","qn","0")); qz.appendChild(el("div","qs",""));
+    bar.appendChild(qz);
+  }
   const sb=el("div","fld"); sb.style.flex="1 1 180px"; sb.style.maxWidth="250px";
   const si=el("input"); si.type="search"; si.placeholder="Filter this list"; si.id="lg-q"; sb.appendChild(si); bar.appendChild(sb);
   /* a facilitator reading down a sign-in sheet wants the list in the same order as the sheet */
   const ob=el("div","fld"); ob.style.flex="0 0 auto";
   const os=el("select"); os.id="lg-sort"; os.setAttribute("aria-label","Order the roster");
   os.style.cssText="border:1px solid var(--border);border-radius:6px;padding:6px 8px;font-size:12.5px;background:var(--surface);color:var(--ink)";
-  [["recent","Most Recent First"],["name","First Name A\u2013Z"],["co","Company A\u2013Z"]]
-    .forEach(([v,t])=>{ const o=el("option",null,t); o.value=v; os.appendChild(o); });
-  os.value=ROSTSORT;
+  const SORTS=[["recent","Most Recent First"],["name","First Name A\u2013Z"],["co","Company A\u2013Z"]];
+  if(votersOf(LOGGK)) SORTS.push(["vote","Voting Reps First"]);
+  SORTS.forEach(([v,t])=>{ const o=el("option",null,t); o.value=v; os.appendChild(o); });
+  os.value=SORTS.some(x=>x[0]===ROSTSORT)?ROSTSORT:"recent";
   os.addEventListener("change",()=>{ ROSTSORT=os.value;
     try{ localStorage.setItem("mt.roster.sort",ROSTSORT); }catch(e){}
     drawRoster(roster,seen,lastd); });
   ob.appendChild(os); bar.appendChild(ob);
   const sp=el("div","sp");
   const clr=el("button","btn ghost","Clear All"); clr.type="button";
-  clr.addEventListener("click",()=>{ LOG.present=new Set(); keepDraft(); drawRoster(roster,seen,lastd); });
+  clr.addEventListener("click",()=>{ LOG.present=new Set(); keepDraft(); drawRoster(roster,seen,lastd); updQuorum(); });
   const sv=el("button","btn","Save Attendance"); sv.type="button"; sv.id="lg-save";
   sv.addEventListener("click",saveMeeting); if(!CANWRITE) sv.disabled=true;
   const cancelled=(ex!=null&&isCancelled(M.mt[ex]));
@@ -4031,7 +4339,7 @@ function loadRoster(){
   if(cancelled){ sv.disabled=true; clr.disabled=true;
     sv.title="This meeting is recorded as cancelled. Reopen it first to log attendance.";
     sp.append(cb2,clr,sv); }
-  else sp.append(copyBtn(()=>[...LOG.present],host),cb2,clr,sv);
+  else sp.append(copyBtn(()=>[...LOG.present],host,null,()=>LOGGK),cb2,clr,sv);
   bar.appendChild(sp);
   host.appendChild(bar);
 
@@ -4050,6 +4358,7 @@ function loadRoster(){
   tools.append(t1,addB,t2,fixB);
   host.appendChild(tools);
 
+  if(votersOf(LOGGK)){ const qb=el("div","qbanner"); qb.id="lg-qban"; host.appendChild(qb); }
   const rl=el("div"); rl.id="lg-roster"; host.appendChild(rl);
   /* a cancelled meeting has no roster to tick — hide the list and the add box
      so nobody spends time marking people who cannot be saved */
@@ -4066,11 +4375,40 @@ function loadRoster(){
 let ROSTSORT=(()=>{ try{ return localStorage.getItem("mt.roster.sort")||"recent"; }catch(e){ return "recent"; } })();
 /* A to Z on a roster means by the name as it is written \u2014 first name first */
 function byFirst(nm){ return String(nm||"").trim().toLowerCase(); }
+/* the two places the quorum count shows while logging: the bar tile and the line above
+   the roster, both redrawn whenever somebody is ticked on or off */
+function updQuorum(){
+  const q=quorumOf(LOGGK,LOG.present);
+  const tile=$("#lg-quor");
+  if(tile&&q){
+    const qn=$(".qn",tile), qs=$(".qs",tile);
+    if(qn) qn.textContent=n(q.here)+" of "+n(q.total);
+    if(qs){ qs.textContent=q.met?"Quorum met":(n(q.short)+" more needed");
+      qs.className="qs "+(q.met?"met":"no"); }
+  }
+  const ban=$("#lg-qban");
+  if(ban&&q){
+    ban.textContent=""; ban.className="qbanner"+(q.met?" met":"");
+    ban.appendChild(el("b",null,n(q.here)+" of "+n(q.total)));
+    ban.appendChild(el("span",null,"voting representatives marked present."));
+    ban.appendChild(el("span","qw",q.met
+      ? ("Quorum is "+n(q.need)+", so you have it.")
+      : ("Quorum is "+n(q.need)+" \u2014 "+n(q.short)+" more to go.")));
+  }
+}
 function drawRoster(roster,seen,lastd){
   const host=$("#lg-roster"); if(!host) return; host.textContent="";
   const q=nk(($("#lg-q")||{}).value||"");
   let list=q?roster.filter(p=>nk(p.name).indexOf(q)>=0||nk(compName(p.k)).indexOf(q)>=0):roster.slice();
-  if(ROSTSORT==="name") list=list.slice().sort((a,b)=>byFirst(a.name).localeCompare(byFirst(b.name)));
+  if(ROSTSORT==="vote"){
+    const cp=p=>copOf(LOGGK,p.k);
+    list=list.slice().sort((a,b)=>{
+      const va=isVoter(LOGGK,a.k), vb=isVoter(LOGGK,b.k);
+      if(va!==vb) return va?-1:1;
+      if(va) return cp(a).localeCompare(cp(b))||byFirst(a.name).localeCompare(byFirst(b.name));
+      return byFirst(a.name).localeCompare(byFirst(b.name)); });
+  }
+  else if(ROSTSORT==="name") list=list.slice().sort((a,b)=>byFirst(a.name).localeCompare(byFirst(b.name)));
   else if(ROSTSORT==="co"){
     /* a blank company is not a company name — those go to the end, not in front of the A's */
     const co=p=>{ const c=M.pp.get(p.k); return (c&&c.ck)?compName(p.k):""; };
@@ -4084,7 +4422,11 @@ function drawRoster(roster,seen,lastd){
     const b=el("button","rp"+(LOG.present.has(p.k)?" on":"")+((seen.get(p.k)||0)===0?" newp":"")); b.type="button";
     const bx=el("span","bx"); bx.innerHTML='<svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7"/></svg>';
     b.appendChild(bx);
-    b.appendChild(el("span","pn",p.name));
+    const pn=el("span","pn",p.name);
+    const cop=copOf(LOGGK,p.k);
+    if(isVoter(LOGGK,p.k)){ pn.appendChild(document.createTextNode(" "));
+      pn.appendChild(el("span","vtag",cop||"Voting Rep")); }
+    b.appendChild(pn);
     b.appendChild(el("span","pc",compName(p.k)));
     b.appendChild(el("span","pk",catOf(p.k)));
     b.appendChild(el("span","pl",(seen.get(p.k)||0)===0?"new":n(seen.get(p.k))+"×"));
@@ -4111,13 +4453,14 @@ function drawRoster(roster,seen,lastd){
     b.addEventListener("click",()=>{ if(!CANWRITE) return;
       if(LOG.present.has(p.k)) LOG.present.delete(p.k); else LOG.present.add(p.k);
       b.classList.toggle("on",LOG.present.has(p.k)); $("#lg-n").textContent=n(LOG.present.size);
-      keepDraft(); });
+      updQuorum(); keepDraft(); });
     box.appendChild(b);
   });
   if(!list.length) box.appendChild(el("div","empty",roster.length?"Nobody matches that filter.":"This group has no roster yet — add the first people below."));
   host.appendChild(box);
   if(list.length>900) host.appendChild(el("div","hint","Showing the first 900. Use the filter to narrow the list."));
   const nn=$("#lg-n"); if(nn) nn.textContent=n(LOG.present.size);
+  updQuorum();
 }
 
 function whoAmI(){ return (USER&&USER.name)||"Someone signed in"; }
@@ -4762,7 +5105,7 @@ async function doImport(P,btn){
    bucket documents: one per group-year for meetings, 36 alphabetical
    buckets for people and companies, one each for groups and summits. */
 const DBC=new Map();           // docPath -> {items:{...}, ...}
-const COLLS=["people","companies","groups","summits","meetings","aliases","sched","notdup"];
+const COLLS=["people","companies","groups","summits","meetings","aliases","sched","notdup","voters"];
 function bucketOf(kind,id,data){
   const a=(String(id||"").charAt(0)||"_").replace(/[^a-z0-9]/,"_");
   if(kind==="people") return "people/b_"+a;
@@ -4771,6 +5114,7 @@ function bucketOf(kind,id,data){
   if(kind==="summits") return "summits/all";
   if(kind==="aliases") return "aliases/all";
   if(kind==="notdup") return "notdup/all";
+  if(kind==="voters") return "voters/all";
   if(kind==="sched") return "sched/all";
   if(kind==="snapshot") return "snapshot/b_"+(String(id||"").length%10);
   if(kind==="meetings"){ const gk=(data&&data.gk)||"x", y=((data&&data.d)||"0000").slice(0,4);
@@ -4887,7 +5231,7 @@ async function saveMany(writes){
 }
 async function loadShared(){
   if(!DB) return {};
-  const out={people:[],companies:[],groups:[],summits:[],meetings:[],aliases:[],sched:[],notdup:[]};
+  const out={people:[],companies:[],groups:[],summits:[],meetings:[],aliases:[],sched:[],notdup:[],voters:[]};
   /* one round trip per collection, all in flight together \u2014 asked for one after another
      this took several seconds over the save relay, and the page showed figures from the
      imported history alone until the last one landed */
