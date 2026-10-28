@@ -1,6 +1,6 @@
 {
   "note": "Public meeting schedule for the MISMO website. Maintained in MISMO’s meeting tracker and published automatically.",
-  "updated": "2026-10-27",
+  "updated": "2026-10-28",
   "groups": [
     {
       "name": "API COP",
@@ -152,10 +152,7 @@
       "day": "Tuesday",
       "cadence": "4th Tuesday",
       "time": "1–2pm ET",
-      "join": "https://mba-org.zoom.us/j/88023232957",
-      "cancelled": [
-        "2026-10-27"
-      ]
+      "join": "https://mba-org.zoom.us/j/88023232957"
     },
     {
       "name": "MI Claim Submission DWG",
