@@ -1,6 +1,6 @@
 {
   "note": "Public meeting schedule for the MISMO website. Maintained in MISMO’s meeting tracker and published automatically.",
-  "updated": "2026-10-28",
+  "updated": "2026-10-29",
   "groups": [
     {
       "name": "API COP",
@@ -264,10 +264,7 @@
       "day": "Wednesday",
       "cadence": "Every Wednesday",
       "time": "3:30–4:30pm ET",
-      "join": "https://mba-org.zoom.us/j/83150861941",
-      "cancelled": [
-        "2026-10-28"
-      ]
+      "join": "https://mba-org.zoom.us/j/83150861941"
     },
     {
       "name": "VA Docs to Data DWG",
