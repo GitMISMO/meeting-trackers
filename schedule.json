@@ -117,10 +117,10 @@
     {
       "name": "eNote Master Control Agreement DWG",
       "topic": "eMortgage",
-      "day": "",
-      "cadence": "Twice a month",
-      "time": "",
-      "join": ""
+      "day": "Tuesday",
+      "cadence": "1st & 3rd Tuesday",
+      "time": "1–2pm ET",
+      "join": "https://mba-org.zoom.us/j/85446553990"
     },
     {
       "name": "HERO (Housing Emerging Risks and Opportunities) COP",

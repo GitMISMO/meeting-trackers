@@ -208,6 +208,19 @@ LOCATION:https://mba-org.zoom.us/j/86820338874
 URL:https://mba-org.zoom.us/j/86820338874
 END:VEVENT
 BEGIN:VEVENT
+UID:enote-master-control-agreement-dwg@mismo.org
+DTSTAMP:20261029T000000Z
+DTSTART;TZID=America/New_York:20261103T130000
+DTEND;TZID=America/New_York:20261103T140000
+RRULE:FREQ=MONTHLY;BYDAY=1TU,3TU
+SUMMARY:eNote Master Control Agreement DWG
+DESCRIPTION:eMortgage · 1st & 3rd Tuesday\n\nJoin: https://mba-org.zoom.u
+ s/j/85446553990\n\nOpen to anyone who would like to participate. Maintai
+ ned and updated by MISMO.
+LOCATION:https://mba-org.zoom.us/j/85446553990
+URL:https://mba-org.zoom.us/j/85446553990
+END:VEVENT
+BEGIN:VEVENT
 UID:hero-housing-emerging-risks-and-opportunities-cop@mismo.org
 DTSTAMP:20261029T000000Z
 DTSTART;TZID=America/New_York:20261103T100000
