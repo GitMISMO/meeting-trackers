@@ -2706,7 +2706,7 @@ function leadSection(gk,after){
         const h=el("div","vrhead"); ["Role","Name","Company"].forEach(x=>h.appendChild(el("span",null,x))); w.appendChild(h);
         list.forEach(x=>{
           const row=el("div","vrow");
-          row.appendChild(el("span","lrole",leadLabel(x.r,list.filter(y=>y.r===x.r).length)));
+          row.appendChild(el("span","lrole",list.filter(y=>y.r===x.r).length>1?(x.r==="vice"?"Co-Vice-Chair":"Co-Chair"):leadLabel(x.r,1)));
           const pk=personKeyFor(x.n);
           if(pk){ const b=el("button","linkb",x.n); b.type="button"; b.title="Open "+x.n;
             b.addEventListener("click",()=>openPerson(pk)); row.appendChild(b); }
