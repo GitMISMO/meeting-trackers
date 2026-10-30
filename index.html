@@ -53,7 +53,7 @@ img{max-width:100%}
   var MAX_FILE = 940000;        /* the relay takes at most 1,000,000 bytes a save */
   /* every collection but meetings is a handful of bucket documents, so each collection
      sits in one file; meetings grow without end, so each group-year gets its own */
-  var GROUPED = ['people', 'companies', 'groups', 'summits', 'aliases', 'sched', 'notdup', 'voters'];
+  var GROUPED = ['people', 'companies', 'groups', 'summits', 'aliases', 'sched', 'notdup', 'voters', 'leaders'];
   var BASELINE = 'baseline';    /* the imported history, kept out of the public page */
 
   /* ---------- browser storage: every tool shares this web address ---------- */
@@ -927,6 +927,11 @@ body.railmini .hq nav button .navcount{position:absolute;top:3px;right:3px;margi
 .pcard2 .pc-s{font-size:12.5px;color:var(--ink-2);line-height:1.45;margin-top:7px}
 .pcard2 .pc-s b{color:var(--ink);font-weight:600}
 .pcard2 .pc-sp{flex:1 1 auto;min-height:8px}
+/* the chair(s) and vice-chair(s), under the meeting line */
+.pcard2 .pc-lead{display:grid;grid-template-columns:auto minmax(0,1fr);gap:3px 10px;align-items:baseline;
+  margin-top:10px;font-size:12px;line-height:1.4}
+.pcard2 .pc-lr{font-size:9.5px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--ink-3);white-space:nowrap}
+.pcard2 .pc-ln{color:var(--ink-2);overflow-wrap:anywhere}
 .pc-foot{flex:0 0 auto;display:flex;align-items:center;justify-content:space-between;gap:10px;
   margin:0;padding:9px 16px 12px 18px;border-top:1px solid var(--rule);
   font-size:11.5px;color:var(--ink-3);line-height:1.4}
@@ -1186,6 +1191,16 @@ body.paneon .pane-scrim{display:block}
 .vquor span{font-size:12.5px;color:var(--ink-2)}
 .vpick{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:9px;font-size:13px}
 .vpick span{color:var(--ink-2)}
+/* workgroup leadership */
+.lreps .vrhead,.lreps .vrow{grid-template-columns:130px minmax(0,1.3fr) minmax(0,1.3fr)}
+.lreps.edit .vrhead,.lreps.edit .vrow{grid-template-columns:190px minmax(0,1.2fr) minmax(0,1.2fr) auto}
+.lreps .lrole{font-size:10.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-3)}
+.lreps .vrow .linkb{justify-self:start;text-align:left}
+@media(max-width:700px){.lreps .vrow{grid-template-columns:minmax(0,1fr) auto}
+  .lreps .vrow .lrole{grid-column:1/-1}
+  .lreps.edit .vrow{grid-template-columns:minmax(0,1fr)}
+  .lreps.edit .vrow>*{grid-column:1/-1}
+  .lreps.edit .vrow .rowx{justify-self:start}}
 @media(max-width:700px){.vrhead{display:none}
   .vrow{grid-template-columns:minmax(0,1fr) auto;row-gap:5px;padding:10px 12px}
   .vrow .vco{text-align:right}
@@ -1650,7 +1665,8 @@ const SETASIDE=new Map(), GONE=new Map(), MERGEDTO=new Map(), BASEPP=new Map();
    Workgroup has one named rep per Community of Practice, and business is only done when
    enough of them are in the room. Each workgroup keeps its own list; everything below is
    general, and the two starting lists further down are only a shortcut for setting them up. */
-const VOTERS=new Map();   /* gk -> {reps:[{k,cop}], map:Map(k->cop), need:0, by:"", at:""} */
+const VOTERS=new Map();
+const LEADERS=new Map(); /* gk -> {list:[{r:"chair"|"vice",n,co}], by, at, src} */   /* gk -> {reps:[{k,cop}], map:Map(k->cop), need:0, by:"", at:""} */
 function mkVoters(reps,need,by,at){
   const list=(reps||[]).filter(r=>r&&r.k).map(r=>({k:r.k,cop:r.cop||""}));
   const mp=new Map(); list.forEach(r=>mp.set(r.k,r.cop));
@@ -1694,6 +1710,9 @@ function applyDbDocs(docs){
   VOTERS.clear();
   (docs.voters||[]).forEach(d=>{ const k=d.id; if(!k) return;
     VOTERS.set(k,mkVoters(d.reps||[],d.need,d.by,d.at)); });
+  LEADERS.clear();
+  (docs.leaders||[]).forEach(d=>{ const k=d.id; if(!k) return;
+    LEADERS.set(k,{list:(d.list||[]).filter(x=>x&&x.n),by:d.by||"",at:d.at||"",src:d.src||""}); });
   (docs.companies||[]).forEach(d=>{ const k=d.id||nk(d.name);
     M.co.set(k,{k:k,name:d.name,cat:d.cat||"Unknown"}); });
   /* pairs somebody has already looked at and said are two different people */
@@ -2273,6 +2292,7 @@ function groupCard(gk){
   meet.appendChild(document.createTextNode(g.hold?"Not meeting at the moment":(ms?(ms+" ET"):"No cadence set")));
   if(g.hold) meet.className="pc-meet none";
   body.appendChild(meet);
+  { const lb=leadBlock(gk); if(lb) body.appendChild(lb); }
   body.appendChild(el("div","pc-sp"));
   c.appendChild(body);
 
@@ -2644,6 +2664,104 @@ function pickPerson(onPick,skip){
   wrap.append(inp,list);
   return wrap;
 }
+/* ---- workgroup leadership ----
+   The chair(s) and vice-chair(s) of each workgroup, first filled in from the 2026
+   Leadership Tracker in Smartsheet. Kept in their own file (leaders) so saving a group's
+   schedule or status never touches them. */
+const LEADROLE={chair:["Chair","Co-Chairs"],vice:["Vice-Chair","Co-Vice-Chairs"]};
+function leadOf(gk){ const v=LEADERS.get(gk); return (v&&v.list.length)?v:null; }
+function leadLabel(r,count){ const p=LEADROLE[r]||LEADROLE.chair; return count>1?p[1]:p[0]; }
+function leadBlock(gk){
+  const v=leadOf(gk); if(!v) return null;
+  const w=el("div","pc-lead");
+  ["chair","vice"].forEach(r=>{
+    const ppl=v.list.filter(x=>x.r===r); if(!ppl.length) return;
+    w.appendChild(el("span","pc-lr",leadLabel(r,ppl.length)));
+    w.appendChild(el("span","pc-ln",ppl.map(x=>x.n).join(", ")));
+  });
+  return w.childNodes.length?w:null;
+}
+async function saveLeaders(gk,list,after){
+  const clean=list.map(x=>({r:x.r==="vice"?"vice":"chair",n:(x.n||"").trim(),co:(x.co||"").trim()})).filter(x=>x.n);
+  const now=new Date().toISOString(), me=whoAmI(), prev=LEADERS.get(gk), src=(prev&&prev.src)||"";
+  const okr=await saveDoc("leaders",gk,{list:clean,by:me,at:now,src:src});
+  if(!okr) return false;
+  LEADERS.set(gk,{list:clean,by:me,at:now,src:src});
+  if(after) after();
+  return true;
+}
+function leadSection(gk,after){
+  const g=M.gr.get(gk)||{name:gk};
+  const d=el("div"), body=el("div"); d.appendChild(body);
+  let editing=false, work=[];
+  function reset(){ const v=LEADERS.get(gk); work=(v?v.list:[]).map(x=>({r:x.r,n:x.n,co:x.co||""})); }
+  function draw(){
+    body.textContent="";
+    const v=LEADERS.get(gk);
+    if(!editing){
+      const list=(v?v.list:[]).filter(x=>x.r==="chair").concat((v?v.list:[]).filter(x=>x.r!=="chair"));
+      if(!list.length) body.appendChild(el("div","empty","No chair or vice-chair is listed for "+g.name+" yet."));
+      else {
+        const w=el("div","vreps lreps");
+        const h=el("div","vrhead"); ["Role","Name","Company"].forEach(x=>h.appendChild(el("span",null,x))); w.appendChild(h);
+        list.forEach(x=>{
+          const row=el("div","vrow");
+          row.appendChild(el("span","lrole",leadLabel(x.r,list.filter(y=>y.r===x.r).length)));
+          const pk=personKeyFor(x.n);
+          if(pk){ const b=el("button","linkb",x.n); b.type="button"; b.title="Open "+x.n;
+            b.addEventListener("click",()=>openPerson(pk)); row.appendChild(b); }
+          else row.appendChild(el("span",null,x.n));
+          row.appendChild(el("span","vco",x.co||"\u2014"));
+          w.appendChild(row);
+        });
+        body.appendChild(w);
+      }
+      if(v&&(v.src||v.at)) body.appendChild(el("div","hint",
+        (v.src?"First filled in from the "+v.src+". ":"")+
+        (v.at?"Last updated "+fmtD(String(v.at).slice(0,10))+(v.by?" by "+v.by:"")+".":"")));
+      if(CANWRITE){
+        const row=el("div","btnrow");
+        const b=el("button","btn ghost",list.length?"Edit Leadership":"Add Leadership"); b.type="button";
+        b.addEventListener("click",()=>{ reset(); if(!work.length) work.push({r:"chair",n:"",co:""}); editing=true; draw(); });
+        row.appendChild(b); body.appendChild(row);
+      }
+      return;
+    }
+    const w=el("div","vreps lreps edit");
+    const h=el("div","vrhead"); ["Role","Name","Company",""].forEach(x=>h.appendChild(el("span",null,x))); w.appendChild(h);
+    work.forEach((x,i)=>{
+      const row=el("div","vrow");
+      const s=el("select","vcop");
+      [["chair","Chair / Co-Chair"],["vice","Vice-Chair / Co-Vice-Chair"]].forEach(([v2,l])=>{
+        const o=el("option",null,l); o.value=v2; if(x.r===v2) o.selected=true; s.appendChild(o); });
+      s.addEventListener("change",()=>{ work[i].r=s.value; });
+      const ni=el("input","vcop"); ni.type="text"; ni.value=x.n; ni.placeholder="Full name";
+      ni.addEventListener("input",()=>{ work[i].n=ni.value; });
+      const ci=el("input","vcop"); ci.type="text"; ci.value=x.co; ci.placeholder="Company";
+      ci.addEventListener("input",()=>{ work[i].co=ci.value; });
+      const xb=el("button","rowx","Remove"); xb.type="button";
+      xb.addEventListener("click",()=>{ work.splice(i,1); draw(); });
+      row.append(s,ni,ci,xb); w.appendChild(row);
+    });
+    if(!work.length) body.appendChild(el("div","empty","Everyone is off the list. Save to leave "+g.name+" with no leadership listed."));
+    else body.appendChild(w);
+    const row=el("div","btnrow");
+    const sv=el("button","btn","Save Leadership"); sv.type="button";
+    sv.addEventListener("click",async()=>{
+      sv.disabled=true; sv.textContent="Saving\u2026";
+      const okr=await saveLeaders(gk,work,after);
+      sv.disabled=false; sv.textContent="Save Leadership";
+      if(okr){ editing=false; draw(); toast("Leadership saved for "+g.name+"."); }
+    });
+    const add=el("button","btn ghost","Add a Person"); add.type="button";
+    add.addEventListener("click",()=>{ work.push({r:"chair",n:"",co:""}); draw(); });
+    const cx=el("button","btn ghost","Cancel"); cx.type="button";
+    cx.addEventListener("click",()=>{ editing=false; draw(); });
+    row.append(sv,add,cx); body.appendChild(row);
+  }
+  draw();
+  return d;
+}
 function votersSection(gk,after){
   const g=M.gr.get(gk)||{name:gk};
   const v=VOTERS.get(gk);
@@ -2790,7 +2908,10 @@ function openGroup(gk,openSched){
       ["First Meeting",fmtD(g.first)],["Last Meeting",fmtD(g.last)],
       ["Average per Meeting",idxs.length?Math.round(recs/idxs.length):0]
     ]));
-    box.appendChild(sect("Who Attends Most",ppl.size,()=>barList(
+    { const lv=leadOf(gk);
+  box.appendChild(sect("Workgroup Leadership",lv?lv.list.length:null,
+    ()=>leadSection(gk,()=>{ renderAll(true); openGroup(gk); }),true)); }
+box.appendChild(sect("Who Attends Most",ppl.size,()=>barList(
       [...ppl.entries()].sort((a,b)=>b[1]-a[1]).slice(0,25).map(([pk,v])=>{ const p=M.pp.get(pk);
         return {label:p?p.name:pk,sub:compName(pk),value:v,color:"var(--c1)",go:()=>openPerson(pk)};}),
       {labelWidth:"190px",pct:false})));
@@ -5105,7 +5226,7 @@ async function doImport(P,btn){
    bucket documents: one per group-year for meetings, 36 alphabetical
    buckets for people and companies, one each for groups and summits. */
 const DBC=new Map();           // docPath -> {items:{...}, ...}
-const COLLS=["people","companies","groups","summits","meetings","aliases","sched","notdup","voters"];
+const COLLS=["people","companies","groups","summits","meetings","aliases","sched","notdup","voters","leaders"];
 function bucketOf(kind,id,data){
   const a=(String(id||"").charAt(0)||"_").replace(/[^a-z0-9]/,"_");
   if(kind==="people") return "people/b_"+a;
@@ -5115,6 +5236,7 @@ function bucketOf(kind,id,data){
   if(kind==="aliases") return "aliases/all";
   if(kind==="notdup") return "notdup/all";
   if(kind==="voters") return "voters/all";
+  if(kind==="leaders") return "leaders/all";
   if(kind==="sched") return "sched/all";
   if(kind==="snapshot") return "snapshot/b_"+(String(id||"").length%10);
   if(kind==="meetings"){ const gk=(data&&data.gk)||"x", y=((data&&data.d)||"0000").slice(0,4);
@@ -5231,7 +5353,7 @@ async function saveMany(writes){
 }
 async function loadShared(){
   if(!DB) return {};
-  const out={people:[],companies:[],groups:[],summits:[],meetings:[],aliases:[],sched:[],notdup:[],voters:[]};
+  const out={people:[],companies:[],groups:[],summits:[],meetings:[],aliases:[],sched:[],notdup:[],voters:[],leaders:[]};
   /* one round trip per collection, all in flight together \u2014 asked for one after another
      this took several seconds over the save relay, and the page showed figures from the
      imported history alone until the last one landed */
