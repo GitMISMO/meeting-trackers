@@ -31,6 +31,8 @@ DTSTAMP:20261103T000000Z
 DTSTART;TZID=America/New_York:20261124T150000
 DTEND;TZID=America/New_York:20261124T160000
 RRULE:FREQ=MONTHLY;BYDAY=4TU
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
 SUMMARY:API COP
 DESCRIPTION:Governance · 4th Tuesday\n\nJoin: https://mba-org.zoom.us/j/8
  4065426860\n\nOpen to anyone who would like to participate. Maintained a
@@ -44,6 +46,8 @@ DTSTAMP:20261103T000000Z
 DTSTART;TZID=America/New_York:20261112T140000
 DTEND;TZID=America/New_York:20261112T150000
 RRULE:FREQ=MONTHLY;BYDAY=2TH,4TH
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
 SUMMARY:Architecture Workgroup
 DESCRIPTION:Governance · 2nd & 4th Thursday\n\nJoin: https://mba-org.zoom
  .us/j/88437195732\n\nOpen to anyone who would like to participate. Maint
@@ -57,6 +61,8 @@ DTSTAMP:20261103T000000Z
 DTSTART;TZID=America/New_York:20261109T150000
 DTEND;TZID=America/New_York:20261109T160000
 RRULE:FREQ=MONTHLY;BYDAY=2MO,4MO
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
 SUMMARY:Artificial Intelligence (AI) COP
 DESCRIPTION:Artificial Intelligence · 2nd & 4th Monday\n\nJoin: https://m
  ba-org.zoom.us/j/83783587917\n\nOpen to anyone who would like to partici
@@ -70,6 +76,8 @@ DTSTAMP:20261103T000000Z
 DTSTART;TZID=America/New_York:20261109T160000
 DTEND;TZID=America/New_York:20261109T170000
 RRULE:FREQ=WEEKLY;BYDAY=MO
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
 SUMMARY:Automated Valuation Model DWG
 DESCRIPTION:Valuation · Every Monday\n\nJoin: https://mba-org.zoom.us/j/8
  6553707201\n\nOpen to anyone who would like to participate. Maintained a
@@ -83,6 +91,8 @@ DTSTAMP:20261103T000000Z
 DTSTART;TZID=America/New_York:20261111T140000
 DTEND;TZID=America/New_York:20261111T150000
 RRULE:FREQ=MONTHLY;BYDAY=2WE,4WE
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
 SUMMARY:Business Glossary COP
 DESCRIPTION:Governance · 2nd & 4th Wednesday\n\nJoin: https://mba-org.zoo
  m.us/j/87615051998\n\nOpen to anyone who would like to participate. Main
@@ -96,6 +106,8 @@ DTSTAMP:20261103T000000Z
 DTSTART;TZID=America/New_York:20261106T100000
 DTEND;TZID=America/New_York:20261106T110000
 RRULE:FREQ=MONTHLY;BYDAY=1FR,3FR
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
 SUMMARY:Business Process Model COP
 DESCRIPTION:Governance · 1st & 3rd Friday\n\nJoin: https://mba-org.zoom.u
  s/j/85418710620\n\nOpen to anyone who would like to participate. Maintai
@@ -109,6 +121,8 @@ DTSTAMP:20261103T000000Z
 DTSTART;TZID=America/New_York:20261112T150000
 DTEND;TZID=America/New_York:20261112T160000
 RRULE:FREQ=MONTHLY;BYDAY=2TH
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
 SUMMARY:Commercial and Other Real Estate Digital Notes DWG
 DESCRIPTION:eMortgage · 2nd Thursday\n\nJoin: https://mba-org.zoom.us/j/8
  9506376242\n\nOpen to anyone who would like to participate. Maintained a
@@ -122,6 +136,8 @@ DTSTAMP:20261103T000000Z
 DTSTART;TZID=America/New_York:20261112T130000
 DTEND;TZID=America/New_York:20261112T140000
 RRULE:FREQ=MONTHLY;BYDAY=2TH
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
 SUMMARY:Commercial COP
 DESCRIPTION:Originations · 2nd Thursday\n\nJoin: https://mba-org.zoom.us/
  j/85450117105\n\nOpen to anyone who would like to participate. Maintaine
@@ -135,6 +151,8 @@ DTSTAMP:20261103T000000Z
 DTSTART;TZID=America/New_York:20261105T160000
 DTEND;TZID=America/New_York:20261105T170000
 RRULE:FREQ=MONTHLY;BYDAY=1TH,3TH
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
 SUMMARY:Credit Reporting COP
 DESCRIPTION:Credit Reporting · 1st & 3rd Thursday\n\nJoin: https://mba-or
  g.zoom.us/j/81784509635\n\nOpen to anyone who would like to participate.
@@ -148,6 +166,8 @@ DTSTAMP:20261103T000000Z
 DTSTART;TZID=America/New_York:20261118T130000
 DTEND;TZID=America/New_York:20261118T140000
 RRULE:FREQ=MONTHLY;BYDAY=3WE
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
 SUMMARY:Data Governance and Management COP
 DESCRIPTION:Governance · 3rd Wednesday\n\nJoin: https://mba-org.zoom.us/j
  /83318613468\n\nOpen to anyone who would like to participate. Maintained
@@ -161,6 +181,8 @@ DTSTAMP:20261103T000000Z
 DTSTART;TZID=America/New_York:20261116T160000
 DTEND;TZID=America/New_York:20261116T170000
 RRULE:FREQ=MONTHLY;BYDAY=1MO,3MO
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
 SUMMARY:Decision Modeling COP
 DESCRIPTION:Originations · 1st & 3rd Monday\n\nJoin: https://mba-org.zoom
  .us/j/81097644741\n\nOpen to anyone who would like to participate. Maint
@@ -174,6 +196,8 @@ DTSTAMP:20261103T000000Z
 DTSTART;TZID=America/New_York:20261112T130000
 DTEND;TZID=America/New_York:20261112T140000
 RRULE:FREQ=MONTHLY;BYDAY=2TH
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
 SUMMARY:Digital Interoperability COP
 DESCRIPTION:eMortgage · 2nd Thursday\n\nJoin: https://mba-org.zoom.us/j/8
  8234890771\n\nOpen to anyone who would like to participate. Maintained a
@@ -187,6 +211,8 @@ DTSTAMP:20261103T000000Z
 DTSTART;TZID=America/New_York:20261112T120000
 DTEND;TZID=America/New_York:20261112T130000
 RRULE:FREQ=MONTHLY;BYDAY=2TH,4TH
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
 SUMMARY:eHELOC DWG
 DESCRIPTION:eMortgage · 2nd & 4th Thursday\n\nJoin: https://mba-org.zoom.
  us/j/89724557553\n\nOpen to anyone who would like to participate. Mainta
@@ -200,6 +226,8 @@ DTSTAMP:20261103T000000Z
 DTSTART;TZID=America/New_York:20261105T130000
 DTEND;TZID=America/New_York:20261105T140000
 RRULE:FREQ=MONTHLY;BYDAY=1TH
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
 SUMMARY:eMortgage COP
 DESCRIPTION:eMortgage · 1st Thursday\n\nJoin: https://mba-org.zoom.us/j/8
  6820338874\n\nOpen to anyone who would like to participate. Maintained a
@@ -213,6 +241,8 @@ DTSTAMP:20261103T000000Z
 DTSTART;TZID=America/New_York:20261103T130000
 DTEND;TZID=America/New_York:20261103T140000
 RRULE:FREQ=MONTHLY;BYDAY=1TU,3TU
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
 SUMMARY:eNote Master Control Agreement DWG
 DESCRIPTION:eMortgage · 1st & 3rd Tuesday\n\nJoin: https://mba-org.zoom.u
  s/j/85446553990\n\nOpen to anyone who would like to participate. Maintai
@@ -226,6 +256,8 @@ DTSTAMP:20261103T000000Z
 DTSTART;TZID=America/New_York:20261103T130000
 DTEND;TZID=America/New_York:20261103T140000
 RRULE:FREQ=MONTHLY;BYDAY=1TU,3TU
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
 SUMMARY:HERO (Housing Emerging Risks and Opportunities) COP
 DESCRIPTION:Governance · 1st & 3rd Tuesday\n\nJoin: https://mba-org.zoom.
  us/j/89963965149\n\nOpen to anyone who would like to participate. Mainta
@@ -239,6 +271,8 @@ DTSTAMP:20261103T000000Z
 DTSTART;TZID=America/New_York:20261125T150000
 DTEND;TZID=America/New_York:20261125T160000
 RRULE:FREQ=MONTHLY;BYDAY=4WE
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
 SUMMARY:Housing Counseling Data DWG
 DESCRIPTION:Originations · 4th Wednesday\n\nJoin: https://mba-org.zoom.us
  /j/85930714859\n\nOpen to anyone who would like to participate. Maintain
@@ -252,6 +286,8 @@ DTSTAMP:20261103T000000Z
 DTSTART;TZID=America/New_York:20261109T140000
 DTEND;TZID=America/New_York:20261109T150000
 RRULE:FREQ=WEEKLY;BYDAY=MO
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
 SUMMARY:Information Management
 DESCRIPTION:Governance · Every Monday\n\nJoin: https://mba-org.zoom.us/j/
  83911697957\n\nOpen to anyone who would like to participate. Maintained 
@@ -265,6 +301,8 @@ DTSTAMP:20261103T000000Z
 DTSTART;TZID=America/New_York:20261124T130000
 DTEND;TZID=America/New_York:20261124T140000
 RRULE:FREQ=MONTHLY;BYDAY=4TU
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
 SUMMARY:Loan Application Data Exchange DWG
 DESCRIPTION:Originations · 4th Tuesday\n\nJoin: https://mba-org.zoom.us/j
  /88023232957\n\nOpen to anyone who would like to participate. Maintained
@@ -278,6 +316,8 @@ DTSTAMP:20261103T000000Z
 DTSTART;TZID=America/New_York:20261103T150000
 DTEND;TZID=America/New_York:20261103T160000
 RRULE:FREQ=MONTHLY;BYDAY=1TU,3TU
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
 SUMMARY:MI Claim Submission DWG
 DESCRIPTION:Mortgage Insurance · 1st & 3rd Tuesday\n\nJoin: https://mba-o
  rg.zoom.us/j/82404935190\n\nOpen to anyone who would like to participate
@@ -291,6 +331,8 @@ DTSTAMP:20261103T000000Z
 DTSTART;TZID=America/New_York:20261105T150000
 DTEND;TZID=America/New_York:20261105T160000
 RRULE:FREQ=MONTHLY;BYDAY=1TH,3TH
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
 SUMMARY:Mortgage Compliance Dataset DWG
 DESCRIPTION:Mortgage Compliance · 1st & 3rd Thursday\n\nJoin: https://mba
  -org.zoom.us/j/88042907892\n\nOpen to anyone who would like to participa
@@ -304,6 +346,8 @@ DTSTAMP:20261103T000000Z
 DTSTART;TZID=America/New_York:20261116T130000
 DTEND;TZID=America/New_York:20261116T140000
 RRULE:FREQ=MONTHLY;BYDAY=3MO
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
 SUMMARY:Mortgage Insurance COP
 DESCRIPTION:Mortgage Insurance · 3rd Monday\n\nJoin: https://mba-org.zoom
  .us/j/87976028176\n\nOpen to anyone who would like to participate. Maint
@@ -317,6 +361,8 @@ DTSTAMP:20261103T000000Z
 DTSTART;TZID=America/New_York:20261104T150000
 DTEND;TZID=America/New_York:20261104T160000
 RRULE:FREQ=MONTHLY;BYDAY=1WE
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
 SUMMARY:Origination COP
 DESCRIPTION:Originations · 1st Wednesday\n\nJoin: https://mba-org.zoom.us
  /j/85990267275\n\nOpen to anyone who would like to participate. Maintain
@@ -330,6 +376,8 @@ DTSTAMP:20261103T000000Z
 DTSTART;TZID=America/New_York:20261113T130000
 DTEND;TZID=America/New_York:20261113T140000
 RRULE:FREQ=MONTHLY;BYDAY=2FR,4FR
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
 SUMMARY:Property and Valuation Services COP
 DESCRIPTION:Valuation · 2nd & 4th Friday\n\nJoin: https://mba-org.zoom.us
  /j/86087635705\n\nOpen to anyone who would like to participate. Maintain
@@ -343,6 +391,8 @@ DTSTAMP:20261103T000000Z
 DTSTART;TZID=America/New_York:20261105T130000
 DTEND;TZID=America/New_York:20261105T140000
 RRULE:FREQ=MONTHLY;BYDAY=1TH,3TH
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
 SUMMARY:Reverse Mortgage DWG
 DESCRIPTION:Originations · 1st & 3rd Thursday\n\nJoin: https://mba-org.zo
  om.us/j/86180371977\n\nOpen to anyone who would like to participate. Mai
@@ -356,6 +406,8 @@ DTSTAMP:20261103T000000Z
 DTSTART;TZID=America/New_York:20261117T150000
 DTEND;TZID=America/New_York:20261117T160000
 RRULE:FREQ=MONTHLY;BYDAY=3TU
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
 SUMMARY:Secondary COP
 DESCRIPTION:Secondary · 3rd Tuesday\n\nJoin: https://mba-org.zoom.us/j/89
  634843815\n\nOpen to anyone who would like to participate. Maintained an
@@ -369,6 +421,8 @@ DTSTAMP:20261103T000000Z
 DTSTART;TZID=America/New_York:20261123T130000
 DTEND;TZID=America/New_York:20261123T140000
 RRULE:FREQ=MONTHLY;BYDAY=4MO
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
 SUMMARY:Servicing COP
 DESCRIPTION:Servicing · 4th Monday\n\nJoin: https://mba-org.zoom.us/j/860
  66078039\n\nOpen to anyone who would like to participate. Maintained and
@@ -382,6 +436,8 @@ DTSTAMP:20261103T000000Z
 DTSTART;TZID=America/New_York:20261111T130000
 DTEND;TZID=America/New_York:20261111T140000
 RRULE:FREQ=MONTHLY;BYDAY=2WE,4WE
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
 SUMMARY:Servicing Transfers DWG
 DESCRIPTION:Servicing · 2nd & 4th Wednesday\n\nJoin: https://mba-org.zoom
  .us/j/87030588927\n\nOpen to anyone who would like to participate. Maint
@@ -395,6 +451,8 @@ DTSTAMP:20261103T000000Z
 DTSTART;TZID=America/New_York:20261118T140000
 DTEND;TZID=America/New_York:20261118T150000
 RRULE:FREQ=MONTHLY;BYDAY=3WE
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
 SUMMARY:TIE (Technology Impact and Enablement) COP
 DESCRIPTION:Governance · 3rd Wednesday\n\nJoin: https://mba-org.zoom.us/j
  /88544460553\n\nOpen to anyone who would like to participate. Maintained
@@ -408,6 +466,8 @@ DTSTAMP:20261103T000000Z
 DTSTART;TZID=America/New_York:20261109T130000
 DTEND;TZID=America/New_York:20261109T140000
 RRULE:FREQ=MONTHLY;BYDAY=2MO
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
 SUMMARY:Title and Closing COP
 DESCRIPTION:Title & Closing · 2nd Monday\n\nJoin: https://mba-org.zoom.us
  /j/89444784294\n\nOpen to anyone who would like to participate. Maintain
@@ -421,6 +481,8 @@ DTSTAMP:20261103T000000Z
 DTSTART;TZID=America/New_York:20261104T140000
 DTEND;TZID=America/New_York:20261104T150000
 RRULE:FREQ=MONTHLY;BYDAY=1WE,3WE
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
 SUMMARY:Title and Closing Docs to Data DWG
 DESCRIPTION:Title & Closing · 1st & 3rd Wednesday\n\nJoin: https://mba-or
  g.zoom.us/j/84866528267\n\nOpen to anyone who would like to participate.
@@ -434,6 +496,8 @@ DTSTAMP:20261103T000000Z
 DTSTART;TZID=America/New_York:20261104T153000
 DTEND;TZID=America/New_York:20261104T163000
 RRULE:FREQ=WEEKLY;BYDAY=WE
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
 SUMMARY:Title Pricing API DWG
 DESCRIPTION:Title & Closing · Every Wednesday\n\nJoin: https://mba-org.zo
  om.us/j/83150861941\n\nOpen to anyone who would like to participate. Mai
@@ -447,6 +511,8 @@ DTSTAMP:20261103T000000Z
 DTSTART;TZID=America/New_York:20261118T150000
 DTEND;TZID=America/New_York:20261118T160000
 RRULE:FREQ=MONTHLY;BYDAY=3WE
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
 SUMMARY:VA Docs to Data DWG
 DESCRIPTION:Originations · 3rd Wednesday\n\nJoin: https://mba-org.zoom.us
  /j/88489860437\n\nOpen to anyone who would like to participate. Maintain
@@ -460,6 +526,8 @@ DTSTAMP:20261103T000000Z
 DTSTART;TZID=America/New_York:20261104T110000
 DTEND;TZID=America/New_York:20261104T120000
 RRULE:FREQ=MONTHLY;BYDAY=1WE
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
 SUMMARY:Verifiable SMART Doc® 3.0 Profile DWG
 DESCRIPTION:eMortgage · 1st Wednesday\n\nJoin: https://mba-org.zoom.us/j/
  86383676148\n\nOpen to anyone who would like to participate. Maintained 

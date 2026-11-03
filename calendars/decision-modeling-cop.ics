@@ -31,6 +31,8 @@ DTSTAMP:20261103T000000Z
 DTSTART;TZID=America/New_York:20261116T160000
 DTEND;TZID=America/New_York:20261116T170000
 RRULE:FREQ=MONTHLY;BYDAY=1MO,3MO
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
 SUMMARY:Decision Modeling COP
 DESCRIPTION:Originations · 1st & 3rd Monday\n\nJoin: https://mba-org.zoom
  .us/j/81097644741\n\nOpen to anyone who would like to participate. Maint

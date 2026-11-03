@@ -31,6 +31,8 @@ DTSTAMP:20261103T000000Z
 DTSTART;TZID=America/New_York:20261109T160000
 DTEND;TZID=America/New_York:20261109T170000
 RRULE:FREQ=WEEKLY;BYDAY=MO
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
 SUMMARY:Automated Valuation Model DWG
 DESCRIPTION:Valuation · Every Monday\n\nJoin: https://mba-org.zoom.us/j/8
  6553707201\n\nOpen to anyone who would like to participate. Maintained a

@@ -32,6 +32,8 @@ DTSTAMP:20261103T000000Z
 DTSTART;TZID=America/New_York:20261103T130000
 DTEND;TZID=America/New_York:20261103T140000
 RRULE:FREQ=MONTHLY;BYDAY=1TU,3TU
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
 SUMMARY:eNote Master Control Agreement DWG
 DESCRIPTION:eMortgage · 1st & 3rd Tuesday\n\nJoin: https://mba-org.zoom.u
  s/j/85446553990\n\nOpen to anyone who would like to participate. Maintai

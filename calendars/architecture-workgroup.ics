@@ -31,6 +31,8 @@ DTSTAMP:20261103T000000Z
 DTSTART;TZID=America/New_York:20261112T140000
 DTEND;TZID=America/New_York:20261112T150000
 RRULE:FREQ=MONTHLY;BYDAY=2TH,4TH
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
 SUMMARY:Architecture Workgroup
 DESCRIPTION:Governance · 2nd & 4th Thursday\n\nJoin: https://mba-org.zoom
  .us/j/88437195732\n\nOpen to anyone who would like to participate. Maint
