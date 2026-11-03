@@ -1792,6 +1792,12 @@ let RANGE={from:"",to:"",preset:"all"};
 function inRange(d){ if(RANGE.from&&d<RANGE.from) return false;
   if(RANGE.to&&d>RANGE.to) return false; return true; }
 function rangeOn(){ return !!(RANGE.from||RANGE.to); }
+/* the range as words that read in a sentence: "since Jan 1, 2025", "between … and …" */
+function rangeWords(){
+  if(!rangeOn()) return "at any time";
+  if(RANGE.from&&RANGE.to) return "between "+fmtD(RANGE.from)+" and "+fmtD(RANGE.to);
+  return RANGE.from?("since "+fmtD(RANGE.from)):("up to "+fmtD(RANGE.to));
+}
 function rangeLabel(){
   if(!rangeOn()) return "All Time";
   if(RANGE.from&&RANGE.to) return fmtD(RANGE.from)+" \u2013 "+fmtD(RANGE.to);
@@ -2027,7 +2033,7 @@ function rangeBar(onChange){
   const clr=el("button","rng-x","Clear"); clr.type="button"; clr.hidden=!rangeOn();
   w.append(sel,f,to,t2,clr);
   const note=el("span","rn"); note.textContent=rangeOn()?rangeLabel():""; w.appendChild(note);
-  function apply(){ clr.hidden=!rangeOn(); note.textContent=rangeOn()?rangeLabel():""; onChange(); }
+  function apply(){ clr.hidden=!rangeOn(); note.textContent=rangeOn()?rangeLabel():""; onChange(); refreshPane(); }
   sel.addEventListener("change",()=>{
     const row=RPRESETS.find(r=>r[0]===sel.value);
     RANGE.preset=sel.value;
@@ -2384,13 +2390,28 @@ function drawPicker(){
 <script>
 "use strict";
 /* ======================= pane ======================= */
+/* the open pane remembers how it was drawn, so a change of dates or scope redraws it
+   with the same filter as everything else on the page */
+let PANE_RE=null, PANE_NEXT=null;
+function paneOpen(){ return document.body.classList.contains("paneon"); }
+function refreshPane(){
+  if(!PANE_RE||!paneOpen()) return;
+  const b=$("#pane-b"), top=b.scrollTop;
+  const opened=new Set([...b.querySelectorAll("details.sect[open] > summary")]
+    .map(x=>(x.firstChild&&x.firstChild.textContent)||""));
+  try{ PANE_RE(); }catch(e){ return; }
+  b.querySelectorAll("details.sect > summary").forEach(x=>{
+    if(opened.has((x.firstChild&&x.firstChild.textContent)||"")) x.parentNode.open=true; });
+  b.scrollTop=top;
+}
 function openPane(title,sub,build){
+  PANE_RE=PANE_NEXT; PANE_NEXT=null;
   $("#pane-t").textContent=title; $("#pane-s").textContent=sub||"";
   const b=$("#pane-b"); b.textContent=""; b.scrollTop=0;
   const r=build(); if(r) b.appendChild(r);
   document.body.classList.add("paneon"); $("#pane").setAttribute("aria-hidden","false");
 }
-function closePane(){ document.body.classList.remove("paneon","panewide"); $("#pane").setAttribute("aria-hidden","true"); }
+function closePane(){ PANE_RE=null; document.body.classList.remove("paneon","panewide"); $("#pane").setAttribute("aria-hidden","true"); }
 $("#pane-x").addEventListener("click",closePane);
 $("#pane-wide").addEventListener("click",()=>{ const w=document.body.classList.toggle("panewide");
   $("#pane-wide").setAttribute("aria-label",w?"Back to normal size":"Expand the panel");
@@ -2892,6 +2913,7 @@ function votersSection(gk,after){
 /* ---- group pane ---- */
 function openGroup(gk,openSched){
   const g=M.gr.get(gk); if(!g) return;
+  PANE_NEXT=()=>openGroup(gk);
   const idxs=inIdx(M.byG.get(gk));
   const ppl=new Map(), cos=new Map(), cats=new Map(); let recs=0;
   idxs.forEach(i=>{ const m=M.mt[i]; recs+=m.p.size;
@@ -2917,7 +2939,8 @@ box.appendChild(sect("Who Attends Most",ppl.size,()=>barList(
       {labelWidth:"190px",pct:false})));
     box.appendChild(sect("Companies in the Room",cos.size,()=>barList(
       [...cos.entries()].sort((a,b)=>b[1]-a[1]).slice(0,25).map(([ck,v])=>{ const c=M.co.get(ck);
-        return {label:c?c.name:ck,sub:c?c.cat:"",value:v,color:"var(--c2)",go:()=>openCompany(ck)};}),
+        return {label:c?c.name:ck,sub:c?c.cat:"",value:v,color:"var(--c2)",go:()=>openCompanyGroup(ck,gk),
+                title:"See who from "+(c?c.name:ck)+" attended "+g.name};}),
       {labelWidth:"190px",pct:false})));
     box.appendChild(sect("Category Mix",null,()=>{
       const arr=[...cats.entries()].sort((a,b)=>b[1]-a[1]);
@@ -3074,6 +3097,7 @@ box.appendChild(sect("Who Attends Most",ppl.size,()=>barList(
 /* ---- person pane ---- */
 function openPerson(pk){
   const p=M.pp.get(pk); if(!p) return;
+  PANE_NEXT=()=>openPerson(pk);
   const idxs=inIdx(M.byP.get(pk));
   const grps=new Map(); let first="",last="";
   idxs.forEach(i=>{ const m=M.mt[i]; grps.set(m.gk,(grps.get(m.gk)||0)+1);
@@ -3142,9 +3166,72 @@ function openPerson(pk){
   });
 }
 
+/* ---- one company inside one group: who came, year by year ---- */
+function openCompanyGroup(ck,gk){
+  const c=M.co.get(ck), g=M.gr.get(gk); if(!c||!g) return;
+  PANE_NEXT=()=>openCompanyGroup(ck,gk);
+  const all=(M.byG.get(gk)||[]).filter(i=>!isCancelled(M.mt[i]));
+  const per=new Map(), yrs=new Set(), mine=[]; let recs=0,first="",last="";
+  let everLast="", everWho=new Set();
+  all.forEach(i=>{ const m=M.mt[i]; const here=[...m.p].filter(pk=>ckAt(pk,m.d)===ck);
+    if(!here.length) return;
+    if(m.d>everLast){ everLast=m.d; everWho=new Set(here); } else if(m.d===everLast) here.forEach(x=>everWho.add(x));
+    if(!inRange(m.d)) return;
+    mine.push(i); recs+=here.length; const y=m.d.slice(0,4); yrs.add(y);
+    if(!first||m.d<first)first=m.d; if(!last||m.d>last)last=m.d;
+    here.forEach(pk=>{ const o=per.get(pk)||{t:0,by:{},last:""}; o.t++; o.by[y]=(o.by[y]||0)+1;
+      if(m.d>o.last) o.last=m.d; per.set(pk,o); }); });
+  const years=[...yrs].sort();
+  openPane(c.name, "In "+g.name+(rangeOn()?" · "+rangeLabel():" · All Time"), ()=>{
+    const box=el("div");
+    box.appendChild(facts([
+      ["Group",(()=>{ const b=el("button","linkb",g.name); b.type="button";
+        b.addEventListener("click",()=>openGroup(gk)); return b; })()],
+      ["Company",(()=>{ const b=el("button","linkb",c.name); b.type="button";
+        b.addEventListener("click",()=>openCompany(ck)); return b; })()],
+      ["Dates",rangeLabel()],
+      ["People",n(per.size)],["Meetings With Them There",n(mine.length)],["Attendance Records",n(recs)],
+      ["First Seen",fmtD(first)],["Last Seen",fmtD(last)]
+    ]));
+    if(!per.size){
+      const b=el("div","banner info");
+      const names=[...everWho].map(pk=>{ const p=M.pp.get(pk); return p?p.name:pk; }).sort();
+      b.innerHTML=everLast
+        ? "<b>No one from "+esc2(c.name)+" attended "+esc2(g.name)+" "+esc2(rangeWords())+".</b> "+
+          "The last time anyone from "+esc2(c.name)+" was there was "+esc2(fmtD(everLast))+
+          " ("+esc2(names.join(", "))+")."
+        : "<b>No one from "+esc2(c.name)+" has ever attended "+esc2(g.name)+".</b>";
+      box.appendChild(b);
+      return box;
+    }
+    box.appendChild(sect("Who Attended, by Year",per.size,()=>{
+      const w=el("div","tblwrap"), t=el("table","tbl"), th=el("thead"), tr=el("tr");
+      ["Name"].concat(years,["Total","Last Attended"]).forEach((x,i)=>{ const h=el("th",null,x);
+        if(i>0) h.style.textAlign="right"; tr.appendChild(h); });
+      th.appendChild(tr); t.appendChild(th);
+      const tb=el("tbody");
+      [...per.entries()].sort((a,b)=>b[1].last.localeCompare(a[1].last)||b[1].t-a[1].t).forEach(([pk,o])=>{
+        const p=M.pp.get(pk); const r=el("tr","clik"); r.title="Open "+(p?p.name:pk);
+        r.appendChild(el("td",null,p?p.name:pk));
+        years.forEach(y=>r.appendChild(el("td","n",o.by[y]?n(o.by[y]):"\u2014")));
+        r.appendChild(el("td","n",n(o.t)));
+        r.appendChild(el("td","n",fmtD(o.last)));
+        r.addEventListener("click",()=>openPerson(pk));
+        tb.appendChild(r); });
+      t.appendChild(tb); w.appendChild(t);
+      const d=el("div"); d.appendChild(w);
+      d.appendChild(el("div","hint","Counts are meetings attended. A person counts for "+c.name+" only on dates they worked there."));
+      return d;
+    },true));
+    box.appendChild(sect("Meetings They Were At",mine.length,()=>mtgList(mine,false)));
+    return box;
+  });
+}
+
 /* ---- company pane ---- */
 function openCompany(ck){
   const c=M.co.get(ck); if(!c) return;
+  PANE_NEXT=()=>openCompany(ck);
   const ppl=M.coPeople.get(ck)||new Set();
   const grps=new Map(), per=new Map(); let recs=0,first="",last="";
   M.mt.forEach((m,i)=>{ if(!inRange(m.d)||isCancelled(m)) return; let hit=0;
@@ -3164,10 +3251,30 @@ function openCompany(ck){
     box.appendChild(sect("People From This Company",per.size,()=>barList(
       [...per.entries()].sort((a,b)=>b[1]-a[1]).map(([pk,v])=>{ const p=M.pp.get(pk);
         return {label:p?p.name:pk,value:v,color:"var(--c1)",go:()=>openPerson(pk)};}),{labelWidth:"200px",pct:false})));
-    box.appendChild(sect("Groups They Take Part In",grps.size,()=>barList(
+    box.appendChild(sect("Groups They Take Part In",grps.size,()=>{
+      const d=el("div");
+      d.appendChild(el("div","hint","Click a group to see who from "+c.name+" attended it, year by year."));
+      d.appendChild(barList(
       [...grps.entries()].sort((a,b)=>b[1]-a[1]).map(([gk,v])=>{ const g=M.gr.get(gk);
         return {label:g?g.name:gk,sub:(g?gtypeShort(g.type):"")+(g&&g.archived?" · Archived":""),
-                value:v,color:"var(--c2)",go:()=>openGroup(gk)};}),{labelWidth:"210px",pct:false})));
+                value:v,color:"var(--c2)",go:()=>openCompanyGroup(ck,gk)};}),{labelWidth:"210px",pct:false}));
+      return d; }));
+    if(rangeOn()){
+      /* groups this company has attended, just not in the dates picked — so "not there lately"
+         shows up as an answer instead of a group silently missing from the list */
+      const before=new Map();
+      M.mt.forEach(m=>{ if(inRange(m.d)||isCancelled(m)||grps.has(m.gk)) return;
+        let hit=0; m.p.forEach(pk=>{ if(ckAt(pk,m.d)===ck) hit++; });
+        if(hit){ const o=before.get(m.gk)||{v:0,last:""}; o.v+=hit; if(m.d>o.last) o.last=m.d; before.set(m.gk,o); } });
+      if(before.size) box.appendChild(sect("Groups Not Attended in These Dates",before.size,()=>{
+        const d=el("div");
+        d.appendChild(el("div","hint","Groups "+c.name+" has attended at some point, but not "+rangeWords()+". The number is their attendance outside these dates. Click one to see who came and when."));
+        d.appendChild(barList([...before.entries()].sort((a,b)=>b[1].last.localeCompare(a[1].last)).map(([gk,o])=>{
+          const g=M.gr.get(gk);
+          return {label:g?g.name:gk,sub:"Last attended "+fmtD(o.last)+(g&&g.archived?" · Archived":""),
+                  value:o.v,color:"var(--ink-3)",go:()=>openCompanyGroup(ck,gk)}; }),{labelWidth:"210px",pct:false}));
+        return d; }));
+    }
     return box;
   });
 }
@@ -6088,7 +6195,7 @@ function renderAll(keepScroll){
   if(changed && RELIST[CUR]) try{ RELIST[CUR](); }catch(e){}
   try{ refreshIssueBadge(); }catch(e){}
 }
-function setScope(v){ SCOPE=v; renderAll(); }
+function setScope(v){ SCOPE=v; renderAll(); refreshPane(); }
 $$(".hq nav button[data-hq]").forEach(b=>b.addEventListener("click",()=>{
   try{ closePane(); }catch(e){}
   if(b.dataset.hq==="ov"){ LOGGK=""; PICKFAC=""; }
