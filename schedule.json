@@ -280,7 +280,10 @@
       "day": "Wednesday",
       "cadence": "1st Wednesday",
       "time": "11am–12pm ET",
-      "join": "https://mba-org.zoom.us/j/86383676148"
+      "join": "https://mba-org.zoom.us/j/86383676148",
+      "cancelled": [
+        "2026-11-04"
+      ]
     }
   ]
 }
