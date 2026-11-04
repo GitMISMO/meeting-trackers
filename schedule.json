@@ -256,7 +256,10 @@
       "day": "Wednesday",
       "cadence": "1st & 3rd Wednesday",
       "time": "2–3pm ET",
-      "join": "https://mba-org.zoom.us/j/84866528267"
+      "join": "https://mba-org.zoom.us/j/84866528267",
+      "cancelled": [
+        "2026-11-04"
+      ]
     },
     {
       "name": "Title Pricing API DWG",
