@@ -109,3 +109,5 @@ from the original Zoom workbook would reintroduce him unless that workbook is co
 - One active workgroup (Private Label RMBS Valuation DWG) has no cadence set.
 
 All three are listed under **Data Health** on the Stats page.
+
+<!-- Republished Nov 4, 2026 after a stalled GitHub Pages deploy. -->
