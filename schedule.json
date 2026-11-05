@@ -1,6 +1,6 @@
 {
   "note": "Public meeting schedule for the MISMO website. Maintained in MISMO’s meeting tracker and published automatically.",
-  "updated": "2026-11-04",
+  "updated": "2026-11-05",
   "groups": [
     {
       "name": "API COP",
@@ -72,7 +72,10 @@
       "day": "Thursday",
       "cadence": "1st & 3rd Thursday",
       "time": "4–5pm ET",
-      "join": "https://mba-org.zoom.us/j/81784509635"
+      "join": "https://mba-org.zoom.us/j/81784509635",
+      "cancelled": [
+        "2026-11-05"
+      ]
     },
     {
       "name": "Data Governance and Management COP",
@@ -256,10 +259,7 @@
       "day": "Wednesday",
       "cadence": "1st & 3rd Wednesday",
       "time": "2–3pm ET",
-      "join": "https://mba-org.zoom.us/j/84866528267",
-      "cancelled": [
-        "2026-11-04"
-      ]
+      "join": "https://mba-org.zoom.us/j/84866528267"
     },
     {
       "name": "Title Pricing API DWG",
@@ -267,10 +267,7 @@
       "day": "Wednesday",
       "cadence": "Every Wednesday",
       "time": "3:30–4:30pm ET",
-      "join": "https://mba-org.zoom.us/j/83150861941",
-      "cancelled": [
-        "2026-11-04"
-      ]
+      "join": "https://mba-org.zoom.us/j/83150861941"
     },
     {
       "name": "VA Docs to Data DWG",
@@ -286,10 +283,7 @@
       "day": "Wednesday",
       "cadence": "1st Wednesday",
       "time": "11am–12pm ET",
-      "join": "https://mba-org.zoom.us/j/86383676148",
-      "cancelled": [
-        "2026-11-04"
-      ]
+      "join": "https://mba-org.zoom.us/j/86383676148"
     }
   ]
 }
