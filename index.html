@@ -3005,6 +3005,11 @@ box.appendChild(sect("Who Attends Most",ppl.size,()=>barList(
       const pad=m=>m==null?"":String(Math.floor(m/60)).padStart(2,"0")+":"+String(m%60).padStart(2,"0");
       const iFrom=fld("Starts (ET)",inp("time",sc.st||pad(cur[0])));
       const iTo  =fld("Ends (ET)",inp("time",sc.en||pad(cur[1])));
+      /* which MISMO Zoom login hosts this group's meeting — it goes into the Outlook invite */
+      const LICS=["MISMO 1","MISMO 2","MISMO 3","MISMO 4","MISMO Facilitators"];
+      const licOpts=[["","\u2014 Not Set \u2014"]].concat(LICS.map(x=>[x,x]));
+      if(sc.lic&&LICS.indexOf(sc.lic)<0) licOpts.push([sc.lic,sc.lic]);
+      const iLic=fld("Zoom Account",sel(licOpts,sc.lic||""));
       const iZoom=fld("Zoom Link",inp("text",sc.zoom,"https://mba-org.zoom.us/j/\u2026"),true);
 
       const hf=el("div","fld wide"); hf.appendChild(el("label",null,"How Often"));
@@ -3071,21 +3076,23 @@ box.appendChild(sect("Who Attends Most",ppl.size,()=>barList(
         const r=rule(), t=fmtSpan(iFrom.value,iTo.value);
         const writes=[{c:"groups",id:gk,data:{name:g.name,type:g.type,
           facilitator:iFac.value.trim(),archived:iSt.value==="1",hold:iSt.value==="h"}}];
+        const upd=todayISO(), updBy=whoAmI();
         if(r) writes.push({c:"sched",id:gk,data:{fac:iFac.value.trim(),day:iDay.value,
           st:iFrom.value||"",en:iTo.value||"",time:t,cadence:cadenceText(r,iDay.value),
-          zoom:iZoom.value.trim(),status:"Active",rule:r,removed:false}});
+          zoom:iZoom.value.trim(),lic:iLic.value,upd:upd,updBy:updBy,status:"Active",rule:r,removed:false}});
         else writes.push({c:"sched",id:gk,data:{removed:true}});
         const okr=await saveMany(writes);
         sv.disabled=false;
         if(!okr) return;
         g.facilitator=iFac.value.trim(); g.archived=iSt.value==="1"; g.hold=iSt.value==="h";
-        if(r) M.sched[gk]={fac:g.facilitator,day:iDay.value,st:iFrom.value||"",en:iTo.value||"",
-          time:t,cadence:cadenceText(r,iDay.value),zoom:iZoom.value.trim(),status:"Active",rule:r};
+        if(r) M.sched[gk]=Object.assign({},M.sched[gk]||{},{fac:g.facilitator,day:iDay.value,st:iFrom.value||"",en:iTo.value||"",
+          time:t,cadence:cadenceText(r,iDay.value),zoom:iZoom.value.trim(),lic:iLic.value,upd:upd,updBy:updBy,
+          status:"Active",rule:r});
         else delete M.sched[gk];
         renderToday(); tickToday(); renderAll(); openGroup(gk); toast("Saved.");
       });
       row.appendChild(sv); d.appendChild(row);
-      d.appendChild(el("div","hint","Times are Eastern, the way the Zoom schedule keeps them. Archiving a group hides it from the active lists; its meetings and people stay in every total."));
+      d.appendChild(el("div","hint","Times are Eastern, the way the Zoom schedule keeps them. Saving updates the MISMO Meetings Schedule calendar in Outlook \u2014 time, cadence, Zoom account and link, and facilitator all go into the invite. Archiving a group hides it from the active lists; its meetings and people stay in every total."));
       return d;
     },!!openSched));
     return box;
