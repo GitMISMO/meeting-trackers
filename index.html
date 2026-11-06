@@ -84,6 +84,8 @@ img{max-width:100%}
    in between, the relay answers 409; the change is re-applied on top of theirs and
    sent again, so two facilitators logging different meetings never overwrite each
    other. Saves made within a moment of each other go out as one commit.
+   Since November 5, 2026 the change re-applied is only what was changed here, not
+   the whole file as this page had it (before, the retry put the older copy back).
 
    Seeing other people's work: the relay has no push, so loaded files are re-read
    every 30 seconds while the page is in use (every 2 minutes after ten idle
@@ -130,6 +132,162 @@ img{max-width:100%}
   function now() { return Date.now(); }
   function idOf(p) { var s = String(p).split('/'); return s[s.length - 1]; }
   function parentOf(p) { var s = String(p).split('/'); return s.slice(0, -1).join('/'); }
+
+  /* ---- saving without overwriting anyone (November 5, 2026) ----------------------------
+     A save used to send the whole record exactly as this page had it. If the page had
+     been open a while, or someone else saved in the moment before, their change was
+     quietly put back. Now a save carries only what was changed here: it is laid over the
+     newest copy at the moment it is written (and again if the relay says someone saved
+     first), and everything this page did not change keeps its newest value.
+       - Records inside a list are matched by their id, so two people changing different
+         rows both keep their change, a row added by either is kept, and a row someone
+         else removed stays removed unless it was changed here.
+       - Running notes kept as text (log, notes) keep both people's additions.
+       - When both changed the very same value, the newer save (this one) wins, unless
+         the person saving says to keep theirs when asked. */
+  var MG_LOGS = { log: true, notes: true };
+  var MG_QUIET = /^(updatedAt|updatedBy|savedAt|savedBy|createdAt|createdBy|updated)$/;   /* when it was saved, and by whom */
+  function mgObj(v) { return !!v && typeof v === 'object' && !Array.isArray(v); }
+  function mgHas(o, k) { return !!o && Object.prototype.hasOwnProperty.call(o, k); }
+  function mgCopy(v) { return v === undefined ? undefined : JSON.parse(JSON.stringify(v)); }
+  /* "", null and nothing are the same; 5 and "5" are the same */
+  function mgNorm(v) {
+    if (v === undefined || v === null || v === '') return '';
+    if (typeof v === 'number' || typeof v === 'boolean') return String(v);
+    if (typeof v === 'string') return v;
+    return JSON.stringify(v);
+  }
+  function mgSame(x, y) {
+    if (x === y) return true;
+    if (mgObj(x) && mgObj(y)) {
+      var k, seen = {};
+      for (k in x) if (mgHas(x, k)) { seen[k] = 1; if (!mgSame(x[k], y[k])) return false; }
+      for (k in y) if (mgHas(y, k) && !seen[k] && !mgSame(x[k], y[k])) return false;
+      return true;
+    }
+    if (Array.isArray(x) && Array.isArray(y)) {
+      if (x.length !== y.length) return false;
+      for (var i = 0; i < x.length; i++) if (!mgSame(x[i], y[i])) return false;
+      return true;
+    }
+    if ((x && typeof x === 'object') || (y && typeof y === 'object')) return false;
+    return mgNorm(x) === mgNorm(y);
+  }
+  /* what a row in a list is called in a question, and how it is matched */
+  function mgName(x, i) {
+    if (mgObj(x)) { var n = x.title || x.name || x.task || x.text || x.nm || x.full || x.email || x.id; if (n) return String(n).slice(0, 40); }
+    return typeof x === 'string' ? x.slice(0, 40) : '#' + (i + 1);
+  }
+  function mgIdKey(x) { return mgObj(x) && x.id !== undefined && x.id !== null && x.id !== '' ? 'i:' + x.id : null; }
+  function mgJsonKey(x) { return x === undefined ? null : 'j:' + JSON.stringify(x); }
+  function mgIndex(lists, keyFn) {
+    var out = [];
+    for (var a = 0; a < lists.length; a++) {
+      var m = {}, order = [];
+      for (var i = 0; i < lists[a].length; i++) {
+        var k = keyFn(lists[a][i]);
+        if (k === null || mgHas(m, k)) return null;
+        m[k] = lists[a][i]; order.push(k);
+      }
+      out.push({ m: m, order: order });
+    }
+    return out;
+  }
+  function mgList(C, M, B, path, ctx) {
+    var common = function (x, y) { return x.order.filter(function (k) { return mgHas(y.m, k); }).join('\u0001'); };
+    var reordered = common(M, B) !== common(B, M);      /* the order was changed here: this order stands */
+    var lead = reordered ? M : C, rest = reordered ? C : M, out = [], keys = [], done = {};
+    var one = function (k) {
+      done[k] = 1;
+      var b = mgHas(B.m, k), m = mgHas(M.m, k), c = mgHas(C.m, k), src = c ? C.m[k] : M.m[k];
+      if (b && m && c) return { v: mgValue(C.m[k], M.m[k], B.m[k], path.concat(mgName(src, 0)), ctx) };
+      if (b && m) return mgSame(M.m[k], B.m[k]) ? null : { v: mgCopy(M.m[k]) };   /* removed there: back only if changed here */
+      if (b) return null;                                                         /* removed here */
+      if (m && c) return { v: mgValue(C.m[k], M.m[k], undefined, path.concat(mgName(src, 0)), ctx) };
+      return { v: mgCopy(src) };                                                  /* added on one side */
+    };
+    lead.order.forEach(function (k) { var r = one(k); if (r) { out.push(r.v); keys.push(k); } });
+    rest.order.forEach(function (k, i) {
+      if (done[k]) return;
+      var r = one(k); if (!r) return;
+      /* a row added at the end goes at the end; one added in between goes after the row
+         it followed on its own side */
+      var at = out.length, between = false;
+      for (var q = i + 1; q < rest.order.length && !between; q++) between = keys.indexOf(rest.order[q]) >= 0;
+      if (between) {
+        at = 0;
+        for (var j = i - 1; j >= 0; j--) { var p = keys.indexOf(rest.order[j]); if (p >= 0) { at = p + 1; break; } }
+      }
+      out.splice(at, 0, r.v); keys.splice(at, 0, k);
+    });
+    return out;
+  }
+  function mgValue(cur, mine, base, path, ctx) {
+    if (mgSame(mine, base)) return mgCopy(cur);                     /* not changed here: the newest value stands */
+    if (mgSame(cur, base) || mgSame(cur, mine)) return mgCopy(mine);
+    var last = path.length ? String(path[path.length - 1]) : '';
+    if (MG_LOGS[last] && typeof cur === 'string' && typeof mine === 'string' && (base == null || typeof base === 'string')) {
+      var b0 = base || '';
+      if (mine.indexOf(b0) === 0 && cur.indexOf(b0) === 0) {                                      /* both added to the end */
+        var add = mine.slice(b0.length);
+        return cur + (cur && !/\s$/.test(cur) && !/^\s/.test(add) ? '\n' : '') + add;
+      }
+    }
+    if (mgObj(cur) && mgObj(mine) && (mgObj(base) || base == null)) {
+      var b = mgObj(base) ? base : {}, out = mgCopy(cur), keys = {}, k;
+      for (k in mine) if (mgHas(mine, k)) keys[k] = 1;
+      for (k in b) if (mgHas(b, k)) keys[k] = 1;
+      Object.keys(keys).forEach(function (k) {
+        if (mgSame(mine[k], b[k])) return;
+        if (!mgHas(mine, k)) { delete out[k]; return; }                               /* taken out here */
+        if (!mgHas(cur, k) && mgHas(b, k)) { out[k] = mgCopy(mine[k]); return; }      /* taken out there, changed here */
+        var v = mgValue(cur[k], mine[k], b[k], path.concat(k), ctx);
+        if (v === undefined) delete out[k]; else out[k] = v;
+      });
+      return out;
+    }
+    if (Array.isArray(cur) && Array.isArray(mine) && (Array.isArray(base) || base == null)) {
+      var bl = Array.isArray(base) ? base : [], ix = mgIndex([cur, mine, bl], mgIdKey);
+      if (ix && (cur.length || mine.length)) return mgList(ix[0], ix[1], ix[2], path, ctx);
+      /* plain values (names, ticks, pairs) are a set: what was added or taken out on each side */
+      var plain = function (a) { return a.every(function (x) { return !mgObj(x); }); };
+      if (plain(cur) && plain(mine) && plain(bl) && (ix = mgIndex([cur, mine, bl], mgJsonKey))) return mgList(ix[0], ix[1], ix[2], path, ctx);
+      if (cur.length === mine.length && mine.length === bl.length)
+        return cur.map(function (c, i) { return mgValue(c, mine[i], bl[i], path.concat(mgName(c, i)), ctx); });
+      ix = mgIndex([cur, mine, bl], mgJsonKey);
+      if (ix) return mgList(ix[0], ix[1], ix[2], path, ctx);
+    }
+    /* both changed this very value */
+    var key = path.join(' › ');
+    if (ctx && ctx.theirs && ctx.theirs[key]) return mgCopy(cur);
+    if (ctx && ctx.clashes && !MG_QUIET.test(last) && !(ctx.quiet && ctx.quiet.test(key)))
+      ctx.clashes.push({ key: key, theirs: cur, mine: mine });
+    return mgCopy(mine);
+  }
+  /* one whole document: `base` is the copy the change started from (undefined: not known,
+     so it is written as sent, the way it always was) */
+  function mgDoc(cur, mine, base, ctx) {
+    if (base === undefined || base === null || mine === null || mine === undefined) return mgCopy(mine);
+    if (cur === null || cur === undefined) return mgSame(mine, base) ? null : mgCopy(mine);   /* removed by someone else */
+    if (mgSame(cur, base)) return mgCopy(mine);                                                 /* nobody else saved: exactly as sent */
+    return mgValue(cur, mine, base, [], ctx);
+  }
+  /* the question asked when both people changed the same thing; true keeps this page's */
+  function mgShow(v) { var t = mgObj(v) || Array.isArray(v) ? JSON.stringify(v) : mgNorm(v); return t === '' ? '(blank)' : t.slice(0, 80); }
+  function mgWord(k) { return String(k).replace(/([a-z])([A-Z])/g, '$1 $2').replace(/^./, function (c) { return c.toUpperCase(); }); }
+  function mgAsk(what, clashes, labels) {
+    var word = function (k) { return labels && labels[k] ? labels[k] : mgWord(k); };
+    var list = clashes.slice(0, 8).map(function (c) {
+      return '• ' + c.key.split(' › ').map(word).join(' › ') + ' — theirs: ' + mgShow(c.theirs) + '   ·   yours: ' + mgShow(c.mine);
+    }).join('\n') + (clashes.length > 8 ? '\n• and ' + (clashes.length - 8) + ' more' : '');
+    var msg = 'While you had ' + what + ' open, someone else saved a different value in the same ' +
+      (clashes.length === 1 ? 'place' : 'places') + ':\n\n' + list +
+      '\n\nOK keeps yours. Cancel keeps theirs for ' + (clashes.length === 1 ? 'this one' : 'these') +
+      ' — your other changes still save.';
+    try { return window.confirm(msg); } catch (e) { return true; }
+  }
+  /* the page's own save code uses the same rules for one record at a time */
+  window.__mtMerge = { doc: mgDoc, same: mgSame, ask: mgAsk };
 
   /* ---------- where a document is filed ---------- */
   function place(path) {
@@ -197,17 +355,27 @@ img{max-width:100%}
   }
   function ensure(f) { return f.loaded ? Promise.resolve(f) : load(f); }
 
-  function applyOps(f, content, ops) {
+  /* Each change is laid over the copy it is applied to (November 5, 2026): `op.base` is the
+     document as this page had it when the change was made, so only what was changed here is
+     written and everything else keeps the newest value. This matters most when the relay says
+     someone else saved first: their meetings in the same group-year, and their people in the
+     same bucket, used to be dropped by the second try, which re-sent this page's older copy. */
+  function applyOps(f, content, ops, writing) {
     ops.forEach(function (op) {
-      if (f.own) {
-        if (op.kind === 'set') content.doc = clone(op.data);
-        else if (op.kind === 'update') content.doc = Object.assign({}, content.doc || {}, clone(op.data));
-        else if (op.kind === 'delete') content.doc = null;
-      } else {
-        if (op.kind === 'set') content.docs[op.path] = clone(op.data);
-        else if (op.kind === 'update') content.docs[op.path] = Object.assign({}, content.docs[op.path] || {}, clone(op.data));
-        else if (op.kind === 'delete') delete content.docs[op.path];
-      }
+      var cur = f.own ? content.doc : content.docs[op.path], next;
+      if (cur === undefined) cur = null;
+      var ctx = { clashes: [], theirs: op.theirs || {} };
+      if (op.kind === 'set') next = mgDoc(cur, op.data, op.base, ctx);
+      else if (op.kind === 'update') {
+        if (op.base && cur === null) next = null;            /* removed by someone else since: not put back */
+        else if (op.base) next = mgDoc(cur, Object.assign(clone(op.base), clone(op.data)), op.base, ctx);
+        else next = Object.assign({}, cur || {}, clone(op.data));
+      } else if (op.kind === 'delete') next = null;
+      else return;
+      if (writing) { op.clashes = ctx.clashes; op.blended = op.base != null && cur !== null && !mgSame(cur, op.base); }
+      if (f.own) content.doc = next === undefined ? null : next;
+      else if (next === null || next === undefined) delete content.docs[op.path];
+      else content.docs[op.path] = next;
     });
     return content;
   }
@@ -223,11 +391,14 @@ img{max-width:100%}
   }
 
   /* ---------- saving ---------- */
-  function queue(path, kind, data) {
+  /* `base`: the document as the change started from it. Left out, it is the copy this page
+     holds right now (November 5, 2026). */
+  function queue(path, kind, data, base) {
     var p = place(path), f = file(p.file, p.own);
     return new Promise(function (res, rej) {
       var go = function () {
-        var op = { kind: kind, path: path, data: data, res: res, rej: rej };
+        var from = base !== undefined ? clone(base) : (kind !== 'delete' ? clone(docIn(f, path)) : undefined);
+        var op = { kind: kind, path: path, data: data, base: from, res: res, rej: rej };
         f.pending.push(op); f.view = null;
         if (p.own) register(path, kind !== 'delete');
         schedule(f, FLUSH_MS);
@@ -267,7 +438,7 @@ img{max-width:100%}
     var batch = f.pending.slice(), tries = 0;
     var attempt = function () {
       return ensure(f).then(function () {
-        var next = applyOps(f, clone(f.server), batch);
+        var next = applyOps(f, clone(f.server), batch, true);
         if (JSON.stringify(next).length > MAX_FILE)
           throw err('TOO_BIG', 'This part of the trackers has grown too big to save in one piece.');
         return put(f.name, { content: next, sha: f.sha }).then(function (b) {
@@ -275,6 +446,8 @@ img{max-width:100%}
           f.pending = f.pending.filter(function (op) { return batch.indexOf(op) < 0; }); f.view = null;
           batch.forEach(function (op) { op.res(); });
           saved();
+          /* someone else's work was folded in on the way: show it here too */
+          if (batch.some(function (op) { return op.blended; })) changedByOthers();
         });
       }).catch(function (e) {
         if (e && e.status === 409 && tries < 8) {
@@ -360,8 +533,9 @@ img{max-width:100%}
         var fresh = f.loaded && !f.loading && (f.pending.length || now() - f.loadedAt < 15000);
         return (fresh ? Promise.resolve(f) : load(f)).then(function () { return docSnap(path, docIn(f, path), f.pending.length > 0); });
       },
-      set: function (data) { return queue(path, 'set', data); },
-      update: function (patch) { return queue(path, 'update', patch); },
+      /* opts.base: the copy this change started from (see queue) */
+      set: function (data, opts) { return queue(path, 'set', data, opts ? opts.base : undefined); },
+      update: function (patch, opts) { return queue(path, 'update', patch, opts ? opts.base : undefined); },
       delete: function () { return queue(path, 'delete', null); }
     };
   }
@@ -644,7 +818,7 @@ img{max-width:100%}
       return Promise.resolve(null);
     }
   };
-  window.__mtRelay = { files: F, place: place, poll: poll, pending: anyPending,
+  window.__mtRelay = { files: F, place: place, poll: poll, pending: anyPending, refresh: changedByOthers,
     pendingCount: pendingCount, status: status,
     config: { RELAY_URL: RELAY_URL, PROJECT: PROJECT, POLL_MS: POLL_MS } };
 
@@ -2458,6 +2632,8 @@ function refreshPane(){
 }
 function openPane(title,sub,build){
   PANE_RE=PANE_NEXT; PANE_NEXT=null;
+  /* November 5, 2026: what the shared data said as this panel was drawn (see writeBuckets) */
+  try{ PANE_SEEN=new Map(DBC); PANE_RECS=[]; PANE_SAID=""; }catch(e){}
   $("#pane-t").textContent=title; $("#pane-s").textContent=sub||"";
   const b=$("#pane-b"); b.textContent=""; b.scrollTop=0;
   const r=build(); if(r) b.appendChild(r);
@@ -2973,6 +3149,7 @@ function openGroup(gk,openSched){
       const ck=ckAt(pk,m.d); if(ck) cos.set(ck,(cos.get(ck)||0)+1);
       const c=catAt(pk,m.d); cats.set(c,(cats.get(c)||0)+1); }); });
   openPane(g.name, gtypeShort(g.type)+(g.archived?" · Archived":g.hold?" · On Hold":"")+(g.facilitator?" · "+g.facilitator:"")+(rangeOn()?" · "+rangeLabel():""), ()=>{
+    ["groups","sched","leaders","voters"].forEach(c=>paneShows(c,gk));
     const box=el("div");
     const st=el("span","pill "+(g.archived?"arch":g.hold?"hold":"live"),
       g.archived?"Archived":g.hold?"On Hold":"Active");
@@ -3162,6 +3339,7 @@ function openPerson(pk){
   idxs.forEach(i=>{ const m=M.mt[i]; grps.set(m.gk,(grps.get(m.gk)||0)+1);
     if(!first||m.d<first)first=m.d; if(!last||m.d>last)last=m.d; });
   openPane(p.name, compName(pk)+" · "+catOf(pk)+(rangeOn()?" · "+rangeLabel():""), ()=>{
+    paneShows("people",pk);
     const box=el("div");
     box.appendChild(facts([
       ["Company",(()=>{ const b=el("button","linkb",compName(pk)); b.type="button";
@@ -3298,6 +3476,7 @@ function openCompany(ck){
     if(hit){ recs+=hit; grps.set(m.gk,(grps.get(m.gk)||0)+hit);
       if(!first||m.d<first)first=m.d; if(!last||m.d>last)last=m.d; } });
   openPane(c.name, c.cat+" · "+n(ppl.size)+" people"+(rangeOn()?" · "+rangeLabel():""), ()=>{
+    paneShows("companies",ck);
     const box=el("div");
     box.appendChild(facts([
       ["Category",CANWRITE?catSelect(c.cat,async v=>{
@@ -3632,6 +3811,7 @@ async function rejoinPair(key,after){
    person — and every meeting they have ever attended — and records what changed and from when. */
 function personEditor(pk,after){
   const p=M.pp.get(pk); if(!p) return el("div","empty","That person could not be found.");
+  paneShows("people",pk);
   const d=el("div");
   d.appendChild(el("div","hint","Their attendance history stays with them whatever changes here — "+
     "nothing is ever detached from a person."));
@@ -5434,6 +5614,44 @@ function withProgress(fn,run){
   const prev=SAVEPROG; SAVEPROG=fn;
   return Promise.resolve().then(run).finally(()=>{ SAVEPROG=prev; });
 }
+/* ---- saving without overwriting anyone (November 5, 2026) ----
+   A panel can sit open for hours, and a save used to write each record exactly as the panel
+   had it, so a company, role or facilitator someone else saved in the meantime was quietly
+   put back. Now each record saved is compared with the copy it started from: the record as
+   the open panel first showed it (PANE_SEEN, taken when the panel is drawn), or else as this
+   page last read it. Only what was changed here is written; every other field keeps its
+   newest value. If someone else changed the very same field, the person saving is asked
+   which to keep, and an open panel says so when someone else saves what it shows. */
+let PANE_SEEN=null, PANE_RECS=[], PANE_SAID="";
+const MINE_SENT=new Map();       // "path|key" -> what this page last wrote there
+function seenItem(src,path,key){
+  const b=src&&src.get(path), it=b&&b.items;
+  return it&&Object.prototype.hasOwnProperty.call(it,key)? JSON.parse(JSON.stringify(it[key])) : undefined;
+}
+function startedFrom(path,key){
+  if(paneOpen()&&PANE_SEEN&&PANE_SEEN.has(path)&&PANE_RECS.some(([p,k])=>p===path&&k===key)) return seenItem(PANE_SEEN,path,key);
+  return seenItem(DBC,path,key);
+}
+/* the panel shows these records; it says so when someone else saves one of them */
+function paneShows(kind,id,data){ try{ PANE_RECS.push([bucketOf(kind,id,data),keyOf(kind,id,data)]); }catch(e){} }
+setInterval(()=>{
+  const MG=window.__mtMerge;
+  if(!MG||!paneOpen()||!PANE_SEEN||!PANE_RECS.length) return;
+  const hit=PANE_RECS.find(([p,k])=>{
+    const was=seenItem(PANE_SEEN,p,k), now=seenItem(DBC,p,k);
+    if(now===undefined||MG.same(was,now)) return false;
+    const mine=MINE_SENT.get(p+"|"+k);
+    return !(mine!==undefined&&MG.same(mine,now));
+  });
+  const b=$("#pane-b"); if(!hit||!b) return;
+  const sig=hit.join("|")+"|"+JSON.stringify(seenItem(DBC,hit[0],hit[1]));
+  if(PANE_SAID===sig||b.querySelector(".mt-stale")) return;
+  PANE_SAID=sig;
+  const n=el("div","banner warn-b mt-stale");
+  n.setAttribute("role","status");
+  n.textContent="Someone else just saved this record. Saving keeps their changes and adds yours.";
+  b.insertBefore(n,b.firstChild);
+},3000);
 async function writeBuckets(groupsMap){
   if(!DB){ toast("Shared data is not available in this view, so nothing was saved.",true); return false; }
   const paths=[...groupsMap.keys()];
@@ -5444,12 +5662,37 @@ async function writeBuckets(groupsMap){
      of commits into a couple of dozen. The hosted copy limits how many saves it will take
      at once, so there we keep a handful in flight instead. */
   const lim=window.__mtRelay?paths.length:6;
-  let bad=null, next=0;
+  let bad=null, next=0, blended=false;
   const one=async(path)=>{
     const ref=DB.doc(path);
+    const wants=groupsMap.get(path), from={};
+    Object.keys(wants).forEach(k=>{ from[k]=startedFrom(path,k); });
     let cur={};
     try{ const s=await ref.get(); if(s.exists) cur=JSON.parse(JSON.stringify(s.data()||{})); }catch(e){}
-    const items=Object.assign({},cur.items||{},groupsMap.get(path));
+    /* each record: only what was changed here, laid over the newest copy (November 5, 2026) */
+    const MG=window.__mtMerge, had=cur.items||{}, put={}, clashes=[], QUIET=/(^|\u203a )(at|by|byId|upd|updBy)$/;
+    Object.keys(wants).forEach(k=>{
+      const was=from[k], now=Object.prototype.hasOwnProperty.call(had,k)? had[k] : null;
+      if(!MG||was===undefined){ put[k]=wants[k]; return; }
+      const ctx={clashes:[],theirs:{},quiet:QUIET};
+      const v=MG.doc(now,wants[k],was,ctx);
+      ctx.clashes.forEach(c=>clashes.push({k:k,c:c}));
+      put[k]=v;
+    });
+    if(clashes.length&&paneOpen()&&MG){
+      const nm=k=>{ const w=wants[k]||{}; return w.name||(had[k]&&had[k].name)||k; };
+      const names=[...new Set(clashes.map(x=>nm(x.k)))];
+      const keepMine=MG.ask(names.length===1?"\u201c"+names[0]+"\u201d":"these records",clashes.map(x=>x.c),
+        {ck:"Company",cat:"Category",p:"Who Attended",fac:"Facilitator",zoom:"Zoom Link",lic:"Zoom Account",st:"Start",en:"End",
+         hist:"Company History",alt:"Other Names",sum:"Summit",label:"Note",reps:"Voting Representatives",list:"Leadership"});
+      if(!keepMine) clashes.forEach(x=>{ const ctx={clashes:[],theirs:{},quiet:QUIET};
+        clashes.filter(y=>y.k===x.k).forEach(y=>{ ctx.theirs[y.c.key]=1; });
+        put[x.k]=MG.doc(had[x.k]===undefined?null:had[x.k],wants[x.k],from[x.k],ctx); });
+    }
+    const items=Object.assign({},had);
+    Object.keys(put).forEach(k=>{ if(put[k]===null) delete items[k]; else { items[k]=put[k]; MINE_SENT.set(path+"|"+k,JSON.parse(JSON.stringify(put[k]))); } });
+    /* someone else's fields were kept: once saved, show the record as it now stands */
+    if(MG&&Object.keys(put).some(k=>!MG.same(put[k],wants[k]))) blended=true;
     const body={items:items,updated:new Date().toISOString()};
     const seg=path.split("/");
     if(seg[0]==="meetings"){ const gy=seg[1].split("__"); body.gk=gy[0]; body.year=gy[1]; }
@@ -5465,6 +5708,7 @@ async function writeBuckets(groupsMap){
     }
   };
   await Promise.all(Array.from({length:Math.max(1,Math.min(lim,paths.length))},worker));
+  if(blended&&window.__mtRelay&&window.__mtRelay.refresh) try{ window.__mtRelay.refresh(); }catch(e){}
   if(bad){ toast(dbErr(bad),true); return false; }
   return true;
 }
