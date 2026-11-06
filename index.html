@@ -3370,7 +3370,7 @@ box.appendChild(sect("Who Attends Most",ppl.size,()=>barList(
         const upd=todayISO(), updBy=whoAmI();
         if(r) writes.push({c:"sched",id:gk,data:{fac:iFac.value.trim(),day:iDay.value,
           st:iFrom.value||"",en:iTo.value||"",time:t,cadence:cadenceText(r,iDay.value),
-          zoom:iZoom.value.trim(),lic:iLic.value,upd:upd,updBy:updBy,status:"Active",rule:r,removed:false}});
+          zoom:iZoom.value.trim(),lic:iLic.value,upd:upd,updBy:updBy,status:"Active",rule:r,removed:false,moves:movesOf(gk)}});
         /* no day or no weeks: off the schedule, but its Zoom link, account and times are kept
            (before November 6, 2026 saving like this threw them all away) */
         else if(iZoom.value.trim()||iLic.value||iFrom.value||iTo.value)
@@ -4890,10 +4890,15 @@ function loadRoster(){
     setCancelled(true);
   });
   if(!CANWRITE) cb2.disabled=true;
+  const mvNow=movedOf(LOG.gk,LOG.d);
+  const mvB=el("button","btn ghost",mvNow?"Moved to "+moveText(mvNow):"Move This Meeting"); mvB.type="button"; mvB.id="lg-move";
+  mvB.title=mvNow?"Change or undo the move":"Move just this meeting to another day or time \u2014 calendars update for everyone who subscribed";
+  { const gk0=LOG.gk, d0=LOG.d; mvB.addEventListener("click",()=>openMovePane(gk0,d0)); }
+  if(!CANWRITE) mvB.disabled=true;
   if(cancelled){ sv.disabled=true; clr.disabled=true;
     sv.title="This meeting is recorded as cancelled. Reopen it first to log attendance.";
     sp.append(cb2,clr,sv); }
-  else sp.append(copyBtn(()=>[...LOG.present],host,null,()=>LOGGK),cb2,clr,sv);
+  else sp.append(copyBtn(()=>[...LOG.present],host,null,()=>LOGGK),mvB,cb2,clr,sv);
   bar.appendChild(sp);
   host.appendChild(bar);
 
@@ -5037,6 +5042,63 @@ function savedByText(m){
   if(m.createdBy&&m.createdBy!==m.by) t+=" \u00b7 first recorded by "+m.createdBy+
     (m.createdAt?" on "+fmtD(String(m.createdAt).slice(0,10)):"");
   return t;
+}
+/* ---- one meeting moved to another day or time (November 6, 2026) ----
+   Kept on the group's schedule as moves[original date] = {d, st, en}. Attendance is still logged on the
+   original date; the website calendars and the Outlook MISMO Meetings Schedule show the new day and time. */
+function movesOf(gk){ const s=(M.sched||{})[gk]; return (s&&s.moves&&typeof s.moves==="object")?s.moves:{}; }
+function movedOf(gk,d){ const m=movesOf(gk)[d]; return (m&&m.d)?m:null; }
+function moveText(mv){
+  if(!mv) return "";
+  const hm=x=>{ if(!/^\d{1,2}:\d{2}$/.test(x||"")) return ""; let [h,m]=x.split(":").map(Number); const ap=h<12?"am":"pm"; h=h%12||12; return h+(m?":"+String(m).padStart(2,"0"):"")+ap; };
+  const a=hm(mv.st), b=hm(mv.en);
+  return fmtD(mv.d)+(a&&b?" \u00b7 "+a+"\u2013"+b+" ET":"");
+}
+async function saveMove(gk,d,mv){
+  const cur=Object.assign({},movesOf(gk));
+  if(mv) cur[d]=mv; else delete cur[d];
+  const today=todayISO();
+  Object.keys(cur).forEach(k=>{ const x=cur[k]; if(!x||(k<today&&String(x.d||"")<today)) delete cur[k]; });
+  const okr=await saveMany([{c:"sched",id:gk,data:keepRest("sched",gk,{moves:cur})}]);
+  if(!okr) return false;
+  M.sched[gk]=Object.assign({},M.sched[gk]||{},{moves:cur});
+  return true;
+}
+function openMovePane(gk,d){
+  const g=M.gr.get(gk), s=(M.sched||{})[gk]||{}, mv=movedOf(gk,d);
+  openPane(mv?"Change the New Day or Time":"Move This Meeting",(g?g.name:"")+" \u00b7 "+fmtD(d),()=>{
+    const box=el("div");
+    box.appendChild(el("div","hint","Moves just this one meeting. Everyone who subscribed to the group\u2019s calendar on the website, and the MISMO Meetings Schedule calendar in Outlook, show the new day and time within a few hours. Attendance is still logged on this meeting."));
+    const mk=(lab,type,val)=>{ const f=el("div","fld"); f.style.marginTop="14px"; f.appendChild(el("label",null,lab)); const i=el("input"); i.type=type; i.value=val||""; f.appendChild(i); box.appendChild(f); return i; };
+    const iD=mk("New Date","date",mv?mv.d:d);
+    const iS=mk("Start Time (ET)","time",mv?mv.st:(s.st||""));
+    const iE=mk("End Time (ET)","time",mv?mv.en:(s.en||""));
+    const row=el("div","btnrow"); row.style.marginTop="16px";
+    const sv=el("button","btn",mv?"Save the Change":"Move It"); sv.type="button";
+    const cx=el("button","btn ghost","Cancel"); cx.type="button"; cx.addEventListener("click",closePane);
+    row.append(sv,cx);
+    if(mv){
+      const un=el("button","btn ghost","Put It Back on "+fmtD(d)); un.type="button";
+      un.addEventListener("click",async()=>{ un.disabled=true;
+        if(await saveMove(gk,d,null)){ toast("Moved back \u2014 the meeting is on "+fmtD(d)+" again."); closePane(); if(LOGGK) loadRoster(); }
+        else un.disabled=false; });
+      row.appendChild(un);
+    }
+    box.appendChild(row);
+    sv.addEventListener("click",async()=>{
+      const nd=iD.value, st=iS.value, en=iE.value;
+      if(!/^\d{4}-\d{2}-\d{2}$/.test(nd)){ toast("Pick the new date.",true); return; }
+      if(!/^\d{2}:\d{2}$/.test(st)||!/^\d{2}:\d{2}$/.test(en)||en<=st){ toast("Enter a start and an end time, with the end after the start.",true); return; }
+      if(nd<todayISO()){ toast("That date has already passed.",true); return; }
+      if(nd===d&&st===(s.st||"")&&en===(s.en||"")){ toast("That is the meeting\u2019s usual day and time \u2014 nothing to move.",true); return; }
+      sv.disabled=true; sv.textContent="Saving\u2026";
+      const ok=await saveMove(gk,d,{d:nd,st:st,en:en,by:whoAmI(),at:new Date().toISOString()});
+      if(!ok){ sv.disabled=false; sv.textContent=mv?"Save the Change":"Move It"; return; }
+      toast("Moved to "+moveText({d:nd,st:st,en:en})+". Calendars update within a few hours.");
+      closePane(); if(LOGGK) loadRoster();
+    });
+    return box;
+  });
 }
 async function setCancelled(on){
   if(!LOG.gk||!LOG.d){ toast("Pick a group and a date.",true); return; }
