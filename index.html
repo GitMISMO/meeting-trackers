@@ -5071,8 +5071,9 @@ function openMovePane(gk,d){
     box.appendChild(el("div","hint","Moves just this one meeting. Everyone who subscribed to the group\u2019s calendar on the website, and the MISMO Meetings Schedule calendar in Outlook, show the new day and time within a few hours. Attendance is still logged on this meeting."));
     const mk=(lab,type,val)=>{ const f=el("div","fld"); f.style.marginTop="14px"; f.appendChild(el("label",null,lab)); const i=el("input"); i.type=type; i.value=val||""; f.appendChild(i); box.appendChild(f); return i; };
     const iD=mk("New Date","date",mv?mv.d:d);
-    const iS=mk("Start Time (ET)","time",mv?mv.st:(s.st||""));
-    const iE=mk("End Time (ET)","time",mv?mv.en:(s.en||""));
+    const sp0=spanOf(s)||[], hhmm=m=>m==null?"":String(Math.floor(m/60)).padStart(2,"0")+":"+String(m%60).padStart(2,"0");
+    const iS=mk("Start Time (ET)","time",mv?mv.st:hhmm(sp0[0]));
+    const iE=mk("End Time (ET)","time",mv?mv.en:hhmm(sp0[1]));
     const row=el("div","btnrow"); row.style.marginTop="16px";
     const sv=el("button","btn",mv?"Save the Change":"Move It"); sv.type="button";
     const cx=el("button","btn ghost","Cancel"); cx.type="button"; cx.addEventListener("click",closePane);
