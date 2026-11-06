@@ -1,0 +1,180 @@
+{
+  "note": "Every calendar address MISMO has published and what it serves now. Old addresses are kept so subscribers keep getting updates.",
+  "feeds": {
+    "api-cop": {
+      "key": "apicop",
+      "name": "API COP",
+      "status": "active"
+    },
+    "architecture-workgroup": {
+      "key": "architectureworkgroup",
+      "name": "Architecture Workgroup",
+      "status": "active"
+    },
+    "artificial-intelligence-ai-cop": {
+      "key": "artificialintelligenceaicop",
+      "name": "Artificial Intelligence (AI) COP",
+      "status": "active"
+    },
+    "automated-valuation-model-dwg": {
+      "key": "automatedvaluationmodeldwg",
+      "name": "Automated Valuation Model DWG",
+      "status": "active"
+    },
+    "business-glossary-cop": {
+      "key": "businessglossarycop",
+      "name": "Business Glossary COP",
+      "status": "active"
+    },
+    "business-process-model-cop": {
+      "key": "businessprocessmodelcop",
+      "name": "Business Process Model COP",
+      "status": "active"
+    },
+    "commercial-and-other-real-estate-digital-notes-dwg": {
+      "key": "commercialandotherrealestatedigitalnotesdwg",
+      "name": "Commercial and Other Real Estate Digital Notes DWG",
+      "status": "active"
+    },
+    "commercial-cop": {
+      "key": "commercialcop",
+      "name": "Commercial COP",
+      "status": "active"
+    },
+    "credit-reporting-cop": {
+      "key": "creditreportingcop",
+      "name": "Credit Reporting COP",
+      "status": "active"
+    },
+    "data-governance-and-management-cop": {
+      "key": "datagovernanceandmanagementcop",
+      "name": "Data Governance and Management COP",
+      "status": "active"
+    },
+    "decision-modeling-cop": {
+      "key": "decisionmodelingcop",
+      "name": "Decision Modeling COP",
+      "status": "active"
+    },
+    "digital-interoperability-cop": {
+      "key": "digitalinteroperabilitycop",
+      "name": "Digital Interoperability COP",
+      "status": "active"
+    },
+    "eheloc-dwg": {
+      "key": "ehelocdwg",
+      "name": "eHELOC DWG",
+      "status": "active"
+    },
+    "emortgage-cop": {
+      "key": "emortgagecop",
+      "name": "eMortgage COP",
+      "status": "active"
+    },
+    "enote-master-control-agreement-dwg": {
+      "key": "enotemastercontrolagreementdwg",
+      "name": "eNote Master Control Agreement DWG",
+      "status": "active"
+    },
+    "hero-housing-emerging-risks-and-opportunities-cop": {
+      "key": "herohousingemergingrisksandopportunitiescop",
+      "name": "HERO (Housing Emerging Risks and Opportunities) COP",
+      "status": "active"
+    },
+    "housing-counseling-data-dwg": {
+      "key": "housingcounselingdatadwg",
+      "name": "Housing Counseling Data DWG",
+      "status": "active"
+    },
+    "information-management": {
+      "key": "informationmanagement",
+      "name": "Information Management",
+      "status": "active"
+    },
+    "loan-application-data-exchange-dwg": {
+      "key": "loanapplicationdataexchangedwg",
+      "name": "Loan Application Data Exchange DWG",
+      "status": "active"
+    },
+    "mi-claim-submission-dwg": {
+      "key": "miclaimsubmissiondwg",
+      "name": "MI Claim Submission DWG",
+      "status": "active"
+    },
+    "mortgage-compliance-dataset-dwg": {
+      "key": "mortgagecompliancedatasetdwg",
+      "name": "Mortgage Compliance Dataset DWG",
+      "status": "active"
+    },
+    "mortgage-insurance-cop": {
+      "key": "mortgageinsurancecop",
+      "name": "Mortgage Insurance COP",
+      "status": "active"
+    },
+    "origination-cop": {
+      "key": "originationcop",
+      "name": "Origination COP",
+      "status": "active"
+    },
+    "property-and-valuation-services-cop": {
+      "key": "propertyandvaluationservicescop",
+      "name": "Property and Valuation Services COP",
+      "status": "active"
+    },
+    "remote-online-notarization-dwg": {
+      "key": "remoteonlinenotarizationdwg",
+      "name": "Remote Online Notarization DWG",
+      "status": "empty"
+    },
+    "reverse-mortgage-dwg": {
+      "key": "reversemortgagedwg",
+      "name": "Reverse Mortgage DWG",
+      "status": "active"
+    },
+    "secondary-cop": {
+      "key": "secondarycop",
+      "name": "Secondary COP",
+      "status": "active"
+    },
+    "servicing-cop": {
+      "key": "servicingcop",
+      "name": "Servicing COP",
+      "status": "active"
+    },
+    "servicing-transfers-dwg": {
+      "key": "servicingtransfersdwg",
+      "name": "Servicing Transfers DWG",
+      "status": "active"
+    },
+    "tie-technology-impact-and-enablement-cop": {
+      "key": "tietechnologyimpactandenablementcop",
+      "name": "TIE (Technology Impact and Enablement) COP",
+      "status": "active"
+    },
+    "title-and-closing-cop": {
+      "key": "titleandclosingcop",
+      "name": "Title and Closing COP",
+      "status": "active"
+    },
+    "title-and-closing-docs-to-data-dwg": {
+      "key": "titleandclosingdocstodatadwg",
+      "name": "Title and Closing Docs to Data DWG",
+      "status": "active"
+    },
+    "title-pricing-api-dwg": {
+      "key": "titlepricingapidwg",
+      "name": "Title Pricing API DWG",
+      "status": "active"
+    },
+    "va-docs-to-data-dwg": {
+      "key": "vadocstodatadwg",
+      "name": "VA Docs to Data DWG",
+      "status": "active"
+    },
+    "verifiable-smart-doc-3-0-profile-dwg": {
+      "key": "verifiablesmartdoc30profiledwg",
+      "name": "Verifiable SMART Doc® 3.0 Profile DWG",
+      "status": "active"
+    }
+  }
+}
