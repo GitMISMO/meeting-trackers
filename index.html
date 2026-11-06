@@ -403,7 +403,9 @@ img{max-width:100%}
         if (p.own) register(path, kind !== 'delete');
         schedule(f, FLUSH_MS);
       };
-      if (!f.loaded) ensure(f).then(go, function (e) { rej(e); });
+      /* the file could not be read first, so nothing was queued: say so, rather than
+         promise it will go out later (November 6, 2026) */
+      if (!f.loaded) ensure(f).then(go, function (e) { try { if (e && typeof e === 'object') e.notQueued = true; } catch (x) {} rej(e); });
       else go();
     });
   }
@@ -1710,12 +1712,18 @@ function trackAC(list,input){
   window.addEventListener("scroll",list.__ac,true);
   window.addEventListener("resize",list.__ac);
 }
-const esc=s=>String(s==null?"":s);
+/* escapes text going into innerHTML (it escaped nothing before November 6, 2026) */
+const esc=s=>String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#39;");
 const MON=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
 function fmtD(iso){ if(!iso) return ""; const p=String(iso).split("-");
   return p.length<3?iso:MON[+p[1]-1]+" "+(+p[2])+", "+p[0]; }
 function fmtDS(iso){ const p=String(iso||"").split("-"); return p.length<3?iso:p[1]+"/"+p[2]+"/"+p[0].slice(2); }
 function n(x){ return (x==null?0:x).toLocaleString(); }
+function monthsBack(k){
+  const t=new Date(), d=new Date(t.getFullYear(),t.getMonth()-k,1);
+  d.setDate(Math.min(t.getDate(),new Date(d.getFullYear(),d.getMonth()+1,0).getDate()));
+  return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
+}
 function todayISO(){ const d=new Date(); return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0"); }
 function el(tag,cls,txt){ const e=document.createElement(tag); if(cls)e.className=cls; if(txt!=null)e.textContent=txt; return e; }
 let TT=null;
@@ -1875,7 +1883,48 @@ function loadBaseline(B){
     const p0=new Set((B.att[i]||[]).map(x=>pk[x]));
     M.mt.push({id:"b"+i,gk:gk[m[0]],d:m[1],sum:(m[2]>=0?nk(B.summits[m[2]][0]):""),label:m[3]||"",
                p:new Set(p0),p0:p0,src:"base"});
+    BASEM.set(gk[m[0]]+"|"+m[1],{id:"b"+i,gk:gk[m[0]],d:m[1],sum:(m[2]>=0?nk(B.summits[m[2]][0]):""),label:m[3]||"",p0:p0});
   });
+}
+/* ---- one rule for turning a saved meeting into what the page counts (November 6, 2026) ----
+   BASEM holds every meeting exactly as the workbooks had it and is never changed.
+   A saved meeting marked full (every save since November 6, 2026) is the whole attendance as
+   the person saving saw it, so it is taken as it is: unticking someone stays unticked.
+   Older saved meetings are added to the imported one, as they always were.
+   A saved meeting marked gone takes the meeting off the record, imported copy included. */
+const BASEM=new Map();
+function baseMeeting(gk,d){
+  const b=BASEM.get(gk+"|"+d); if(!b) return null;
+  return {id:b.id,gk:b.gk,d:b.d,sum:b.sum,label:b.label,p:new Set(b.p0),p0:b.p0,src:"base"};
+}
+function dbMeeting(it,gk,d,id){
+  if(!it||it.gone) return null;
+  const b=BASEM.get(gk+"|"+d);
+  const p=(it.cancelled||it.full||!b)?new Set(it.p||[]):new Set([...b.p0,...(it.p||[])]);
+  return {id:id||it.id||("m_"+gk+"_"+String(d).replace(/-/g,"")),gk:gk,d:d,sum:it.sum||"",label:it.label||"",
+    p:p,src:"db",by:it.by||"",at:it.at||"",byId:it.byId||"",p0:b?b.p0:null,full:!!it.full,
+    cancelled:!!it.cancelled,createdBy:it.createdBy||"",createdAt:it.createdAt||""};
+}
+/* put a meeting into M.mt (rec null: take it out); the caller rebuilds the indexes */
+function putMeeting(gk,d,rec){
+  let done=false;
+  for(let i=M.mt.length-1;i>=0;i--){ const m=M.mt[i];
+    if(m.gk!==gk||m.d!==d) continue;
+    if(rec&&!done){ M.mt[i]=rec; done=true; } else M.mt.splice(i,1); }
+  if(rec&&!done) M.mt.push(rec);
+}
+/* a saved meeting taken away: what is left is the imported one, if there was one */
+function unsaveMeeting(gk,d){ putMeeting(gk,d,baseMeeting(gk,d)); }
+/* the meeting held for a group and date, read straight from M.mt (safe before the indexes are rebuilt) */
+function mtAt(gk,d){ return M.mt.find(m=>m.gk===gk&&m.d===d)||null; }
+/* take a meeting off the record. An imported one needs a saved marker, or it would come
+   straight back from the workbooks on the next load. */
+async function offRecord(gk,d){
+  const id="m_"+gk+"_"+String(d).replace(/-/g,"");
+  if(!BASEM.has(gk+"|"+d)) return removeDoc("meetings",id,{gk:gk,d:d});
+  const now=new Date().toISOString(), me=whoAmI();
+  return saveDoc("meetings",id,{gk:gk,d:d,sum:"",label:"",p:[],gone:true,full:true,
+    by:me,byId:(USER&&USER.id)||"",at:now,createdBy:me,createdAt:now});
 }
 
 /* Two records with the same surname are not always two records of the same person —
@@ -1969,9 +2018,13 @@ function applyDbDocs(docs){
   (docs.people||[]).forEach(d=>{ if(d.mergedInto||d.removed) return;
     const k=d.id||nk(d.name);
     const prev=M.pp.get(k)||{};
-    M.pp.set(k,{k:k,name:d.name||prev.name,ck:d.ck!=null?d.ck:(prev.ck||""),role:d.role||prev.role||"",
-      hist:(d.hist&&d.hist.length)?d.hist:prev.hist,alt:(d.alt&&d.alt.length)?d.alt:prev.alt,
-      addedBy:d.addedBy||prev.addedBy||"",addedAt:d.addedAt||prev.addedAt||""}); });
+    /* a value saved as cleared stays cleared (before November 6, 2026 an empty one fell back
+       to whatever this page held, so other open pages kept the old value and saved it back) */
+    const has=f=>Object.prototype.hasOwnProperty.call(d,f);
+    M.pp.set(k,{k:k,name:d.name||prev.name,ck:d.ck!=null?d.ck:(prev.ck||""),role:has("role")?(d.role||""):(prev.role||""),
+      hist:has("hist")?(d.hist||[]):prev.hist,alt:has("alt")?(d.alt||[]):prev.alt,
+      addedBy:has("addedBy")?(d.addedBy||""):(prev.addedBy||""),addedAt:has("addedAt")?(d.addedAt||""):(prev.addedAt||""),
+      checked:!!d.checked}); });
   (docs.groups||[]).forEach(d=>{ const k=d.id||nk(d.name);
     const prev=M.gr.get(k)||{first:"",last:""};
     M.gr.set(k,{k:k,name:d.name||prev.name,type:d.type||prev.type||"Other",
@@ -1979,18 +2032,19 @@ function applyDbDocs(docs){
       hold:d.hold!=null?!!d.hold:!!prev.hold,
       facilitator:d.facilitator!=null?d.facilitator:(prev.facilitator||""),
       first:prev.first,last:prev.last}); });
-  const seen=new Map(); M.mt.forEach((m,i)=>seen.set(m.gk+"|"+m.d,i));
+  const inDb=new Set();
   (docs.meetings||[]).forEach(d=>{
     if(!d.gk||!d.d) return;
-    const key=d.gk+"|"+d.d, ex=seen.get(key);
-    const rec={id:d.id,gk:d.gk,d:d.d,sum:d.sum||"",label:d.label||"",
-               p:new Set(d.p||[]),src:"db",by:d.by||"",at:d.at||"",byId:d.byId||"",
-               p0:(ex!=null?M.mt[ex].p0:null),
-               cancelled:!!d.cancelled,createdBy:d.createdBy||"",createdAt:d.createdAt||""};
-    if(ex!=null && M.mt[ex].src==="db"){ M.mt[ex]=rec; }
-    else if(ex!=null){ if(!rec.cancelled) rec.p=new Set([...M.mt[ex].p,...rec.p]); M.mt[ex]=rec; }
-    else { seen.set(key,M.mt.length); M.mt.push(rec); }
+    inDb.add(d.gk+"|"+d.d);
+    putMeeting(d.gk,d.d,dbMeeting(d,d.gk,d.d,d.id));
   });
+  /* saved meetings someone has since reopened or removed: back to the imported copy, if any.
+     Only when the meetings actually loaded, and never one this page saved a moment ago. */
+  if(docs._ok&&docs._ok.has("meetings")){
+    const fresh=Date.now()-120000;
+    M.mt.filter(m=>m.src==="db"&&!inDb.has(m.gk+"|"+m.d)&&!(m.at&&Date.parse(m.at)>fresh))
+      .forEach(m=>unsaveMeeting(m.gk,m.d));
+  }
   /* A saved meeting is merged with the imported one so a facilitator's save adds to the
      history rather than replacing it. That union would also put back anyone a merge folded
      away or a removal took out, so those are applied here — after the union, never before. */
@@ -2006,7 +2060,7 @@ function applyDbDocs(docs){
     else m.p=out;
   });
   // refresh group first/last
-  M.gr.forEach(g=>{ const ds=M.mt.filter(m=>m.gk===g.k).map(m=>m.d).sort();
+  M.gr.forEach(g=>{ const ds=M.mt.filter(m=>m.gk===g.k&&!isCancelled(m)).map(m=>m.d).sort();
     if(ds.length){ g.first=ds[0]; g.last=ds[ds.length-1]; } });
 }
 
@@ -2241,10 +2295,10 @@ const RPRESETS=[
   ["all","All Time",()=>["",""]],
   ["fy","This Fiscal Year",()=>fyBounds(0)],
   ["fyp","Last Fiscal Year",()=>fyBounds(1)],
-  ["m12","Last 12 Months",()=>{ const d=new Date(); d.setFullYear(d.getFullYear()-1);
-      return [d.toISOString().slice(0,10),todayISO()]; }],
-  ["m3","Last 3 Months",()=>{ const d=new Date(); d.setMonth(d.getMonth()-3);
-      return [d.toISOString().slice(0,10),todayISO()]; }],
+  /* worked out from the local date, not UTC (which ran a day ahead in the evening), and a
+     month that is shorter lands on its last day rather than spilling into the next */
+  ["m12","Last 12 Months",()=>[monthsBack(12),todayISO()]],
+  ["m3","Last 3 Months",()=>[monthsBack(3),todayISO()]],
   ["cus","Custom\u2026",null]
 ];
 function rangeBar(onChange){
@@ -2331,7 +2385,7 @@ function facList(){
 }
 /* scheduled dates in the last 60 days with nothing logged against them */
 function pendingFor(gk){
-  const g0=M.gr.get(gk); if(g0&&g0.hold) return [];   /* on hold: nothing is owed */
+  const g0=M.gr.get(gk); if(g0&&(g0.hold||g0.archived)) return [];   /* on hold or archived: nothing is owed */
   const sc=(M.sched||{})[gk]; if(!sc||!sc.rule) return [];
   const have=new Set((M.byG.get(gk)||[]).map(i=>M.mt[i].d));
   const now=etNow(), out=[];
@@ -2467,7 +2521,10 @@ function newGroupPane(){
    facilitator actually plans around. */
 function weekCount(gks,now){
   const d0=new Date(now.getTime());
-  d0.setDate(d0.getDate()-((d0.getDay()+6)%7));        /* back to Monday */
+  /* back to Monday — or, at the weekend, on to the week ahead, the same as the Today box */
+  if(d0.getDay()===0) d0.setDate(d0.getDate()+1);
+  else if(d0.getDay()===6) d0.setDate(d0.getDate()+2);
+  else d0.setDate(d0.getDate()-((d0.getDay()+6)%7));
   let t=0;
   for(let i=0;i<5;i++){
     const d=new Date(d0.getTime()); d.setDate(d.getDate()+i);
@@ -2551,7 +2608,8 @@ function drawPicker(){
     const grid=el("div","cardgrid");
     fl.forEach(([nm,gks])=>{
       const pend=gks.reduce((a,k)=>a+pendingFor(k).length,0);
-      const now=etNow(), todayN=gks.filter(k=>{ const sc=(M.sched||{})[k]; return sc&&sc.rule&&meetsOn(sc.rule,now); }).length;
+      const now=etNow(), todayN=gks.filter(k=>{ const sc=(M.sched||{})[k], g=M.gr.get(k);
+        if(g&&(g.archived||g.hold)) return false; return sc&&sc.rule&&meetsOn(sc.rule,now); }).length;
       const wk=weekCount(gks,now);
       const c=el("button","pcard2"); c.type="button";
       /* the stripe is the person's own colour, the same one their circle carries \u2014 the
@@ -3142,7 +3200,7 @@ function votersSection(gk,after){
 function openGroup(gk,openSched){
   const g=M.gr.get(gk); if(!g) return;
   PANE_NEXT=()=>openGroup(gk);
-  const idxs=inIdx(M.byG.get(gk));
+  const idxs=inIdx(M.byG.get(gk)).filter(i=>!isCancelled(M.mt[i]));
   const ppl=new Map(), cos=new Map(), cats=new Map(); let recs=0;
   idxs.forEach(i=>{ const m=M.mt[i]; recs+=m.p.size;
     m.p.forEach(pk=>{ ppl.set(pk,(ppl.get(pk)||0)+1);
@@ -3225,11 +3283,13 @@ box.appendChild(sect("Who Attends Most",ppl.size,()=>barList(
         t.style.cssText="width:100%;border:1px solid var(--border);border-radius:6px;padding:7px 9px;font-size:13px;background:var(--surface);color:var(--ink)";
         return t; }
 
-      const iFac=fld("Facilitator",inp("text",g.facilitator,"Who runs this group"));
+      /* the facilitator shown everywhere else (facOf), so saving never quietly swaps it */
+      const iFac=fld("Facilitator",inp("text",facOf(gk),"Who runs this group"));
       const iSt =fld("Status",sel([["0","Active"],["h","On Hold"],["1","Archived"]],
         g.archived?"1":g.hold?"h":"0"));
       const iDay=fld("Meeting Day",sel([["","\u2014 Not Scheduled \u2014"],["Monday","Monday"],["Tuesday","Tuesday"],
-        ["Wednesday","Wednesday"],["Thursday","Thursday"],["Friday","Friday"]],sc.day||""));
+        ["Wednesday","Wednesday"],["Thursday","Thursday"],["Friday","Friday"]],
+        sc.day||(sc.rule&&sc.rule.dow!=null?DAYS[sc.rule.dow]:"")||""));
       const cur=spanOf(sc)||[];
       const pad=m=>m==null?"":String(Math.floor(m/60)).padStart(2,"0")+":"+String(m%60).padStart(2,"0");
       const iFrom=fld("Starts (ET)",inp("time",sc.st||pad(cur[0])));
@@ -3263,7 +3323,8 @@ box.appendChild(sect("Who Attends Most",ppl.size,()=>barList(
         if(!iDay.value) return null;
         const dw={Monday:1,Tuesday:2,Wednesday:3,Thursday:4,Friday:5}[iDay.value];
         if(every.checked) return {dow:dw,weeks:"*"};
-        const w=[1,2,3,4].filter((_,i)=>boxes[i].checked);
+        /* a week past the 4th, if one is on file, has no box here: keep it rather than drop it */
+        const w=[1,2,3,4].filter((_,i)=>boxes[i].checked).concat(wk==="*"?[]:wk.filter(x=>x>4));
         return w.length?{dow:dw,weeks:w}:null;
       }
       function nextOn(r){
@@ -3287,7 +3348,8 @@ box.appendChild(sect("Who Attends Most",ppl.size,()=>barList(
           sv.disabled=true; return;
         }
         sv.disabled=false;
-        if(!r){ pv.innerHTML="<b>Not on the schedule.</b> Pick a day and how often, and this group appears in the Today band."; return; }
+        if(!r){ pv.innerHTML="<b>Not on the schedule.</b> Pick a day and how often, and this group appears in the Today band."+
+          ((iZoom.value.trim()||iLic.value)?" Its Zoom details are kept.":""); return; }
         const nx=nextOn(r);
         pv.innerHTML="<b>"+esc(cadenceText(r,iDay.value))+(t?", "+esc(t)+" ET":"")+".</b>"+
           (nx?" Next on "+esc(nx)+".":"");
@@ -3309,6 +3371,12 @@ box.appendChild(sect("Who Attends Most",ppl.size,()=>barList(
         if(r) writes.push({c:"sched",id:gk,data:{fac:iFac.value.trim(),day:iDay.value,
           st:iFrom.value||"",en:iTo.value||"",time:t,cadence:cadenceText(r,iDay.value),
           zoom:iZoom.value.trim(),lic:iLic.value,upd:upd,updBy:updBy,status:"Active",rule:r,removed:false}});
+        /* no day or no weeks: off the schedule, but its Zoom link, account and times are kept
+           (before November 6, 2026 saving like this threw them all away) */
+        else if(iZoom.value.trim()||iLic.value||iFrom.value||iTo.value)
+          writes.push({c:"sched",id:gk,data:keepRest("sched",gk,{fac:iFac.value.trim(),day:"",
+            st:iFrom.value||"",en:iTo.value||"",time:t,cadence:"",zoom:iZoom.value.trim(),lic:iLic.value,
+            upd:upd,updBy:updBy,status:"Active",rule:null,removed:false})});
         else writes.push({c:"sched",id:gk,data:{removed:true}});
         const okr=await saveMany(writes);
         sv.disabled=false;
@@ -3317,6 +3385,9 @@ box.appendChild(sect("Who Attends Most",ppl.size,()=>barList(
         if(r) M.sched[gk]=Object.assign({},M.sched[gk]||{},{fac:g.facilitator,day:iDay.value,st:iFrom.value||"",en:iTo.value||"",
           time:t,cadence:cadenceText(r,iDay.value),zoom:iZoom.value.trim(),lic:iLic.value,upd:upd,updBy:updBy,
           status:"Active",rule:r});
+        else if(iZoom.value.trim()||iLic.value||iFrom.value||iTo.value)
+          M.sched[gk]=Object.assign({},M.sched[gk]||{},{fac:g.facilitator,day:"",st:iFrom.value||"",en:iTo.value||"",
+            time:t,cadence:"",zoom:iZoom.value.trim(),lic:iLic.value,upd:upd,updBy:updBy,status:"Active",rule:null});
         else delete M.sched[gk];
         renderToday(); tickToday(); renderAll(); openGroup(gk); toast("Saved.");
       });
@@ -3334,7 +3405,7 @@ box.appendChild(sect("Who Attends Most",ppl.size,()=>barList(
 function openPerson(pk){
   const p=M.pp.get(pk); if(!p) return;
   PANE_NEXT=()=>openPerson(pk);
-  const idxs=inIdx(M.byP.get(pk));
+  const idxs=inIdx(M.byP.get(pk)).filter(i=>inScope(M.mt[i].gk));
   const grps=new Map(); let first="",last="";
   idxs.forEach(i=>{ const m=M.mt[i]; grps.set(m.gk,(grps.get(m.gk)||0)+1);
     if(!first||m.d<first)first=m.d; if(!last||m.d>last)last=m.d; });
@@ -3471,7 +3542,7 @@ function openCompany(ck){
   PANE_NEXT=()=>openCompany(ck);
   const ppl=M.coPeople.get(ck)||new Set();
   const grps=new Map(), per=new Map(); let recs=0,first="",last="";
-  M.mt.forEach((m,i)=>{ if(!inRange(m.d)||isCancelled(m)) return; let hit=0;
+  M.mt.forEach((m,i)=>{ if(!inRange(m.d)||!inScope(m.gk)||isCancelled(m)) return; let hit=0;
     m.p.forEach(pk=>{ if(ckAt(pk,m.d)===ck){ hit++; per.set(pk,(per.get(pk)||0)+1); } });
     if(hit){ recs+=hit; grps.set(m.gk,(grps.get(m.gk)||0)+hit);
       if(!first||m.d<first)first=m.d; if(!last||m.d>last)last=m.d; } });
@@ -3536,7 +3607,7 @@ async function mergePeople(dupKey,keepKey,after,opts){
     const p=new Set(m.p); p.delete(dupKey); p.add(keepKey);
     writes.push({c:"meetings",id:"m_"+m.gk+"_"+String(m.d).replace(/-/g,""),
       data:{gk:m.gk,d:m.d,sum:m.sum||"",label:m.label||"",cancelled:!!m.cancelled,
-        p:[...p],by:me,byId:(USER&&USER.id)||"",at:now,
+        p:[...p],full:true,by:me,byId:(USER&&USER.id)||"",at:now,
         createdBy:m.createdBy||m.by||me,createdAt:m.createdAt||m.at||now}});
     touched.push({i:i,p:p});
   });
@@ -3554,8 +3625,8 @@ async function mergePeople(dupKey,keepKey,after,opts){
     ? opts.hist.map(e=>({ck:e.ck,from:e.from||""}))
     : (keepHist.length?keepHist:dupHist).map(e=>({ck:e.ck,from:e.from||""}));
   const nowCk=hist.length?hist[hist.length-1].ck:(keep.ck||dup.ck||"");
-  writes.push({c:"people",id:keepKey,data:{name:keep.name,ck:nowCk,role:keep.role||dup.role||"",
-    hist:hist,alt:alt}});
+  writes.push({c:"people",id:keepKey,data:keepRest("people",keepKey,{name:keep.name,ck:nowCk,role:keep.role||dup.role||"",
+    hist:hist,alt:alt})});
   /* The duplicate may have come from the imported history, which is reloaded every time.
      Deleting the shared-data record would not remove them — so leave a marker saying
      "this one is now that one", which the loader applies over the history. */
@@ -3694,7 +3765,7 @@ async function unmergePeople(dupKey,keepKey,dupName,after,prev){
     moved++;
     writes.push({c:"meetings",id:"m_"+m.gk+"_"+String(m.d).replace(/-/g,""),
       data:{gk:m.gk,d:m.d,sum:m.sum||"",label:m.label||"",cancelled:!!m.cancelled,
-        p:[...np],by:me,byId:(USER&&USER.id)||"",at:now,
+        p:[...np],full:true,by:me,byId:(USER&&USER.id)||"",at:now,
         createdBy:m.createdBy||m.by||me,createdAt:m.createdAt||m.at||now}});
     touched.push({i:i,p:np}); });
   /* the kept record stops answering to the other name */
@@ -3709,8 +3780,8 @@ async function unmergePeople(dupKey,keepKey,dupName,after,prev){
   const bkHist=(was&&was.hist&&was.hist.length)
     ? was.hist.map(e=>({ck:e.ck||"",from:e.from||""}))
     : (was?[]:histOf(keep).map(e=>({ck:e.ck,from:e.from||""})));
-  writes.push({c:"people",id:keepKey,data:{name:keep.name,ck:bkCk,role:keep.role||"",
-    hist:bkHist,alt:alt}});
+  writes.push({c:"people",id:keepKey,data:keepRest("people",keepKey,{name:keep.name,ck:bkCk,role:keep.role||"",
+    hist:bkHist,alt:alt})});
   const okr=await saveMany(writes);
   if(!okr) return false;
   /* and the marker that folded them together goes */
@@ -3737,21 +3808,40 @@ async function unmergePeople(dupKey,keepKey,dupName,after,prev){
 async function setAside(pk,after){
   const p=M.pp.get(pk); if(!p) return false;
   const now=new Date().toISOString();
-  const okr=await saveDoc("people",pk,{name:p.name,ck:p.ck||"",role:p.role||"",
+  const okr=await saveDoc("people",pk,keepRest("people",pk,{name:p.name,ck:p.ck||"",role:p.role||"",
     hist:histOf(p).map(e=>({ck:e.ck,from:e.from||""})),alt:p.alt||[],
     addedBy:p.addedBy||"",addedAt:p.addedAt||"",
-    setAside:true,setAsideBy:whoAmI(),setAsideAt:now});
+    setAside:true,setAsideBy:whoAmI(),setAsideAt:now}));
   if(!okr) return false;
   SETASIDE.set(pk,{by:whoAmI(),at:now,name:p.name});
   if(after) after();
   toast(p.name+" set aside \u2014 their attendance still counts, but they are off the list.");
   return true;
 }
+/* a hand-added person someone has looked at and confirmed: off the Added in the Room list only */
+/* a key for someone new. A record that was removed outright keeps its key for good: reusing it
+   would quietly undo the removal and put that name back on every meeting it was taken out of. */
+function freshKey(k){
+  if(!GONE.has(k)&&!MERGEDTO.has(k)) return k;
+  let i=2; while(GONE.has(k+"-"+i)||MERGEDTO.has(k+"-"+i)||M.pp.has(k+"-"+i)) i++;
+  return k+"-"+i;
+}
+async function markChecked(pk,after){
+  const p=M.pp.get(pk); if(!p) return false;
+  const okr=await saveDoc("people",pk,keepRest("people",pk,{name:p.name,ck:p.ck||"",role:p.role||"",
+    hist:histOf(p).map(e=>({ck:e.ck,from:e.from||""})),alt:p.alt||[],
+    addedBy:p.addedBy||"",addedAt:p.addedAt||"",checked:true,checkedBy:whoAmI(),checkedAt:new Date().toISOString()}));
+  if(!okr) return false;
+  p.checked=true;
+  if(after) after();
+  toast(p.name+" checked — off the Added in the Room list.");
+  return true;
+}
 async function unsetAside(pk,after){
   const p=M.pp.get(pk); if(!p) return false;
-  const okr=await saveDoc("people",pk,{name:p.name,ck:p.ck||"",role:p.role||"",
+  const okr=await saveDoc("people",pk,keepRest("people",pk,{name:p.name,ck:p.ck||"",role:p.role||"",
     hist:histOf(p).map(e=>({ck:e.ck,from:e.from||""})),alt:p.alt||[],
-    addedBy:p.addedBy||"",addedAt:p.addedAt||"",setAside:false});
+    addedBy:p.addedBy||"",addedAt:p.addedAt||"",setAside:false}));
   if(!okr) return false;
   SETASIDE.delete(pk);
   if(after) after();
@@ -3769,7 +3859,7 @@ async function removePerson(pk,after){
     const np=new Set(m.p); np.delete(pk);
     writes.push({c:"meetings",id:"m_"+m.gk+"_"+String(m.d).replace(/-/g,""),
       data:{gk:m.gk,d:m.d,sum:m.sum||"",label:m.label||"",cancelled:!!m.cancelled,
-        p:[...np],by:me,byId:(USER&&USER.id)||"",at:now,
+        p:[...np],full:true,by:me,byId:(USER&&USER.id)||"",at:now,
         createdBy:m.createdBy||m.by||me,createdAt:m.createdAt||m.at||now}});
     touched.push({i:i,p:np}); });
   writes.push({c:"people",id:pk,data:{name:p.name,removed:true,
@@ -3984,8 +4074,8 @@ function personEditor(pk,after){
         hist.sort((a,b)=>String(a.from).localeCompare(String(b.from)));
       }
     }
-    const data={name:nm,ck:moved?ck:(p.ck||""),role:p.role||"",hist:hist,alt:alt,
-      addedBy:p.addedBy||"",addedAt:p.addedAt||""};
+    const data=keepRest("people",pk,{name:nm,ck:moved?ck:(p.ck||""),role:p.role||"",hist:hist,alt:alt,
+      addedBy:p.addedBy||"",addedAt:p.addedAt||""});
     const okr=await saveDoc("people",pk,data);
     sv.disabled=false; sv.textContent="Save Changes";
     if(!okr) return;
@@ -3999,8 +4089,8 @@ function personEditor(pk,after){
       esc(ck?coNameOf(ck):"no company")+"</b>"+
       (!ck?"":(sel.value==="fix"?" for every meeting":" from "+esc(fmtD(di.value||todayISO())))));
     setUndo(bits.join(", ")+".",async()=>{
-      const okr2=await saveDoc("people",pk,{name:before.name,ck:before.ck,role:data.role,
-        hist:before.hist,alt:before.alt});
+      const okr2=await saveDoc("people",pk,keepRest("people",pk,{name:before.name,ck:before.ck,role:data.role,
+        hist:before.hist,alt:before.alt}));
       if(!okr2) return false;
       M.pp.set(pk,{k:pk,name:before.name,ck:before.ck,role:data.role,hist:before.hist,alt:before.alt});
       buildIndexes(); if(after) after();
@@ -4309,9 +4399,11 @@ function manageSection(){
         if(!nm||!gks.length) return;
         go2.disabled=true; go2.textContent="Saving\u2026";
         const writes=[];
+        /* only the facilitator changes: the schedule record keeps its day, times and Zoom
+           details (before November 6, 2026 it was saved as the facilitator alone, wiping them) */
         gks.forEach(k=>{ const g=M.gr.get(k);
-          writes.push({c:"groups",id:k,data:{name:g.name,type:g.type,archived:!!g.archived,hold:!!g.hold,facilitator:nm}});
-          writes.push({c:"sched",id:k,data:{fac:nm}}); });
+          writes.push({c:"groups",id:k,data:keepRest("groups",k,{name:g.name,type:g.type,archived:!!g.archived,hold:!!g.hold,facilitator:nm})});
+          if((M.sched||{})[k]) writes.push({c:"sched",id:k,data:keepRest("sched",k,{fac:nm})}); });
         const okr=await saveMany(writes);
         go2.disabled=false;
         if(!okr){ count(); return; }
@@ -4323,8 +4415,8 @@ function manageSection(){
         setUndo("<b>"+n(gks.length)+" workgroup"+(gks.length===1?"":"s")+"</b> handed to "+esc(nm)+".",async()=>{
           const back=[];
           was.forEach(w=>{ const g2=M.gr.get(w.k); if(!g2) return;
-            back.push({c:"groups",id:w.k,data:{name:g2.name,type:g2.type,archived:!!g2.archived,hold:!!g2.hold,facilitator:w.gfac}});
-            back.push({c:"sched",id:w.k,data:{fac:w.fac}}); });
+            back.push({c:"groups",id:w.k,data:keepRest("groups",w.k,{name:g2.name,type:g2.type,archived:!!g2.archived,hold:!!g2.hold,facilitator:w.gfac})});
+            if((M.sched||{})[w.k]) back.push({c:"sched",id:w.k,data:keepRest("sched",w.k,{fac:w.fac})}); });
           const okr2=await saveMany(back);
           if(!okr2) return false;
           was.forEach(w=>{ const g2=M.gr.get(w.k); if(g2) g2.facilitator=w.gfac;
@@ -4376,18 +4468,12 @@ async function syncMeeting(gk,d){
     const cur=(sn&&sn.exists)?(sn.data()||{}):{};
     DBC.set(path,cur);
     const items=cur.items||{};
-    Object.keys(items).forEach(dd=>{ const it=items[dd]||{};
-      const rec={id:"m_"+gk+"_"+String(dd).replace(/-/g,""),gk:gk,d:dd,sum:it.sum||"",label:it.label||"",
-        p:new Set(it.p||[]),src:"db",by:it.by||"",at:it.at||"",byId:it.byId||"",
-        cancelled:!!it.cancelled,createdBy:it.createdBy||"",createdAt:it.createdAt||""};
-      const ex=(M.byG.get(gk)||[]).find(i=>M.mt[i].d===dd);
-      if(ex!=null) M.mt[ex]=rec; else M.mt.push(rec);
-    });
+    Object.keys(items).forEach(dd=>{ putMeeting(gk,dd,dbMeeting(items[dd]||{},gk,dd)); });
     /* a record this page still holds but the shared data no longer has — someone reopened or
-       undid it; drop it, but never touch the imported history (src is not "db") */
+       undid it; back to the imported copy if there is one */
     let dropped=false;
-    for(let i=M.mt.length-1;i>=0;i--){ const m=M.mt[i];
-      if(m.gk===gk&&m.src==="db"&&String(m.d).slice(0,4)===yr&&!(m.d in items)){ M.mt.splice(i,1); dropped=true; } }
+    M.mt.filter(m=>m.gk===gk&&m.src==="db"&&String(m.d).slice(0,4)===yr&&!(m.d in items))
+      .forEach(m=>{ unsaveMeeting(gk,m.d); dropped=true; });
     if(dropped||Object.keys(items).length) buildIndexes();
   }catch(e){}
   return findMeeting(gk,d);
@@ -4472,21 +4558,24 @@ function logScreen(root){
 
 /* mark every outstanding date for this workgroup as a meeting that did not happen */
 async function cancelAllPending(btn){
-  const gk=LOGGK, pend=pendingFor(gk);
+  const gk=LOGGK; let pend=pendingFor(gk);
   if(!gk||!pend.length) return;
   btn.disabled=true; btn.textContent="Saving\u2026";
+  /* someone may have logged one of these dates in the last few seconds: read the newest
+     copy first, so their attendance is never replaced by a cancellation */
+  for(const y of new Set(pend.map(d=>String(d).slice(0,4)))) await syncMeeting(gk,y+"-01-01");
+  pend=pendingFor(gk);
+  if(!pend.length){ btn.disabled=false; refreshPending(); loadRoster(); toast("Those dates have just been logged by someone else \u2014 nothing was cancelled.",true); return; }
   const reason=($("#lg-note")||{}).value||"";
   const now=new Date().toISOString(), me=whoAmI(), uid=(USER&&USER.id)||"";
   const writes=pend.map(d=>({c:"meetings",id:"m_"+gk+"_"+d.replace(/-/g,""),
-    data:{gk:gk,d:d,sum:"",label:reason,p:[],cancelled:true,
+    data:{gk:gk,d:d,sum:"",label:reason,p:[],cancelled:true,full:true,
       by:me,byId:uid,at:now,createdBy:me,createdAt:now}}));
   const okr=await saveMany(writes);
   btn.disabled=false;
   if(!okr){ refreshPending(); return; }
   writes.forEach(w=>{
-    const ex=(M.byG.get(gk)||[]).find(i=>M.mt[i].d===w.data.d);
-    const rec=Object.assign({},w.data,{id:w.id,p:new Set(),src:"db"});
-    if(ex!=null) M.mt[ex]=rec; else M.mt.push(rec);
+    putMeeting(gk,w.data.d,dbMeeting(w.data,gk,w.data.d,w.id));
     DRAFTS.delete(gk+"|"+w.data.d);
   });
   buildIndexes();
@@ -4498,9 +4587,7 @@ async function cancelAllPending(btn){
     const okr2=await removeMany(ds.map(d=>({c:"meetings",id:"m_"+gk+"_"+d.replace(/-/g,""),data:{gk:gk,d:d}})),
       it=>!!(it&&it.cancelled));
     if(!okr2) return false;
-    const set=new Set(ds);
-    for(let i=M.mt.length-1;i>=0;i--){ const m=M.mt[i];
-      if(m.gk===gk&&set.has(m.d)&&m.cancelled&&m.src==="db") M.mt.splice(i,1); }
+    ds.forEach(d=>{ const m=mtAt(gk,d); if(m&&m.cancelled&&m.src==="db") unsaveMeeting(gk,d); });
     buildIndexes();
     toast(n(ds.length)+" cancellations undone \u2014 those dates are back on the to-log list.");
     renderToday(); tickToday();
@@ -4636,7 +4723,7 @@ function openAddPane(){
     ai.addEventListener("input",()=>{ clearTimeout(at); at=setTimeout(runAdd,120); });
     ab.addEventListener("click",async()=>{
       const nm=ai.value.trim(); if(!nm){ toast("Type a name first.",true); return; }
-      const k=personKeyFor(nm)||nk(nm);
+      const k=freshKey(personKeyFor(nm)||nk(nm));
       if(M.pp.has(k)){ const pp2=M.pp.get(k);
         take(k,nk(pp2.name)===nk(nm)?"Added.":("Added \u2014 MISMO has them as "+pp2.name+"."));
         return; }
@@ -4899,7 +4986,7 @@ function drawRoster(roster,seen,lastd){
     b.appendChild(el("span","pl",(seen.get(p.k)||0)===0?"new":n(seen.get(p.k))+"×"));
     /* somebody typed in by hand, in this room, who should not have been: let them be taken
        off the master list from here rather than hunted down later */
-    if(CANWRITE&&p.addedBy){
+    if(CANWRITE&&p.addedBy&&!/\(from /.test(p.addedBy)){
       const had=(M.byP.get(p.k)||[]).length;
       const x=el("span","rpx"); x.setAttribute("role","button"); x.tabIndex=0;
       x.textContent="×";
@@ -4968,7 +5055,7 @@ async function setCancelled(on){
   let okr;
   if(on){
     okr=await saveDoc("meetings",id,{gk:LOG.gk,d:LOG.d,sum:(prev&&prev.sum)||"",label:reason,
-      p:[],cancelled:true,by:me,byId:(USER&&USER.id)||"",at:now,
+      p:[],cancelled:true,full:true,by:me,byId:(USER&&USER.id)||"",at:now,
       createdBy:(prev&&prev.createdBy)||(prev&&prev.by)||me,
       createdAt:(prev&&prev.createdAt)||(prev&&prev.at)||now});
   }else{
@@ -4977,15 +5064,14 @@ async function setCancelled(on){
   if(btn){ btn.disabled=false; }
   if(!okr){ loadRoster(); return; }
   if(on){
-    const rec={id:id,gk:LOG.gk,d:LOG.d,sum:(prev&&prev.sum)||"",label:reason,p:new Set(),
-      cancelled:true,by:me,at:now,createdBy:(prev&&prev.createdBy)||(prev&&prev.by)||me,src:"db"};
-    const exi=(M.byG.get(LOG.gk)||[]).find(x=>M.mt[x].d===LOG.d);
-    if(exi!=null) M.mt[exi]=rec; else M.mt.push(rec);
+    putMeeting(LOG.gk,LOG.d,dbMeeting({sum:(prev&&prev.sum)||"",label:reason,p:[],cancelled:true,full:true,
+      by:me,at:now,byId:(USER&&USER.id)||"",createdBy:(prev&&prev.createdBy)||(prev&&prev.by)||me,
+      createdAt:(prev&&prev.createdAt)||(prev&&prev.at)||now},LOG.gk,LOG.d,id));
     LOG.seenAt=now;
   }else{
-    LOG.seenAt="";
-    const i=(M.byG.get(LOG.gk)||[]).find(x=>M.mt[x].d===LOG.d);
-    if(i!=null) M.mt.splice(i,1);
+    /* reopened: an imported meeting gets its imported attendance back */
+    unsaveMeeting(LOG.gk,LOG.d);
+    LOG.seenAt=atOf(mtAt(LOG.gk,LOG.d));
   }
   DRAFTS.delete(LOG.gk+"|"+LOG.d);
   LOG.present=new Set();
@@ -4997,8 +5083,7 @@ async function setCancelled(on){
       const okr2=await removeMany([{c:"meetings",id:"m_"+ugk+"_"+ud.replace(/-/g,""),data:{gk:ugk,d:ud}}],
         it=>!!(it&&it.cancelled));
       if(!okr2) return false;
-      for(let i=M.mt.length-1;i>=0;i--){ const m=M.mt[i];
-        if(m.gk===ugk&&m.d===ud&&m.cancelled&&m.src==="db") M.mt.splice(i,1); }
+      const um=mtAt(ugk,ud); if(um&&um.cancelled&&um.src==="db") unsaveMeeting(ugk,ud);
       buildIndexes();
       toast("Cancellation undone \u2014 that date is back on the to-log list.");
       renderToday(); tickToday();
@@ -5020,19 +5105,16 @@ async function dropFromMeeting(gk,d,pk,nm){
   const g=M.gr.get(gk);
   let okr;
   if(!left.length){
-    okr=await removeDoc("meetings",id,{gk:gk,d:d});
+    okr=await offRecord(gk,d);
     if(!okr) return;
-    for(let i=M.mt.length-1;i>=0;i--){ const x=M.mt[i];
-      if(x.gk===gk&&x.d===d&&x.src==="db") M.mt.splice(i,1); }
+    putMeeting(gk,d,null);
   }else{
-    const data={gk:gk,d:d,sum:m.sum||"",label:m.label||"",p:left,
+    const data={gk:gk,d:d,sum:m.sum||"",label:m.label||"",p:left,full:true,
       by:me,byId:(USER&&USER.id)||"",at:now,
       createdBy:m.createdBy||m.by||me,createdAt:m.createdAt||m.at||now};
     okr=await saveDoc("meetings",id,data);
     if(!okr) return;
-    const rec=Object.assign({},data,{id:id,p:new Set(left),src:"db"});
-    const ex=(M.byG.get(gk)||[]).find(i=>M.mt[i].d===d);
-    if(ex!=null) M.mt[ex]=rec; else M.mt.push(rec);
+    putMeeting(gk,d,dbMeeting(data,gk,d,id));
   }
   DRAFTS.delete(gk+"|"+d);
   buildIndexes();
@@ -5060,11 +5142,10 @@ async function emptyMeeting(){
   btn.disabled=true; btn.textContent="Removing\u2026";
   const id="m_"+LOG.gk+"_"+LOG.d.replace(/-/g,"");
   const gk=LOG.gk, d=LOG.d;
-  const okr=await removeDoc("meetings",id,{gk:gk,d:d});
+  const okr=await offRecord(gk,d);
   btn.disabled=false; btn.textContent="Save Attendance"; btn.classList.remove("danger");
   if(!okr) return;
-  for(let i=M.mt.length-1;i>=0;i--){ const m=M.mt[i];
-    if(m.gk===gk&&m.d===d&&m.src==="db") M.mt.splice(i,1); }
+  putMeeting(gk,d,null);
   DRAFTS.delete(gk+"|"+d);
   buildIndexes(); clearUndo();
   LOG.seenAt=""; LOG.force=false;
@@ -5111,7 +5192,7 @@ async function saveMeeting(){
   const prev=live||(LOG.existing!=null?M.mt[LOG.existing]:null);
   const now=new Date().toISOString(), me=whoAmI();
   const data={gk:LOG.gk,d:LOG.d,sum:(prev&&prev.sum)||"",label:note,
-    p:[...LOG.present],by:me,byId:(USER&&USER.id)||"",at:now,
+    p:[...LOG.present],full:true,by:me,byId:(USER&&USER.id)||"",at:now,
     createdBy:(prev&&prev.createdBy)||(prev&&prev.by)||me,
     createdAt:(prev&&prev.createdAt)||(prev&&prev.at)||now};
   const okr=await saveDoc("meetings",id,data);
@@ -5119,9 +5200,7 @@ async function saveMeeting(){
   if(!okr) return;
   clearUndo();
   LOG.force=false; LOG.seenAt=now;
-  const rec=Object.assign({},data,{id:id,p:new Set(LOG.present),src:"db"});
-  const exi=(M.byG.get(LOG.gk)||[]).find(i=>M.mt[i].d===LOG.d);
-  if(exi!=null) M.mt[exi]=rec; else M.mt.push(rec);
+  putMeeting(LOG.gk,LOG.d,dbMeeting(data,LOG.gk,LOG.d,id));
   const g=M.gr.get(LOG.gk); if(g){ if(!g.last||LOG.d>g.last) g.last=LOG.d; if(!g.first||LOG.d<g.first) g.first=LOG.d; }
   buildIndexes();
   DRAFTS.delete(LOG.gk+"|"+LOG.d);
@@ -5152,7 +5231,7 @@ function renderSummitBody(){
   ms.forEach(m=>{ recs+=m.p.size; sess.set(m.gk,(sess.get(m.gk)||0)+m.p.size);
     days.set(m.d,(days.get(m.d)||0)+m.p.size);
     m.p.forEach(pk=>{ ppl.add(pk); const c=catAt(pk,m.d); cats.set(c,(cats.get(c)||0)+1);
-      const p=M.pp.get(pk); if(p&&p.ck) cos.set(p.ck,(cos.get(p.ck)||0)+1); }); });
+      const ck=ckAt(pk,m.d); if(ck) cos.set(ck,(cos.get(ck)||0)+1); }); });
   $("#f-sc").textContent=fmtD(s.start)+" – "+fmtD(s.end);
   const t=el("div","tiles");
   t.append(tile("Attendance Records",n(recs),"Scans across all sessions","var(--c1)"),
@@ -5326,6 +5405,7 @@ async function importPeople(btn){
   const writes=[], cos=new Map();
   take.forEach(r=>{
     if(r.co&&r.newCo&&!cos.has(r.ck)) cos.set(r.ck,{name:r.co,cat:"Unknown"});
+    r.key=freshKey(r.key);
     writes.push({c:"people",id:r.key,data:{name:r.name,ck:r.co?r.ck:"",role:r.role||"",
       addedBy:me+" (from "+PPL.name+")",addedAt:now}});
   });
@@ -5524,7 +5604,7 @@ async function doImport(P,btn){
   const newCo=new Map(); P.rows.forEach(r=>{ if(r.org&&!M.co.has(nk(r.org))) newCo.set(nk(r.org),r.org); });
   newCo.forEach((nm,k)=>writes.push({c:"companies",id:k,data:{name:nm,cat:"Unknown"}}));
   const newPp=new Map(); P.rows.forEach(r=>{ const k=personKeyFor(r.who)||nk(r.who);
-    if(!M.pp.has(k)&&!newPp.has(k)) newPp.set(k,{name:r.who,ck:r.org?nk(r.org):""}); });
+    if(!M.pp.has(k)&&!newPp.has(k)&&!GONE.has(k)) newPp.set(k,{name:r.who,ck:r.org?nk(r.org):""}); });
   newPp.forEach((v,k)=>writes.push({c:"people",id:k,data:{name:v.name,ck:v.ck,role:""}}));
   const chosen=new Map();
   $$("select[data-sess]").forEach(sl=>chosen.set(sl.dataset.sess,sl.value));
@@ -5540,7 +5620,7 @@ async function doImport(P,btn){
   P.sess.forEach(s2=>{ const gk=gkFor(s2);
     writes.push({c:"meetings",id:"m_"+gk+"_"+s2.d.replace(/-/g,""),
       data:{gk:gk,d:s2.d,sum:sk,label:"",p:[...new Set(s2.p.map(r=>personKeyFor(r.who)||nk(r.who)))],
-            by:(USER&&USER.name)||"",at:new Date().toISOString(),src:"trackpod"}}); });
+            full:true,by:(USER&&USER.name)||"",at:new Date().toISOString(),src:"trackpod"}}); });
   const okr=await saveMany(writes);
   btn.disabled=false; btn.textContent="Import "+n(P.rows.length)+" Attendance Records";
   if(!okr) return;
@@ -5548,14 +5628,12 @@ async function doImport(P,btn){
   M.summits.set(sk,{k:sk,name:sname,start:P.dates[0],end:P.dates[P.dates.length-1]});
   newCo.forEach((nm,k)=>M.co.set(k,{k:k,name:nm,cat:"Unknown"}));
   newPp.forEach((v,k)=>M.pp.set(k,{k:k,name:v.name,ck:v.ck,role:""}));
-  newGr.forEach((nm,k)=>M.gr.set(k,{k:k,name:nm,type:"Other",archived:false,facilitator:"",first:P.dates[0],last:P.dates[P.dates.length-1]}));
+  newGr.forEach((nm,k)=>M.gr.set(k,{k:k,name:nm,
+    type:/\bCOP\b/i.test(nm)?"Community of Practice":/\bDWG\b/i.test(nm)?"Development Workgroup":/workgroup/i.test(nm)?"Workgroup":"Other",
+    archived:false,facilitator:"",first:P.dates[0],last:P.dates[P.dates.length-1]}));
   newAl.forEach((gk,sk2)=>GALIAS.set(sk2,gk));
-  const idx=new Map(); M.mt.forEach((m,i)=>idx.set(m.gk+"|"+m.d,i));
-  P.sess.forEach(s2=>{ const gk=gkFor(s2), key=gk+"|"+s2.d;
-    const rec={id:"m_"+gk+"_"+s2.d.replace(/-/g,""),gk:gk,d:s2.d,sum:sk,label:"",
-               p:new Set(s2.p.map(r=>personKeyFor(r.who)||nk(r.who))),src:"db"};
-    if(idx.has(key)) M.mt[idx.get(key)]=rec; else M.mt.push(rec); });
-  M.gr.forEach(g=>{ const ds=M.mt.filter(m=>m.gk===g.k).map(m=>m.d).sort();
+  writes.filter(w=>w.c==="meetings").forEach(w=>putMeeting(w.data.gk,w.data.d,dbMeeting(w.data,w.data.gk,w.data.d,w.id)));
+  M.gr.forEach(g=>{ const ds=M.mt.filter(m=>m.gk===g.k&&!isCancelled(m)).map(m=>m.d).sort();
     if(ds.length){ g.first=ds[0]; g.last=ds[ds.length-1]; } });
   buildIndexes(); PARSED=null;
   renderAll();
@@ -5592,6 +5670,9 @@ function bucketOf(kind,id,data){
 function keyOf(kind,id,data){ return kind==="meetings"?((data&&data.d)||id):id; }
 function dbErr(e){
   const c=(e&&e.code)||"";
+  if(e&&e.notQueued&&(c==="OFFLINE"||c==="SIGNED_OUT"))
+    return c==="OFFLINE"?"No connection to the save relay, so that was not saved. Save it again when the connection is back."
+      :"Your sign-in has expired, so that was not saved. Sign in again, then save it again.";
   /* the save relay's own codes, when this copy is hosted on resources.mismo.org */
   if(c==="TOKEN"||c==="UNKNOWN_PROJECT") return "Saving is not set up correctly for this page yet. Tell Jonna \u2014 trying again will not help.";
   if(c==="GITHUB") return "The save relay could not reach its storage. Nothing was saved. Tell Jonna if it keeps happening.";
@@ -5668,14 +5749,19 @@ async function writeBuckets(groupsMap){
     const wants=groupsMap.get(path), from={};
     Object.keys(wants).forEach(k=>{ from[k]=startedFrom(path,k); });
     let cur={};
-    try{ const s=await ref.get(); if(s.exists) cur=JSON.parse(JSON.stringify(s.data()||{})); }catch(e){}
+    /* if the newest copy cannot be read, fall back to the copy this page last read; with
+       neither, stop rather than write a file holding only these records (November 6, 2026) */
+    try{ const s=await ref.get(); if(s.exists) cur=JSON.parse(JSON.stringify(s.data()||{})); }
+    catch(e){ const c0=DBC.get(path); if(c0) cur=JSON.parse(JSON.stringify(c0)); else throw e; }
     /* each record: only what was changed here, laid over the newest copy (November 5, 2026) */
     const MG=window.__mtMerge, had=cur.items||{}, put={}, clashes=[], QUIET=/(^|\u203a )(at|by|byId|upd|updBy)$/;
     Object.keys(wants).forEach(k=>{
       const was=from[k], now=Object.prototype.hasOwnProperty.call(had,k)? had[k] : null;
-      if(!MG||was===undefined){ put[k]=wants[k]; return; }
+      if(!MG||(was===undefined&&now==null)){ put[k]=wants[k]; return; }
       const ctx={clashes:[],theirs:{},quiet:QUIET};
-      const v=MG.doc(now,wants[k],was,ctx);
+      /* a record someone else created since this page last looked: keep their fields and lay
+         this save's over them, rather than replacing it outright */
+      const v=MG.doc(now,wants[k],was===undefined?{}:was,ctx);
       ctx.clashes.forEach(c=>clashes.push({k:k,c:c}));
       put[k]=v;
     });
@@ -5698,6 +5784,8 @@ async function writeBuckets(groupsMap){
     if(seg[0]==="meetings"){ const gy=seg[1].split("__"); body.gk=gy[0]; body.year=gy[1]; }
     await ref.set(body);
     DBC.set(path,body);
+    /* an open panel now starts from what was just saved, not from what it first showed */
+    try{ if(PANE_SEEN&&PANE_SEEN.has(path)) PANE_SEEN.set(path,JSON.parse(JSON.stringify(body))); }catch(e){}
     done++;
     if(rep) try{ rep(done,paths.length); }catch(e){}
   };
@@ -5722,7 +5810,9 @@ async function removeDoc(kind,id,data){
   const path=bucketOf(kind,id,data), key=keyOf(kind,id,data);
   try{
     const ref=DB.doc(path);
-    let cur={}; try{ const sn=await ref.get(); if(sn.exists) cur=JSON.parse(JSON.stringify(sn.data()||{})); }catch(e){}
+    let cur={};
+    try{ const sn=await ref.get(); if(sn.exists) cur=JSON.parse(JSON.stringify(sn.data()||{})); }
+    catch(e){ const c0=DBC.get(path); if(c0) cur=JSON.parse(JSON.stringify(c0)); else throw e; }
     const items=cur.items||{};
     if(!(key in items)) return true;
     delete items[key];
@@ -5742,7 +5832,9 @@ async function removeMany(rems,only){
   try{
     for(const [path,keys] of m){
       const ref=DB.doc(path);
-      let cur={}; try{ const sn=await ref.get(); if(sn.exists) cur=JSON.parse(JSON.stringify(sn.data()||{})); }catch(e){}
+      let cur={};
+      try{ const sn=await ref.get(); if(sn.exists) cur=JSON.parse(JSON.stringify(sn.data()||{})); }
+      catch(e){ const c0=DBC.get(path); if(c0) cur=JSON.parse(JSON.stringify(c0)); else throw e; }
       const items=cur.items||{};
       let any=false;
       keys.forEach(k=>{ if(!(k in items)) return;
@@ -5755,6 +5847,12 @@ async function removeMany(rems,only){
     return true;
   }catch(e){ toast(dbErr(e),true); return false; }
 }
+/* the record as this page last read it from the shared data, so a save that changes one or two
+   fields can carry everything else as it is — the merge treats a field left out as removed */
+function savedRec(kind,id,data){
+  try{ return seenItem(DBC,bucketOf(kind,id,data),keyOf(kind,id,data))||null; }catch(e){ return null; }
+}
+function keepRest(kind,id,change){ return Object.assign({},savedRec(kind,id)||{},change); }
 async function saveMany(writes){
   const m=new Map();
   writes.forEach(w=>{ const p=bucketOf(w.c,w.id,w.data);
@@ -5768,9 +5866,11 @@ async function loadShared(){
      this took several seconds over the save relay, and the page showed figures from the
      imported history alone until the last one landed */
   const snaps=await Promise.all(COLLS.map(c=>
-    DB.collection(c).limit(1000).get().then(x=>[c,x],e=>{ console.warn("load",c,e); return [c,null]; })));
+    DB.collection(c).get().then(x=>[c,x],e=>{ console.warn("load",c,e); return [c,null]; })));
+  out._ok=new Set();
   for(const [c,snap] of snaps){
     if(!snap) continue;
+    out._ok.add(c);
     try{
       snap.docs.forEach(d=>{
         const body=d.data()||{}; DBC.set(c+"/"+d.id,body);
@@ -6110,7 +6210,8 @@ function issueSets(){
     .sort((a,b)=>(M.byP.get(b.k)||[]).length-(M.byP.get(a.k)||[]).length);
   const noCat=[...M.co.values()].filter(c=>c.cat==="Unknown"&&M.coPeople.has(c.k))
     .sort((a,b)=>(M.byC.get(b.k)||[]).length-(M.byC.get(a.k)||[]).length);
-  const added=[...M.pp.values()].filter(p=>p.addedBy&&!aside(p.k))
+  /* entered by hand in the room and not yet checked — people loaded from a list say "(from …)" */
+  const added=[...M.pp.values()].filter(p=>p.addedBy&&!/\(from /.test(p.addedBy)&&!p.checked&&!aside(p.k))
     .sort((a,b)=>String(b.addedAt||"").localeCompare(String(a.addedAt||"")));
   /* pairs that look like the same human, each pair listed once */
   const names=[...M.pp.values()].filter(p=>M.byP.has(p.k)&&!aside(p.k));
@@ -6338,7 +6439,9 @@ function renderIssues(root){
         ok.title="Checked \u2014 take this off the list";
         ok.addEventListener("click",async ev=>{ ev.stopPropagation();
           ok.disabled=true; ok.textContent="Clearing\u2026";
-          const r2=await setAside(p.k,land);
+          /* checked, not set aside: setting aside means "not a person" and hides them from the
+             duplicate and no-company checks for good */
+          const r2=await markChecked(p.k,land);
           if(!r2){ ok.disabled=false; ok.textContent="Looks Right"; } });
         acts.appendChild(ok);
         const db=el("button","linkb quiet danger","Delete"); db.type="button";
