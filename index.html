@@ -10,6 +10,55 @@ html{scroll-padding-top:env(safe-area-inset-top,0px)}
 body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#f1f6fa;color:#0d314c}
 img{max-width:100%}
 [hidden]:not([hidden=until-found i]){display:none!important}
+
+/* ---------- help: topics down the left, one topic at a time on the right (same as the Membership Desk and the Scheduler) ---------- */
+.helpgrid{display:grid;grid-template-columns:254px minmax(0,1fr);gap:16px;align-items:start}
+.helpnav{display:flex;flex-direction:column;gap:2px;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:6px;position:sticky;top:calc(var(--hq-h) + 16px)}
+.helpnav button{all:unset;box-sizing:border-box;cursor:pointer;display:flex;align-items:center;gap:9px;padding:9px 11px;border-radius:6px;font-size:13.5px;font-weight:500;color:var(--ink-2);white-space:nowrap}
+.helpnav button i{width:9px;height:9px;border-radius:2px;background:var(--k,#9fb3c8);flex:none}
+.helpnav button:hover{background:var(--surface-2)}
+.helpnav button[aria-current]{background:color-mix(in srgb,var(--sky) 16%,var(--surface));color:var(--ink);font-weight:600;box-shadow:inset 3px 0 0 var(--sky)}
+.helpnav button:focus-visible{outline:2px solid var(--sky);outline-offset:-2px}
+.helpbody{padding:18px 22px 20px;margin-bottom:0}
+.helpbody h2{margin:0 0 4px;font-size:19px}
+.helpbody h3{margin:20px 0 8px;font-size:14.5px}
+.helpbody .lead{margin:0 0 16px;color:var(--ink-2);font-size:14px;line-height:1.55}
+.helpbody p{margin:0 0 12px;color:var(--ink-2);font-size:13.5px;line-height:1.55}
+.helpbody p b,.helpbody li b{color:var(--ink)}
+.helpbody ul.hlist{margin:0 0 14px;padding-left:18px;color:var(--ink-2);font-size:13.5px;line-height:1.6}
+.helpbody code{font-family:var(--display);font-size:12.5px;background:var(--chip);border:1px solid var(--border);border-radius:4px;padding:0 5px;color:var(--ink)}
+.hsteps{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:0 0 16px}
+.hstep{border:1px solid var(--border);border-radius:8px;padding:12px 14px;display:grid;grid-template-columns:26px minmax(0,1fr);gap:4px 10px;align-content:start}
+.hstep b.n{grid-row:span 2;width:24px;height:24px;border-radius:5px;background:var(--navy);color:#fff;display:flex;align-items:center;justify-content:center;font-size:12px;font-variant-numeric:tabular-nums}
+:root[data-theme="dark"] .hstep b.n{background:var(--sky);color:var(--navy)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .hstep b.n{background:var(--sky);color:var(--navy)}}
+.hstep strong{font-size:14px}
+.hstep span{font-size:13px;color:var(--ink-2);line-height:1.5}
+.hnote{border-left:3px solid var(--sky);background:var(--surface-2);padding:10px 14px;border-radius:0 6px 6px 0;font-size:13.5px;color:var(--ink-2);line-height:1.55;margin:0 0 12px}
+.hnote b{color:var(--ink)}
+.hnote.warn{border-left-color:var(--warn);background:var(--warn-soft)}
+.hfaq{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.hfaq div{border:1px solid var(--border);border-radius:8px;padding:12px 14px}
+.hfaq b{display:block;font-size:14px;margin-bottom:4px}
+.hfaq span{font-size:13px;color:var(--ink-2);line-height:1.5}
+.helpbody .btn{margin-top:4px}
+.helpbody table{width:100%;border-collapse:collapse;font-size:13px;margin:0 0 14px}
+.helpbody th{text-align:left;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-3);font-weight:600;padding:7px 10px;border-bottom:1px solid var(--border);white-space:nowrap}
+.helpbody td{padding:8px 10px;border-bottom:1px solid var(--rule);vertical-align:top;color:var(--ink-2);line-height:1.45}
+.helpbody td b{color:var(--ink)}
+/* the what-drives-what map: one row per chain, boxes joined by arrows */
+.hflow{display:flex;flex-direction:column;gap:12px;margin:0 0 18px}
+.hrow{border:1px solid var(--border);border-radius:8px;padding:12px 14px;background:var(--surface-2)}
+.hrow>b{display:flex;align-items:center;gap:8px;font-size:11px;letter-spacing:.07em;text-transform:uppercase;color:var(--ink-3);margin-bottom:9px}
+.hrow>b i{width:9px;height:9px;border-radius:2px;background:var(--k,#9fb3c8)}
+.hchain{display:flex;align-items:stretch;gap:8px}
+.hbox{flex:1 1 0;min-width:0;background:var(--surface);border:1px solid var(--border);border-top:3px solid var(--k,var(--sky));border-radius:6px;padding:8px 10px}
+.hbox strong{display:block;font-size:13px;color:var(--ink);line-height:1.3}
+.hbox span{display:block;font-size:11.5px;color:var(--ink-3);line-height:1.4;margin-top:3px}
+.harr{flex:none;align-self:center;color:var(--ink-3);font-size:16px;line-height:1}
+@media(max-width:900px){.helpgrid{grid-template-columns:1fr}.helpnav{position:static;flex-direction:row;overflow-x:auto}.hsteps,.hfaq{grid-template-columns:1fr}
+  .hchain{flex-direction:column}.hbox{flex:none}.harr{transform:rotate(90deg)}}
+@media(max-width:700px){.helpbody{padding:14px 14px 16px}.helpbody table{display:block;overflow-x:auto}}
 </style>
 <script src="/assets/session.js"></script>
 <script>
@@ -1402,6 +1451,9 @@ c57 -33 76 -84 76 -200 0 -116 -19 -167 -76 -200 -32 -19 -52 -20 -294 -20
     <button type="button" data-hq="iss" title="Issues">
       <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 9v4.5M12 17h.01"/><path d="M10.3 3.9 1.9 18a2 2 0 0 0 1.7 3h16.8a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg>
       <span>Issues</span><span class="navcount" id="iss-n" hidden></span></button>
+    <button type="button" data-hq="help" title="Help">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M9.6 9.3a2.5 2.5 0 014.8.9c0 1.7-2.4 2.2-2.4 3.6"/><path d="M12 17.2v.1"/></svg>
+      <span>Help</span></button>
   </nav>
   <div class="railsum">
     <label for="scope-pick">Showing</label>
@@ -6160,8 +6212,213 @@ function renderIssues(root){
   root.appendChild(peopleUploader());
 }
 
+/* ======================= help =======================
+   Every connection Meeting Trackers has, and what drives what, one topic at a time —
+   laid out the same way as the Membership Desk and Scheduler help. */
+const HFLOW=[
+  {k:"#2477b8",name:"Outlook Calendar",boxes:[
+    ["You Save the Group's Settings","Meeting Schedule and Settings, in the group's panel"],
+    ["Tracker Data","Private GitHub repository meeting-trackers-data: sched.json and groups.json"],
+    ["Calendar Sync","GitHub Action, starts within a minute of the save"],
+    ["Calendar Flow","Power Automate: Meeting Trackers to MISMO Meetings Schedule"],
+    ["MISMO Meetings Schedule","Outlook calendar of the meetings@ mailbox, shared with the team"]]},
+  {k:"#a78bfa",name:"Website Schedule",boxes:[
+    ["The Same Save, or Mark Cancelled","Settings, or a meeting marked Cancelled on Log Attendance"],
+    ["Publish Meeting Schedule","GitHub Action, on every save and once every morning"],
+    ["Public Files","schedule.json, mismo-meetings.ics and one calendar file per group"],
+    ["Website and Subscribers","resources.mismo.org/meeting-trackers — six public fields only"]]},
+  {k:"#1baf7a",name:"Attendance",boxes:[
+    ["Log Attendance and Uploads","Rosters ticked in the room, TrackPod summit exports, membership lists"],
+    ["Tracker Data","One file per group per year, through Perry's save relay"],
+    ["Stats, Drill-Downs and Issues","This page, for any date range"],
+    ["Member 360","The attendance figures in the Activity Snapshot"]]},
+  {k:"#eda100",name:"Company Categories",boxes:[
+    ["Member 360 Designations","The category list Member 360 uses"],
+    ["Company Category Here","Stats → Companies, set once per company"],
+    ["Everyone at That Company","Every chart, drill-down and Member 360 figure follows"]]}
+];
+const HELP=[
+ {id:"start",k:"#74bfeb",name:"How It Works",
+  lead:"Meeting Trackers is where MISMO keeps every workgroup's attendance, schedule, facilitator and Zoom room. It is the one place to change them. The Outlook calendar, the website schedule and the calendar files people subscribe to all follow what is saved here.",
+  steps:[["Log Attendance","Pick your card, open the meeting, tick who was there and save. Anyone can log for anyone, and whoever saves is recorded on the meeting."],
+   ["Stats","Every meeting and summit session MISMO has tracked, by group, person, company and summit, for any date range. Click a row for its drill-down."],
+   ["Issues","People with no company, companies with no category, possible duplicates and people added in the room. Closing these makes every total right."],
+   ["Meeting Schedule and Settings","Open a group and use this box to set its day, times, weeks of the month, Zoom account and link, facilitator and status. Saving it updates Outlook and the website."]],
+  notes:["<b>The one rule:</b> change meetings here, never in Outlook. Anything typed into an Outlook invite does not come back to the tracker, and it is replaced the next time that group is saved."],
+  go:["map","See What Drives What"]},
+ {id:"map",k:"#14486e",name:"What Drives What",
+  lead:"Four chains start here and flow out. Nothing flows back in, apart from the company categories, which follow Member 360.",
+  flow:true,
+  html:'<h3>What You Change and Where It Shows Up</h3>'+
+   '<table><thead><tr><th>You Change</th><th>Where It Shows Up</th><th>How Soon</th></tr></thead><tbody>'+
+   '<tr><td><b>Meeting day, start and end time, weeks of the month</b></td><td>The Outlook series for that group; the website schedule and calendar files; the Today box and the “to log” counts here.</td><td>Outlook in about a minute. The website in a few minutes.</td></tr>'+
+   '<tr><td><b>Zoom link</b></td><td>The location and body of every future Outlook invite; the join link on the website.</td><td>Same as above.</td></tr>'+
+   '<tr><td><b>Zoom account</b> (MISMO 1–4, MISMO Facilitators)</td><td>The Zoom Information in the Outlook invite: the account, its username and its password. Never on the website.</td><td>About a minute.</td></tr>'+
+   '<tr><td><b>Facilitator</b></td><td>The Facilitator line in the Outlook invite, and the facilitator cards on Log Attendance. Never on the website.</td><td>About a minute.</td></tr>'+
+   '<tr><td><b>Status: On Hold or Archived</b></td><td>The group’s future meetings come off Outlook and the website. Past meetings and attendance stay.</td><td>About a minute.</td></tr>'+
+   '<tr><td><b>Back to Active</b></td><td>A fresh series goes on Outlook from the next meeting date, with the details.</td><td>About a minute.</td></tr>'+
+   '<tr><td><b>Mark Cancelled</b> on one meeting</td><td>That date drops off the website calendar files. Outlook does not change, so delete that one occurrence in Outlook yourself.</td><td>A few minutes.</td></tr>'+
+   '<tr><td><b>Attendance</b></td><td>Stats, drill-downs, Issues and the Member 360 figures. Never on the calendar or the website.</td><td>At once here; others see it within 30 seconds.</td></tr>'+
+   '<tr><td><b>Company category</b></td><td>Every person at that company, every chart and the Member 360 figures.</td><td>At once.</td></tr>'+
+   '</tbody></table>'},
+ {id:"log",k:"#5fd39a",name:"Logging Attendance",
+  lead:"Facilitators check names off a roster for each meeting. Meetings that were due and not logged are flagged, so nothing slips.",
+  steps:[["Pick Your Card","Your workgroups are on your card, or switch to the full A–Z list."],
+   ["Open the Meeting","The meeting due today is picked for you. Any other date can be chosen."],
+   ["Tick Who Was There","Voting reps can be sorted first, and the quorum banner counts them as you go. Someone new? Search first — everyone MISMO knows is checked so no one is entered twice."],
+   ["Save","Saved for everyone at once. If the meeting did not happen, select Mark Cancelled instead."]],
+  notes:["<b>Summits:</b> drop the TrackPod session-scanning export in on the Summits page under Stats. Uploading the same export again later in the day just refreshes the numbers.",
+   "<b>Nothing is ever removed.</b> Archived groups and their meetings stay in every total for good."]},
+ {id:"sched",k:"#f0b94a",name:"Meeting Schedule and Settings",
+  lead:"Open any group (Stats → Groups, or search) and use Meeting Schedule and Settings. This box is what drives the Outlook calendar and the website. It needs edit access.",
+  html:'<table><thead><tr><th>Field</th><th>What It Drives</th></tr></thead><tbody>'+
+   '<tr><td><b>Facilitator</b></td><td>The Facilitator line in the Outlook invite, and whose card the group sits on.</td></tr>'+
+   '<tr><td><b>Status</b></td><td>Active, On Hold or Archived. Only Active groups have meetings on Outlook and the website.</td></tr>'+
+   '<tr><td><b>Meeting Day</b> and <b>How Often</b></td><td>Every Week, or the weeks of the month it meets (1st and 3rd, say). Each week becomes its own Outlook series.</td></tr>'+
+   '<tr><td><b>Starts (ET)</b> and <b>Ends (ET)</b></td><td>The meeting time. Always Eastern, the way the Zoom schedule keeps them.</td></tr>'+
+   '<tr><td><b>Zoom Link</b></td><td>The invite’s location and the website’s join link.</td></tr>'+
+   '<tr><td><b>Zoom Account</b></td><td>Which MISMO Zoom login hosts the meeting. The invite shows the account, its username and its password.</td></tr>'+
+   '</tbody></table>'+
+   '<p>Saving also stamps <b>Last Reviewed/Update</b> with today’s date and your name, which shows at the foot of every invite.</p>'+
+   '<h3>The Zoom Logins</h3>'+
+   '<table><thead><tr><th>Account</th><th>Username</th></tr></thead><tbody>'+
+   '<tr><td><b>MISMO 1</b></td><td>info@mismo.org</td></tr>'+
+   '<tr><td><b>MISMO 2</b></td><td>workrequests@mismo.org</td></tr>'+
+   '<tr><td><b>MISMO 3</b></td><td>subscriptions@mismo.org</td></tr>'+
+   '<tr><td><b>MISMO 4</b></td><td>membership@mismo.org</td></tr>'+
+   '<tr><td><b>MISMO Facilitators</b></td><td>MISMOFacilitators@mismo.org</td></tr>'+
+   '</tbody></table>',
+  notes:["<b>Passwords are never stored in this page or in any file.</b> They live only in the GitHub secret <code>MT_ZOOM_PASSWORDS</code> and are added to the invite as it is sent. To change one, see Behind the Scenes."]},
+ {id:"cal",k:"#2477b8",name:"The Outlook Calendar",
+  lead:"The MISMO Meetings Schedule calendar in Outlook belongs to the meetings@ mailbox and is shared with the team. Meeting Trackers keeps it up to date by itself.",
+  steps:[["You Save","Meeting Schedule and Settings is saved to the tracker data on GitHub."],
+   ["Calendar Sync Starts","A GitHub Action compares the save with the version before it and picks out only the groups whose name, status, day, times, weeks, Zoom link, Zoom account or facilitator changed."],
+   ["The Flow Is Sent the Details","For each of those groups it sends the Power Automate flow the meeting pattern from the next meeting date, plus the invite text with the Zoom password added from the secret."],
+   ["Outlook Is Updated","The flow retires that group’s current series and puts the new one on the calendar."]],
+  html:'<h3>What Goes in Every Invite</h3>'+
+   '<table><tbody>'+
+   '<tr><td><b>Title</b></td><td>The workgroup name, exactly as it is here.</td></tr>'+
+   '<tr><td><b>Location</b></td><td>The Zoom link.</td></tr>'+
+   '<tr><td><b>Body</b></td><td>Time, Cadence, Zoom Information (account, username, password, link), Facilitator, and Last Reviewed/Update.</td></tr>'+
+   '<tr><td><b>Time zone</b></td><td>Eastern, always.</td></tr>'+
+   '<tr><td><b>Settings</b></td><td>No invitees, shown as Free, no reminder — it is a schedule, not a meeting request.</td></tr>'+
+   '</tbody></table>'+
+   '<h3>How the Flow Retires the Old Series</h3>'+
+   '<table><tbody>'+
+   '<tr><td><b>A series that has not started yet</b></td><td>Deleted, so there is never a duplicate.</td></tr>'+
+   '<tr><td><b>A series already under way</b></td><td>Ended at today, so past meetings keep the details they had.</td></tr>'+
+   '<tr><td><b>A series that has already ended</b></td><td>Left alone. It is never extended.</td></tr>'+
+   '<tr><td><b>A series with no details in it</b></td><td>Deleted, wherever it starts.</td></tr>'+
+   '</tbody></table>',
+  notes:["<b>Never restore calendar items from your own Deleted Items.</b> The calendar belongs to meetings@, so restoring from your mailbox puts copies only in your view that cannot be removed. If something looks wrong, resend the group (see When It Stops) and the flow puts it right.",
+   "<b>Moving one meeting:</b> a one-off change can be made in Outlook, but it is replaced the next time that group’s settings are saved or resent."]},
+ {id:"web",k:"#a78bfa",name:"The Website Schedule",
+  lead:"The public meeting schedule and the calendar files people subscribe to are built from the same tracker data, by a second GitHub Action called Publish Meeting Schedule.",
+  steps:[["When It Runs","On every save of a group’s settings or status, on every meeting marked Cancelled, and once every morning as a safety net."],
+   ["What It Builds","schedule.json for the website, mismo-meetings.ics with every group, and one calendar file per group in the calendars folder."],
+   ["Where It Goes","Into the public meeting-trackers repository, under the name MISMO Schedule Publisher. GitHub Pages then puts it live at resources.mismo.org/meeting-trackers."],
+   ["What Is Public","Six fields only: name, topic, day, cadence, time and the join link, plus upcoming Cancelled dates. Facilitators, Zoom logins and attendance never leave the private data."]],
+  notes:["<b>Topics</b> (Governance, Artificial Intelligence and so on) come from the domains list kept in the private data. A group with no topic there keeps the one already live."]},
+ {id:"data",k:"#9fb3c8",name:"Saving and Your Data",
+  lead:"Everything saved here goes through Perry’s save relay into the private GitHub repository meeting-trackers-data. The public page holds no member information.",
+  html:'<table><thead><tr><th>File</th><th>Holds</th></tr></thead><tbody>'+
+   '<tr><td><b>sched</b></td><td>Each group’s schedule: day, times, weeks, Zoom link and account, who last updated it. Saving this starts Calendar Sync and Publish Meeting Schedule.</td></tr>'+
+   '<tr><td><b>groups</b></td><td>Names, status (Active, On Hold, Archived) and facilitators. Saving this starts both Actions too.</td></tr>'+
+   '<tr><td><b>m-&lt;group&gt;-&lt;year&gt;</b></td><td>One file per group per year: every meeting, who attended, who logged it, and Cancelled dates.</td></tr>'+
+   '<tr><td><b>people, companies, aliases</b></td><td>The master list of people, their companies and categories, and earlier names.</td></tr>'+
+   '<tr><td><b>summits</b></td><td>Summit sessions from TrackPod uploads.</td></tr>'+
+   '<tr><td><b>voters, leaders</b></td><td>Each group’s voting reps and quorum, and its chairs and vice-chairs.</td></tr>'+
+   '<tr><td><b>baseline</b></td><td>The history imported from the original tracker workbooks. Day-to-day logging never touches it.</td></tr>'+
+   '</tbody></table>',
+  notes:["<b>Two people saving at once</b> never overwrite each other — the second save is reapplied on top of the first. If the connection drops, the change waits and goes out when it is back. If your sign-in expires, you are asked to sign in again and nothing is lost.",
+   "<b>Others’ work appears without a reload</b>, every 30 seconds while the page is open."]},
+ {id:"behind",k:"#14486e",name:"Behind the Scenes",
+  lead:"Every piece, what it does and where it lives. For Jonna, and for anyone looking after Meeting Trackers later.",
+  html:'<table><thead><tr><th>Piece</th><th>What It Does</th><th>Where It Lives</th></tr></thead><tbody>'+
+   '<tr><td><b>Meeting Trackers</b></td><td>This page. One file, no build step.</td><td>GitHub: GitMISMO/meeting-trackers, index.html, served by GitHub Pages at resources.mismo.org/meeting-trackers.</td></tr>'+
+   '<tr><td><b>Sign-in</b></td><td>The shared resources.mismo.org sign-in. Edit access is what lets someone save.</td><td>The resources.mismo.org sign-in, project meeting-trackers.</td></tr>'+
+   '<tr><td><b>Save relay</b></td><td>Writes each save into the private data as a commit named “Update … dashboard data (saved by …)”.</td><td>Perry’s relay on AWS, project key meeting-trackers.</td></tr>'+
+   '<tr><td><b>Tracker data</b></td><td>Every file listed under Saving and Your Data.</td><td>GitHub: GitMISMO/meeting-trackers-data (private), data folder.</td></tr>'+
+   '<tr><td><b>Calendar Sync</b></td><td>Works out which groups changed and sends each one to the calendar flow. Can be run by hand for one group or all.</td><td>meeting-trackers-data: .github/workflows/calendar-sync.yml and .github/scripts/calendar-sync.mjs. Actions tab, Calendar Sync.</td></tr>'+
+   '<tr><td><b>Calendar flow</b></td><td>Finds the MISMO Meetings Schedule calendar, retires the group’s current series and creates the new one.</td><td>Power Automate, “Meeting Trackers to MISMO Meetings Schedule”, on Jonna’s license and Outlook connection.</td></tr>'+
+   '<tr><td><b>MISMO Meetings Schedule</b></td><td>The Outlook calendar the team uses.</td><td>The meetings@ mailbox, shared with the team. Jonna has edit and share rights.</td></tr>'+
+   '<tr><td><b>Publish Meeting Schedule</b></td><td>Builds the public schedule and calendar files and copies them to the public repository.</td><td>meeting-trackers-data: .github/workflows/publish-schedule.yml and scripts/publish-schedule.mjs.</td></tr>'+
+   '<tr><td><b>Website Edit Watch</b></td><td>Not part of meetings. Checks the editable MISMO website pages every two hours and logs changes and formatting to clean up.</td><td>meeting-trackers-data: .github/workflows/site-watch.yml, results in the site-watch folder.</td></tr>'+
+   '<tr><td><b>Agendas</b></td><td>Not driven by the tracker. The What We Are Working On Now boxes on workgroup pages, refreshed monthly from posted agendas.</td><td>meeting-trackers: agendas.json.</td></tr>'+
+   '</tbody></table>'+
+   '<h3>The Secrets</h3>'+
+   '<p>Kept in GitHub under meeting-trackers-data → Settings → Secrets and variables → Actions. They are never written in any file.</p>'+
+   '<table><thead><tr><th>Secret</th><th>Holds</th><th>Change It When</th></tr></thead><tbody>'+
+   '<tr><td><b>MT_CALENDAR_FLOW_URL</b></td><td>The private link that starts the calendar flow.</td><td>The flow is ever rebuilt and gets a new link. Copy the new link from the flow’s first step.</td></tr>'+
+   '<tr><td><b>MT_ZOOM_PASSWORDS</b></td><td>The Zoom passwords shown in the invites, one line per account, written as <code>MISMO 1=password</code>.</td><td>A Zoom password changes. Update that line, then resend all.</td></tr>'+
+   '<tr><td><b>PUBLISH_TOKEN</b></td><td>Lets Publish Meeting Schedule write the public files.</td><td>It expires, or the website schedule stops updating with a permissions error.</td></tr>'+
+   '</tbody></table>'},
+ {id:"stops",k:"#ff8f7d",name:"When It Stops",
+  lead:"What to do when something does not come through. In almost every case, resending the group fixes it.",
+  steps:[["Open the Actions Tab","GitHub → GitMISMO/meeting-trackers-data → Actions → Calendar Sync."],
+   ["Select Run Workflow","The button on the right of the list of runs."],
+   ["Type the Group","The workgroup name exactly as it is here, or all for every active workgroup."],
+   ["Run It","Each group gets a line in the run’s log saying what was sent. Outlook catches up in about a minute."]],
+  html:'<table><thead><tr><th>What You See</th><th>What to Do</th></tr></thead><tbody>'+
+   '<tr><td><b>Saved here, Outlook did not change</b></td><td>Open the latest Calendar Sync run. Green with “No calendar changes” means nothing that reaches the calendar changed. Red: read the line for that group, then check the flow’s run history in Power Automate. Then resend the group.</td></tr>'+
+   '<tr><td><b>“Could not read its meeting times”</b></td><td>Set Starts (ET) and Ends (ET) in Meeting Schedule and Settings and save. The calendar is left alone until then.</td></tr>'+
+   '<tr><td><b>Duplicate or blank invites</b></td><td>Resend that group. Series that have not started are deleted, and series with no details are removed.</td></tr>'+
+   '<tr><td><b>Calendar flow failing in Power Automate</b></td><td>Usually the Outlook connection needs signing in again. Fix the connection on the flow, then resend all.</td></tr>'+
+   '<tr><td><b>Website schedule not updated</b></td><td>meeting-trackers-data → Actions → Publish Meeting Schedule → Run workflow. Then check meeting-trackers → Actions for the Pages deploy.</td></tr>'+
+   '<tr><td><b>Pages deploy stuck on Queued</b></td><td>Cancel the stuck run in meeting-trackers → Actions, then make any small commit (an edit to the README is enough) to start a fresh deploy.</td></tr>'+
+   '<tr><td><b>“Not saved yet” here</b></td><td>The connection dropped. Leave the page open; it saves when the connection is back. If asked, sign in again.</td></tr>'+
+   '<tr><td><b>Copies in your Outlook that will not delete</b></td><td>They are in your view only. Remove the shared MISMO Meetings Schedule calendar from your Outlook and add it back.</td></tr>'+
+   '</tbody></table>'},
+ {id:"faq",k:"#74bfeb",name:"Questions",
+  faq:[["Can I change a meeting in Outlook instead?","Not for good. Outlook changes never come back here, and the next save of that group replaces them. Change it here."],
+   ["Does a schedule change rewrite past meetings?","No. Series already under way are ended at today and keep the details they had. Only meetings from today on change."],
+   ["Who can change a schedule?","Anyone with edit access to Meeting Trackers. Every save records who made it, and the invite shows it under Last Reviewed/Update."],
+   ["Why does a group have two series in Outlook?","Groups that meet on two weeks of the month (1st and 3rd, say) get one series per week. That is expected."],
+   ["Is anything about members made public?","No. Only name, topic, day, cadence, time and the join link go to the website."],
+   ["What happens when a group is archived?","Its future meetings come off Outlook and the website. Its meetings, people and attendance stay in every total for good."],
+   ["Where are the Zoom passwords kept?","Only in the GitHub secret MT_ZOOM_PASSWORDS. They appear in the invites and nowhere else."],
+   ["Who do I ask?","Jonna Critchley."]]}
+];
+let HCUR="start";
+function renderHelp(root){
+  root.appendChild(vhead("Help","How Meeting Trackers works, everything it is connected to, and what drives what. Questions: Jonna Critchley."));
+  const grid=el("div","helpgrid"), nav=el("nav","helpnav"), body=el("div","panel helpbody");
+  nav.setAttribute("aria-label","Help topics");
+  grid.append(nav,body); root.appendChild(grid);
+  function draw(){
+    nav.textContent=""; body.textContent="";
+    HELP.forEach(t=>{ const b=el("button"); b.type="button"; b.style.setProperty("--k",t.k);
+      if(t.id===HCUR) b.setAttribute("aria-current","true");
+      b.append(el("i"),document.createTextNode(t.name));
+      b.addEventListener("click",()=>{ HCUR=t.id; draw(); });
+      nav.appendChild(b); });
+    const t=HELP.find(x=>x.id===HCUR)||HELP[0];
+    body.appendChild(el("h2",null,t.name));
+    if(t.lead) body.appendChild(el("p","lead",t.lead));
+    if(t.flow){ const f=el("div","hflow");
+      HFLOW.forEach(r=>{ const row=el("div","hrow"); row.style.setProperty("--k",r.k);
+        const h=el("b"); h.append(el("i"),document.createTextNode(r.name)); row.appendChild(h);
+        const c=el("div","hchain");
+        r.boxes.forEach((x,i)=>{ if(i) c.appendChild(el("span","harr","→"));
+          const bx=el("div","hbox"); bx.append(el("strong",null,x[0]),el("span",null,x[1])); c.appendChild(bx); });
+        row.appendChild(c); f.appendChild(row); });
+      body.appendChild(f); }
+    if(t.steps){ const s=el("div","hsteps");
+      t.steps.forEach((x,i)=>{ const d=el("div","hstep"); d.append(el("b","n",String(i+1)),el("strong",null,x[0]),el("span",null,x[1])); s.appendChild(d); });
+      body.appendChild(s); }
+    if(t.html){ const d=el("div"); d.innerHTML=t.html; body.appendChild(d); }
+    (t.notes||[]).forEach(n=>{ const d=el("div","hnote"+(/^<b>Never/.test(n)?" warn":"")); d.innerHTML=n; body.appendChild(d); });
+    if(t.faq){ const q=el("div","hfaq");
+      t.faq.forEach(x=>{ const d=el("div"); d.append(el("b",null,x[0]),el("span",null,x[1])); q.appendChild(d); });
+      body.appendChild(q); }
+    if(t.go){ const b=el("button","btn",t.go[1]+" →"); b.type="button"; b.style.minWidth="max-content";
+      b.addEventListener("click",()=>{ HCUR=t.go[0]; draw(); window.scrollTo(0,0); }); body.appendChild(b); }
+  }
+  draw();
+}
+
 /* ======================= router ======================= */
-const VIEWS={ov:renderOverview,stats:renderStats,iss:renderIssues};
+const VIEWS={ov:renderOverview,stats:renderStats,iss:renderIssues,help:renderHelp};
 let CUR="ov";
 function go(tab){
   if(!VIEWS[tab]) return;
