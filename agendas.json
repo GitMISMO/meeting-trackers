@@ -1,19 +1,24 @@
 {
   "note": "What each MISMO workgroup is working on, from its latest posted meeting agenda. Shown in the What We Are Working On Now boxes on the workgroup pages. Refreshed monthly.",
-  "updated": "2026-11-01",
+  "updated": "2026-11-16",
   "groups": {
     "digital-interoperability": {
-      "date": "2026-10-08",
+      "date": "2026-11-12",
       "items": [
         [
           "In Progress",
-          "Use Case Matrix",
-          "Reviewing the digital interoperability use case matrix."
+          "Zip Code Masking Interoperability",
+          "Testing the zip code masking approach and revising the SMART Doc iGuide to match."
         ],
         [
           "In Progress",
-          "Signature Validation",
-          "Working through signature validation for digital documents."
+          "MERS Roadmap Input",
+          "Gathering input on upcoming MERS changes, including the 27.1 release and the SHA-256 signature upgrade."
+        ],
+        [
+          "Under Review",
+          "Paper Conversion Reversals",
+          "Reviewing the use case matrix for reversing converted-to-paper and paper replacement actions."
         ]
       ]
     },
@@ -38,32 +43,32 @@
       ]
     },
     "emortgage": {
-      "date": "2026-10-01",
+      "date": "2026-11-05",
       "items": [
         [
-          "In Progress",
-          "Electronic Note Vault Definition",
-          "Reviewing a proposed change to the Electronic Note Vault definition."
+          "Under Review",
+          "eNote Vault Definition",
+          "Reviewing a proposed change to the electronic note vault definition."
         ],
         [
           "In Progress",
-          "SMART Doc® iGuide V1.02",
-          "Working through open discussion items, including eNotes with trusts, signature validation and dollar amounts."
+          "SMART Doc iGuide V1.02",
+          "Working through 2026 discussion items for the next SMART Doc iGuide, including dollar amounts and signature validation."
         ],
         [
-          "New",
-          "15/15 ARM and MISMO Version ID",
-          "New discussion items on 15/15 ARM mapping and the MISMO Version ID."
+          "Ongoing",
+          "Industry and Work Product Updates",
+          "Sharing updates from MERS, the agencies and related MISMO groups."
         ]
       ]
     },
     "tri-party-enote-bailee": {
-      "date": "2026-11-03",
+      "date": "2026-11-17",
       "items": [
         [
           "Working Session",
-          "Agreement Drafting Questions",
-          "Working through open questions, such as making the agreement work no matter which party funds first."
+          "Agreement Drafting",
+          "Continuing the working session on drafting the master control agreement."
         ],
         [
           "In Progress",
@@ -71,9 +76,9 @@
           "Gathering ideas and drafting the standard, starting from the major negotiated terms summary."
         ],
         [
-          "Open",
-          "Leadership Roles",
-          "Chair, vice chair and education representative roles are open."
+          "New",
+          "Workgroup Leadership",
+          "Introducing the group's chairs and vice chairs and their responsibilities."
         ]
       ]
     },
@@ -98,12 +103,12 @@
       ]
     },
     "commercial-digital-notes": {
-      "date": "2026-10-08",
+      "date": "2026-11-12",
       "items": [
         [
-          "Under Review",
+          "In Progress",
           "CORE Digital Notes FAQ",
-          "Reviewing the draft FAQ for Commercial and Other Real Estate (CORE) digital notes."
+          "Discussing member answers to the FAQ, with answers due for consolidation in December."
         ],
         [
           "In Progress",
@@ -111,9 +116,9 @@
           "Developing a standardized glossary of common commercial note and UCC legal terms and definitions."
         ],
         [
-          "In Progress",
-          "Process Requirements",
-          "Working out the requirements and process changes needed before eNotes can work in commercial origination."
+          "Up Next",
+          "Winter Summit Planning",
+          "Planning the group's Winter Summit session."
         ]
       ]
     },
@@ -138,62 +143,62 @@
       ]
     },
     "mortgage-compliance-dataset": {
-      "date": "2026-10-15",
+      "date": "2026-11-05",
       "items": [
         [
-          "Up Next",
+          "New",
           "Next Version of the MCD",
-          "Discussing scope for the next version of the Mortgage Compliance Dataset."
+          "Planning the work request and approach for the next version of the dataset."
         ],
         [
           "In Progress",
           "MCD Response File",
-          "Update from the MCD Response File subgroup."
+          "Hearing updates from the subgroup building the MCD response file."
         ],
         [
           "In Progress",
-          "Implementations and Q&A",
-          "Identifying implementation status and documenting MCD questions and answers."
+          "Implementation Tracking",
+          "Identifying where the MCD is in use and documenting implementations."
         ]
       ]
     },
     "mortgage-insurance": {
-      "date": "2026-10-19",
+      "date": "2026-11-16",
       "items": [
         [
           "In Progress",
-          "Estimated JSON Rate Quote",
-          "Status update on the Estimated JSON Rate Quote."
+          "Estimated Rate Quote API",
+          "Confirming how to communicate the MI estimated rate quote API to the industry."
+        ],
+        [
+          "Under Review",
+          "Reference Model Changes in v3.6.4",
+          "Reviewing the group's reference model changes in the v3.6.4 artifacts."
         ],
         [
           "In Progress",
-          "Details JSON Rate Quote",
-          "Progress update on the Details JSON Rate Quote."
-        ],
-        [
-          "Up Next",
-          "Prioritization and Research",
-          "Reviewing the brainstorming list for prioritization and research volunteers."
+          "Detailed JSON Rate Quote",
+          "Continuing work on the detailed JSON rate quote."
         ]
       ]
     },
     "property-valuation-services": {
-      "date": "2026-10-23",
+      "date": "2026-11-13",
       "items": [
         [
           "Working Session",
-          "PaVS Procurement Dataset White Paper",
-          "Working session on the white paper for the PaVS Procurement Dataset Specification."
+          "Procurement Dataset Implementation Guide",
+          "Working on the implementation guide for the PaVS procurement dataset specification."
         ],
         [
           "In Progress",
-          "Completion Dates for Current Work",
-          "Reviewing estimated completion dates for work in progress."
+          "Procurement Dataset White Paper",
+          "Updating the white paper on the PaVS procurement dataset specification."
         ],
         [
           "Ongoing",
           "Workgroup Updates",
-          "Updates from the IM, AWG and AVM DWG representatives."
+          "Sharing updates from Information Management, Architecture and the AVM DWG."
         ]
       ]
     },
@@ -218,22 +223,22 @@
       ]
     },
     "artificial-intelligence": {
-      "date": "2026-10-26",
+      "date": "2026-11-09",
       "items": [
         [
-          "Up Next",
+          "New",
           "2027 Roadmap Planning",
-          "Planning the 2027 roadmap, including agent communication standards and a book and article club."
+          "Planning next year's work, including agent communication standards and context and ontology work for LLMs."
         ],
         [
-          "Ongoing",
-          "FRAME and Regulatory Updates",
-          "Updates from MBA Annual and MBA Tech on FRAME, plus the MBA regulatory update."
+          "In Progress",
+          "AI Governance Forum",
+          "Hearing updates on the new AI Governance Forum."
         ],
         [
-          "Working Session",
-          "Use Case Deep Dive",
-          "A deep dive into an AI use case, along with a glossary update."
+          "Up Next",
+          "Winter Summit Planning",
+          "Planning the group's session at the Winter Summit in New Orleans."
         ]
       ]
     },
@@ -258,42 +263,42 @@
       ]
     },
     "origination": {
-      "date": "2026-09-16",
+      "date": "2026-11-04",
       "items": [
         [
-          "In Progress",
-          "Loan Estimate Mapping Specification",
-          "Updates to the Loan Estimate mapping specification."
-        ],
-        [
           "Under Review",
-          "Reference Model v3.6.4 Build Package",
-          "The v3.6.4 build package is ready for workgroup review."
+          "Revised LE Mapping Spec",
+          "The revised Loan Estimate mapping spec and VA Form 26-1805 mapping are pending comment."
         ],
         [
-          "In Progress",
-          "Business Glossary 2026.02 Release",
-          "Preparing submissions for the 2026.02 Business Glossary release."
+          "New",
+          "UCD Enumerations Work Request",
+          "Discussing a new work request for reference model maintenance of UCD-related enumerations."
+        ],
+        [
+          "Up Next",
+          "Winter Summit Planning",
+          "Brainstorming topics for the group's Winter Summit session."
         ]
       ]
     },
     "title-closing": {
-      "date": "2026-09-14",
+      "date": "2026-11-09",
       "items": [
         [
-          "Discovery",
-          "SMART Doc for Title Commitment",
-          "New discovery effort on a SMART Doc for the title commitment."
+          "Under Review",
+          "Title and Closing Order Dataset",
+          "The order dataset from the Docs to Data DWG is in its public comment period."
         ],
         [
-          "Discovery",
-          "Transactional Closing Instructions",
-          "New discovery effort to revamp transactional closing instructions."
+          "Published",
+          "Title Pricing Dataset",
+          "No comments were received, so it will be published as final with Reference Model v3.6.4."
         ],
         [
           "In Progress",
-          "Property Fraud and PRIA Collaboration",
-          "Next steps on property fraud work with PRIA."
+          "Property Fraud",
+          "Continuing small group discussions on property fraud."
         ]
       ]
     },
@@ -318,22 +323,22 @@
       ]
     },
     "credit-reporting": {
-      "date": "2026-10-01",
+      "date": "2026-11-05",
       "items": [
-        [
-          "In Progress",
-          "New Credit Scoring Models",
-          "FHA implementation of new credit scoring models and finalizing the related work request."
-        ],
-        [
-          "Up Next",
-          "Non-Credit \"Tear Offs\" Analysis",
-          "Confirming next steps on the analysis of non-credit-specific items."
-        ],
         [
           "Working Session",
           "Undisclosed Credit File Monitoring",
-          "Identifying the data points the UCFM response needs for creditor, liability detail and public record containers."
+          "Working on reference model changes, such as definitions and enumerations, for UCFM."
+        ],
+        [
+          "In Progress",
+          "Credit Reporting Maintenance Work Request",
+          "Tracking the status of a new credit reporting maintenance work request."
+        ],
+        [
+          "Ongoing",
+          "FHA Credit Scoring Models",
+          "Discussing FHA's implementation of new credit scoring models."
         ]
       ]
     },
@@ -378,42 +383,42 @@
       ]
     },
     "decision-modeling": {
-      "date": "2026-11-02",
+      "date": "2026-11-16",
       "items": [
         [
           "In Progress",
           "Servicing Default Waterfall",
-          "Update on the servicing default waterfall work."
+          "Updating the servicing default waterfall decision model."
+        ],
+        [
+          "New",
+          "2027 Roadmap",
+          "Building next year's topic list, including AI and DMN education and state rules on automated decision making."
         ],
         [
           "Up Next",
           "Winter Summit Planning",
-          "Planning Summit sessions on the 2027 roadmap, DMN 1.8 and a hands-on decision table primer."
-        ],
-        [
-          "New",
-          "State Rules on Automated Decisions",
-          "Looking at Colorado and New Jersey laws that address automated decision making."
+          "Planning a summit session on the roadmap, DMN 1.8 and a hands-on decision table primer."
         ]
       ]
     },
     "business-process-model": {
-      "date": "2026-10-30",
+      "date": "2026-11-13",
       "items": [
         [
           "Working Session",
-          "2026.02 Life of Loan Release",
-          "Working session on the 2026.02 Life of Loan release."
+          "Life of Loan 2026.02 Release",
+          "Working on the 2026.02 release of the Life of Loan model."
         ],
         [
           "In Progress",
           "BPM Engineering",
-          "Update on BPM engineering work."
+          "Engineering updates to the business process model."
         ],
         [
-          "Ongoing",
+          "Up Next",
           "Workgroup Collaboration",
-          "Coordinating with Title and Closing, and with PaVS on the Common Confidence Score testing narrative."
+          "Planning joint sessions with the Servicing and Origination CoPs during the next release."
         ]
       ]
     },
@@ -438,22 +443,22 @@
       ]
     },
     "secondary": {
-      "date": "2026-11-03",
+      "date": "2026-11-17",
       "items": [
         [
           "In Progress",
           "Commitment Dataset Mapping Review",
-          "The group is down to the last few fields, and the specification is published after each meeting for review."
+          "Down to the last few fields, answering mapping questions and working through feedback."
         ],
         [
           "In Progress",
           "Commitment Dataset Use Cases",
-          "Reviewing the use cases drafted at the Spring Summit with members who were not there."
+          "Reviewing the use cases drafted at the Spring Summit."
         ],
         [
           "In Progress",
-          "Adoption Outreach",
-          "Refocusing the webinar on adoption and working with Marketing on outreach and LinkedIn reminders."
+          "Adoption Webinar",
+          "Refocusing the group's webinar on work product adoption."
         ]
       ]
     },
@@ -478,27 +483,27 @@
       ]
     },
     "architecture": {
-      "date": "2026-10-22",
+      "date": "2026-11-12",
       "items": [
         [
           "Under Review",
-          "ALTA Settlement Statement Dataset Revisions",
-          "Review and decision on work request WR2026_11."
+          "Servicing and Loan Modification Work Requests",
+          "Deciding on reference model changes for Fannie Mae LMFS and the Loan Modification SMART Doc V3 dataset."
         ],
         [
           "Under Review",
-          "Title and Closing Order Reference Model Change",
-          "Review and decision on work request WR2025_22."
+          "v3.6.4 Reference Model Artifacts",
+          "Workgroups are reviewing the v3.6.4 artifacts, with feedback due November 20."
         ],
         [
           "In Progress",
-          "MEG 45 Care and Feeding",
-          "Finalizing the MEG 45 Care and Feeding work request."
+          "Version 3 iGuide",
+          "Tracking the Version 3 iGuide and v3.6.x schema validation work."
         ]
       ]
     },
     "avm": {
-      "date": "2026-11-02",
+      "date": "2026-11-09",
       "items": [
         [
           "Working Session",
@@ -553,22 +558,22 @@
       ]
     },
     "mi-claim-submission": {
-      "date": "2026-10-20",
+      "date": "2026-11-17",
       "items": [
         [
           "Working Session",
           "JSON MI Claim API iGuide",
-          "Working sessions on the MISMO 3.6.0 JSON MI Claim API Implementation Guide."
+          "Gathering final feedback on the MISMO 3.6.0 JSON API iGuide, schema validation files and sample JSON files."
+        ],
+        [
+          "Up Next",
+          "Move to Information Management",
+          "Confirming reference model questions and voting on moving the work product to IM."
         ],
         [
           "In Progress",
           "Freddie Mac Enumeration Feedback",
           "Reviewing Freddie Mac feedback on enumerations and missing X12 sort IDs."
-        ],
-        [
-          "In Progress",
-          "Schema Validation and Sample Files",
-          "Addressing JSON and xPath errors, schema validation questions and sample JSON files."
         ]
       ]
     },
@@ -653,22 +658,27 @@
       ]
     },
     "information-management": {
-      "date": "2026-10-26",
+      "date": "2026-11-16",
       "items": [
         [
           "Under Review",
-          "Servicing Reference Model Changes",
-          "Review and decision on the re-submitted work request WR2025_13."
+          "AI Glossary V2",
+          "Reviewing and deciding on the second version of the AI glossary."
         ],
         [
-          "Ongoing",
+          "Under Review",
+          "v3.6.4 Reference Model Artifacts",
+          "Discussing feedback on the v3.6.4 reference model artifacts."
+        ],
+        [
+          "Up Next",
           "IM Queue",
-          "Reviewing the upcoming Information Management queue."
+          "Reviewing the upcoming queue of work products for IM review."
         ]
       ]
     },
     "reverse-mortgage": {
-      "date": "2026-10-15",
+      "date": "2026-11-05",
       "items": [
         [
           "Working Session",
