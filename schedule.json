@@ -1,6 +1,6 @@
 {
   "note": "Public meeting schedule for the MISMO website. Maintained in MISMO’s meeting tracker and published automatically.",
-  "updated": "2026-11-16",
+  "updated": "2026-11-17",
   "groups": [
     {
       "name": "API COP",
@@ -96,7 +96,10 @@
       "day": "Thursday",
       "cadence": "2nd Thursday",
       "time": "1–2pm ET",
-      "join": "https://mba-org.zoom.us/j/88234890771"
+      "join": "https://mba-org.zoom.us/j/88234890771",
+      "cancelled": [
+        "2027-01-14"
+      ]
     },
     {
       "name": "eHELOC DWG",
