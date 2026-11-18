@@ -207,7 +207,10 @@
       "day": "Friday",
       "cadence": "2nd & 4th Friday",
       "time": "1–2pm ET",
-      "join": "https://mba-org.zoom.us/j/86087635705"
+      "join": "https://mba-org.zoom.us/j/86087635705",
+      "cancelled": [
+        "2026-11-27"
+      ]
     },
     {
       "name": "Remote Online Notarization DWG",
