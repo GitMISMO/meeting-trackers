@@ -26,6 +26,20 @@ RRULE:FREQ=YEARLY;BYMONTH=11;BYDAY=1SU
 END:STANDARD
 END:VTIMEZONE
 BEGIN:VEVENT
+UID:ai-governance-forum-2026-11-19@mismo.org
+DTSTAMP:20261118T000000Z
+DTSTART;TZID=America/New_York:20261119T130000
+DTEND;TZID=America/New_York:20261119T140000
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+SUMMARY:AI Governance Forum (Kickoff)
+DESCRIPTION:Artificial Intelligence · Kickoff: Thursday\, Nov 19\, 2026\n
+ \nJoin: https://mba-org.zoom.us/j/4687813951\n\nOpen to anyone who would
+  like to participate. Maintained and updated by MISMO.
+LOCATION:https://mba-org.zoom.us/j/4687813951
+URL:https://mba-org.zoom.us/j/4687813951
+END:VEVENT
+BEGIN:VEVENT
 UID:api-cop@mismo.org
 DTSTAMP:20261118T000000Z
 DTSTART;TZID=America/New_York:20261124T150000
