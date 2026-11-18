@@ -24,7 +24,10 @@
       "day": "Thursday",
       "cadence": "2nd & 4th Thursday",
       "time": "2–3pm ET",
-      "join": "https://mba-org.zoom.us/j/88437195732"
+      "join": "https://mba-org.zoom.us/j/88437195732",
+      "cancelled": [
+        "2026-11-26"
+      ]
     },
     {
       "name": "Artificial Intelligence (AI) COP",
