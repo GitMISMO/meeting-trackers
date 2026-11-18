@@ -40,4 +40,19 @@ DESCRIPTION:Mortgage Insurance · 3rd Monday\n\nJoin: https://mba-org.zoom
 LOCATION:https://mba-org.zoom.us/j/87976028176
 URL:https://mba-org.zoom.us/j/87976028176
 END:VEVENT
+BEGIN:VEVENT
+UID:mortgage-insurance-cop@mismo.org
+DTSTAMP:20261118T000000Z
+RECURRENCE-ID;TZID=America/New_York:20261221T130000
+DTSTART;TZID=America/New_York:20261214T130000
+DTEND;TZID=America/New_York:20261214T140000
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+SUMMARY:Mortgage Insurance COP
+DESCRIPTION:Moved from 2026-12-21.\n\nJoin: https://mba-org.zoom.us/j/879
+ 76028176\n\nOpen to anyone who would like to participate. Maintained and
+  updated by MISMO.
+LOCATION:https://mba-org.zoom.us/j/87976028176
+URL:https://mba-org.zoom.us/j/87976028176
+END:VEVENT
 END:VCALENDAR
