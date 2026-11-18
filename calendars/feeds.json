@@ -1,6 +1,11 @@
 {
   "note": "Every calendar address MISMO has published and what it serves now. Old addresses are kept so subscribers keep getting updates.",
   "feeds": {
+    "ai-governance-forum": {
+      "key": "aigovernanceforum",
+      "name": "AI Governance Forum",
+      "status": "empty"
+    },
     "api-cop": {
       "key": "apicop",
       "name": "API COP",
