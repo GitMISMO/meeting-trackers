@@ -3338,7 +3338,7 @@ box.appendChild(sect("Who Attends Most",ppl.size,()=>barList(
         const a=hm(iFrom.value), b2=hm(iTo.value);
         return (a!=null&&b2!=null&&b2<=a);
       }
-      function preview(){
+      function preview0(){
         const r=rule(), t=fmtSpan(iFrom.value,iTo.value), bad=badTimes();
         pv.classList.toggle("warn-b",bad);
         if(bad){
@@ -3354,23 +3354,104 @@ box.appendChild(sect("Who Attends Most",ppl.size,()=>barList(
         pv.innerHTML="<b>"+esc(cadenceText(r,iDay.value))+(t?", "+esc(t)+" ET":"")+".</b>"+
           (nx?" Next on "+esc(nx)+".":"");
       }
-      [iDay,iFrom,iTo,every].concat(boxes).forEach(x=>x.addEventListener("change",preview));
+      /* ---- the Zoom account check: which account is free at this day and time ---- */
+      const zv=el("div","banner"); zv.hidden=true; d.appendChild(zv);
+      const zs=el("div","zsugg"); zs.style.cssText="display:flex;flex-wrap:wrap;gap:8px;margin:-8px 0 14px"; zs.hidden=true; d.appendChild(zs);
+      const ovl=el("label","tgl"); ovl.style.cssText="display:flex;gap:7px;font-size:13px;cursor:pointer;margin:-6px 0 14px";
+      const ov=el("input"); ov.type="checkbox"; ov.checked=!!(sc.lic===ZOOM_ONEOFF&&sc.licWhy);
+      ovl.append(ov,document.createTextNode("Special circumstances: host it on MISMO Facilitators (your name is recorded)"));
+      ovl.hidden=true; d.appendChild(ovl);
+      const zst=el("div","hint"); zst.style.margin="-6px 0 14px"; zst.hidden=true; d.appendChild(zst);
+      const snap=()=>JSON.stringify([rule(),iFrom.value,iTo.value,iLic.value,ov.checked]);
+      let snap0="", zBlock="";
+      function zcheck(auto){
+        zBlock=""; zv.hidden=true; zs.hidden=true; zs.textContent=""; ovl.hidden=true; zst.hidden=true;
+        const r=rule(), a=hm(iFrom.value), b=hm(iTo.value);
+        if(iSt.value!=="0"||!r||a==null||b==null||b<=a) return;
+        if(iLic.value&&ZOOM_REG.indexOf(iLic.value)<0&&iLic.value!==ZOOM_ONEOFF) return;
+        const days=zoomDays(), idx=zoomIndex(gk,days);
+        const plan=(st,en)=>zoomPlan(gk,Object.assign({},sc,{rule:r,st:st,en:en,once:null,moves:movesOf(gk)}),days);
+        const occs=plan(iFrom.value,iTo.value);
+        if(!occs.length) return;
+        const busy={}; ZOOM_REG.concat([ZOOM_ONEOFF]).forEach(L=>{ busy[L]=zoomBusy(idx,L,occs); });
+        const free=ZOOM_REG.filter(L=>!busy[L].length);
+        let lic=iLic.value, said="";
+        /* a new day or time: fill in the first account that is free, unless the one chosen still is */
+        if(auto&&free.length&&(!lic||(lic!==ZOOM_ONEOFF&&busy[lic].length))){
+          const was=lic, skipped=ZOOM_REG.slice(0,ZOOM_REG.indexOf(free[0])).filter(L=>L!==was);
+          lic=free[0]; iLic.value=lic;
+          said=(was?"<b>"+esc(was)+" is busy then</b> ("+esc(zoomWhy(busy[was]))+"), so the Zoom Account is now <b>"+esc(lic)+"</b>."
+                   :"<b>Zoom Account set to "+esc(lic)+"</b>, the first account free at this time.")+
+               (skipped.length?" "+esc(zList(skipped))+(skipped.length>1?" are":" is")+" busy then.":"")+" ";
+        }
+        const changed=snap()!==snap0, why="A Zoom account runs two meetings at once, so it can take this one only if fewer than two of its other meetings fall within the hour either side, on every date over the next 12 months.";
+        let cls="ok", html="", block="";
+        const offer=()=>{ /* nearest open times, on any of MISMO 1 to 4 */
+          const opts=zoomOpenTimes(idx,plan,a,b,null,4);
+          if(!opts.length) return " No other time between 8AM and 6PM is free either.";
+          zs.hidden=false;
+          opts.forEach(o=>{ const bt=el("button","btn ghost",fmtSpan(o.st,o.en)+" on "+o.lic); bt.type="button";
+            bt.style.cssText="padding:4px 11px;font-size:12px";
+            bt.addEventListener("click",()=>{ iFrom.value=o.st; iTo.value=o.en; iLic.value=o.lic; preview(false); });
+            zs.appendChild(bt); });
+          return " These times are free — pick one to use it:";
+        };
+        if(!lic){
+          if(free.length) html="<b>"+esc(zList(free))+(free.length>1?" are":" is")+" free at this time.</b> Pick one for the Zoom Account.";
+          else{ cls="warn-b"; block="None of MISMO 1 to 4 is free at this time.";
+            html="<b>None of MISMO 1 to 4 is free at this time.</b> On MISMO 1, for one \u2014 "+esc(zoomWhy(busy["MISMO 1"]))+"."+offer();
+            ovl.hidden=false; }
+        }else if(lic===ZOOM_ONEOFF){
+          ovl.hidden=false;
+          if(busy[lic].length){ cls="warn-b"; block="MISMO Facilitators is busy then too.";
+            html="<b>MISMO Facilitators is busy then too</b> ("+esc(zoomWhy(busy[lic]))+")."+offer(); }
+          else if(!ov.checked){ cls="warn-b"; block="MISMO Facilitators is kept for one-off meetings. Pick one of MISMO 1 to 4, or tick Special circumstances.";
+            html="<b>MISMO Facilitators is kept for one-off meetings.</b> "+
+              (free.length?esc(zList(free))+(free.length>1?" are":" is")+" free at this time — pick one of those, or tick Special circumstances below."
+                          :"None of MISMO 1 to 4 is free at this time, so tick Special circumstances below to use it, or pick another time."+offer()); }
+          else html="<b>Special circumstances: MISMO Facilitators.</b> It is free at this time. Saving records "+esc(whoAmI()||"you")+" as the person who chose it.";
+        }else if(busy[lic].length){
+          cls="warn-b"; block=lic+" is busy at this time.";
+          html=said+"<b>"+esc(lic)+" is busy then</b> ("+esc(zoomWhy(busy[lic]))+"). "+
+            (free.length?esc(zList(free))+(free.length>1?" are":" is")+" free — pick one of those for the Zoom Account."
+                        :"None of MISMO 1 to 4 is free at this time."+offer());
+          if(!free.length) ovl.hidden=false;
+        }else html=said+(said?"":"<b>"+esc(lic)+" is free at this time.</b> ")+esc(why);
+        /* a clash already on file isn't stopped from saving a facilitator or a status: it's on Issues */
+        if(block&&!changed){ cls="warn-b"; html+=" <i>This was already on file, so saving other changes is still allowed — it is listed on Issues.</i>"; block=""; }
+        zBlock=block;
+        zv.className="banner "+cls; zv.innerHTML=html; zv.hidden=false;
+        if(block) sv.disabled=true;
+        /* the room itself: new account, or no link yet */
+        if(!block&&iLic.value&&(iLic.value!==(sc.lic||"")||!iZoom.value.trim())){ zst.innerHTML=zoomSteps(iLic.value); zst.hidden=false; }
+      }
+      function preview(auto){ preview0(); if(!badTimes()) zcheck(auto); }
+      [iDay,iFrom,iTo,every].concat(boxes).forEach(x=>x.addEventListener("change",()=>preview(true)));
+      [iLic,iSt].forEach(x=>x.addEventListener("change",()=>preview(false)));
+      ov.addEventListener("change",()=>{ if(ov.checked) iLic.value=ZOOM_ONEOFF; preview(false); });
+      iZoom.addEventListener("input",()=>{ if(!zBlock&&iLic.value) zst.hidden=!(iLic.value!==(sc.lic||"")||!iZoom.value.trim()); });
       every.addEventListener("change",()=>{ boxes.forEach(c=>{ c.disabled=every.checked;
         c.parentNode.style.opacity=every.checked?".45":"1"; }); });
       boxes.forEach(c=>{ c.disabled=every.checked; c.parentNode.style.opacity=every.checked?".45":"1"; });
-      preview();
+      snap0=snap();
+      preview(false);
 
       const row=el("div","btnrow");
       sv.addEventListener("click",async()=>{
         if(badTimes()){ toast("The end time has to be after the start time.",true); return; }
+        preview(false);
+        if(zBlock){ toast(zBlock,true); return; }
         sv.disabled=true;
         const r=rule(), t=fmtSpan(iFrom.value,iTo.value);
+        /* MISMO Facilitators on a regular meeting: who made that call, and when */
+        const licWhy=(iLic.value===ZOOM_ONEOFF&&ov.checked)
+          ?((sc.lic===ZOOM_ONEOFF&&sc.licWhy)?sc.licWhy:{by:whoAmI(),at:todayISO()}):null;
         const writes=[{c:"groups",id:gk,data:{name:g.name,type:g.type,
           facilitator:iFac.value.trim(),archived:iSt.value==="1",hold:iSt.value==="h"}}];
         const upd=todayISO(), updBy=whoAmI();
         if(r) writes.push({c:"sched",id:gk,data:{fac:iFac.value.trim(),day:iDay.value,
           st:iFrom.value||"",en:iTo.value||"",time:t,cadence:cadenceText(r,iDay.value),
-          zoom:iZoom.value.trim(),lic:iLic.value,upd:upd,updBy:updBy,status:"Active",rule:r,removed:false,moves:movesOf(gk)}});
+          zoom:iZoom.value.trim(),lic:iLic.value,upd:upd,updBy:updBy,status:"Active",rule:r,removed:false,moves:movesOf(gk),licWhy:licWhy}});
         /* no day or no weeks: off the schedule, but its Zoom link, account and times are kept
            (before November 6, 2026 saving like this threw them all away) */
         else if(iZoom.value.trim()||iLic.value||iFrom.value||iTo.value)
@@ -3384,7 +3465,7 @@ box.appendChild(sect("Who Attends Most",ppl.size,()=>barList(
         g.facilitator=iFac.value.trim(); g.archived=iSt.value==="1"; g.hold=iSt.value==="h";
         if(r) M.sched[gk]=Object.assign({},M.sched[gk]||{},{fac:g.facilitator,day:iDay.value,st:iFrom.value||"",en:iTo.value||"",
           time:t,cadence:cadenceText(r,iDay.value),zoom:iZoom.value.trim(),lic:iLic.value,upd:upd,updBy:updBy,
-          status:"Active",rule:r});
+          status:"Active",rule:r,licWhy:licWhy});
         else if(iZoom.value.trim()||iLic.value||iFrom.value||iTo.value)
           M.sched[gk]=Object.assign({},M.sched[gk]||{},{fac:g.facilitator,day:"",st:iFrom.value||"",en:iTo.value||"",
             time:t,cadence:"",zoom:iZoom.value.trim(),lic:iLic.value,upd:upd,updBy:updBy,status:"Active",rule:null});
@@ -5054,6 +5135,113 @@ function moveText(mv){
   const a=hm(mv.st), b=hm(mv.en);
   return fmtD(mv.d)+(a&&b?" \u00b7 "+a+"\u2013"+b+" ET":"");
 }
+
+/* ---- which Zoom account can host a meeting ----
+   A Zoom license runs two meetings at once. The rule (Perry, November 2026): an account can take
+   a meeting when fewer than two of its other meetings fall within the hour either side of it \u2014
+   from an hour before the start to an hour after the end \u2014 on every date it meets over the next
+   twelve months. MISMO 1 to 4 host the regular meetings; MISMO Facilitators is kept for one-offs
+   and special circumstances. Creating the Zoom room itself stays a person's job. */
+const ZOOM_REG=["MISMO 1","MISMO 2","MISMO 3","MISMO 4"], ZOOM_ONEOFF="MISMO Facilitators";
+const ZOOM_USER={"MISMO 1":"info@mismo.org","MISMO 2":"workrequests@mismo.org","MISMO 3":"subscriptions@mismo.org",
+  "MISMO 4":"membership@mismo.org","MISMO Facilitators":"MISMOFacilitators@mismo.org"};
+const ZOOM_PAD=60, ZOOM_DAYS=366;
+/* meeting at all: on the schedule, Active, and the group not archived or on hold */
+function zoomLive(gk){
+  const s=(M.sched||{})[gk]; if(!s||s.removed) return false;
+  if(s.status&&String(s.status).toLowerCase()!=="active") return false;
+  const g=M.gr.get(gk); return !(g&&(g.archived||g.hold));
+}
+function zoomDays(){
+  const t0=etNow(), out=[];
+  for(let i=0;i<ZOOM_DAYS;i++){ const dt=new Date(t0.getFullYear(),t0.getMonth(),t0.getDate()+i); out.push([dISO(dt),dt]); }
+  return out;
+}
+/* every meeting a group has on one date: the regular one (unless moved away or cancelled),
+   any single meeting moved onto it, and a one-time meeting */
+function zoomOcc(gk,s,iso,dt){
+  const out=[], mv=(s.moves&&typeof s.moves==="object")?s.moves:{};
+  if(s.rule&&meetsOn(s.rule,dt)&&!(mv[iso]&&mv[iso].d)&&!cancelledOn(gk,iso)){
+    const sp=spanOf(s); if(sp) out.push({gk:gk,d:iso,sp:sp}); }
+  Object.keys(mv).forEach(k=>{ const m=mv[k]; if(!m||m.d!==iso||cancelledOn(gk,k)) return;
+    const a=hm(m.st), b=hm(m.en), sp=(a!=null&&b!=null)?[a,b]:spanOf(s);
+    if(sp) out.push({gk:gk,d:iso,sp:sp,from:k}); });
+  if(!s.rule&&s.once&&s.once.d===iso&&!cancelledOn(gk,iso)){
+    const a=hm(s.once.st), b=hm(s.once.en); if(a!=null&&b!=null) out.push({gk:gk,d:iso,sp:[a,b]}); }
+  return out;
+}
+/* one group's meetings over the next twelve months, from its schedule record s */
+function zoomPlan(gk,s,days){
+  const out=[]; (days||zoomDays()).forEach(([iso,dt])=>{ zoomOcc(gk,s,iso,dt).forEach(o=>out.push(o)); });
+  return out;
+}
+/* every other live group's meetings, by date, each with its account */
+function zoomIndex(exceptGk,days){
+  const idx=new Map(); days=days||zoomDays();
+  Object.keys(M.sched||{}).forEach(gk=>{
+    if(gk===exceptGk||!zoomLive(gk)) return;
+    const s=M.sched[gk]; if(!s.lic) return;
+    zoomPlan(gk,s,days).forEach(o=>{ o.lic=s.lic; if(!idx.has(o.d)) idx.set(o.d,[]); idx.get(o.d).push(o); });
+  });
+  return idx;
+}
+/* the account's other meetings that fall within the hour either side of one meeting */
+function zoomNear(idx,lic,o){
+  return (idx.get(o.d)||[]).filter(x=>x.lic===lic&&x.gk!==o.gk&&x.sp[0]<o.sp[1]+ZOOM_PAD&&x.sp[1]>o.sp[0]-ZOOM_PAD);
+}
+/* the dates on which an account cannot take these meetings: two or more of its others nearby */
+function zoomBusy(idx,lic,occs){
+  const bad=[]; occs.forEach(o=>{ const nr=zoomNear(idx,lic,o); if(nr.length>=2) bad.push({d:o.d,sp:o.sp,near:nr}); });
+  return bad;
+}
+function zoomClock(sp){ return fmtSpan(zhm(sp[0]),zhm(sp[1])); }
+function zhm(m){ return String(Math.floor(m/60)).padStart(2,"0")+":"+String(m%60).padStart(2,"0"); }
+function zList(a){ return a.length>1?a.slice(0,-1).join(", ")+" and "+a[a.length-1]:(a[0]||""); }
+function zoomName(gk){ const g=M.gr.get(gk); return g?g.name:gk; }
+/* "Thursday, December 3: AI COP 1\u20132PM and eNote DWG 1:30\u20132:30PM, and 11 more dates" */
+function zoomWhy(bad){
+  if(!bad||!bad.length) return "";
+  const b=bad[0], dt=new Date(b.d+"T12:00:00");
+  const who=b.near.map(x=>zoomName(x.gk)+" "+zoomClock(x.sp));
+  const list=zList(who);
+  return DAYS[dt.getDay()]+", "+MONF[dt.getMonth()]+" "+dt.getDate()+": "+list+
+    (bad.length>1?", and "+(bad.length-1)+" more date"+(bad.length===2?"":"s"):"");
+}
+/* other start times, nearest first, that a regular account (or lic, if given) can take;
+   occsAt(st,en) gives the meetings at that time */
+function zoomOpenTimes(idx,occsAt,a,b,lic,max){
+  const len=b-a, tries=[];
+  for(let st=8*60;st+len<=18*60;st+=30) if(st!==a) tries.push(st);
+  tries.sort((x,y)=>(Math.abs(x-a)-Math.abs(y-a))||(x-y));
+  const out=[];
+  for(const st of tries){
+    const occs=occsAt(zhm(st),zhm(st+len));
+    const L=(lic?[lic]:ZOOM_REG).find(x=>!zoomBusy(idx,x,occs).length);
+    if(L) out.push({st:zhm(st),en:zhm(st+len),lic:L});
+    if(out.length>=(max||4)) break;
+  }
+  return out;
+}
+/* the whole schedule, checked: each clash once, with the groups in it and the dates */
+function zoomClashes(){
+  const days=zoomDays(), idx=zoomIndex(null,days), byKey=new Map();
+  Object.keys(M.sched||{}).forEach(gk=>{
+    if(!zoomLive(gk)) return; const s=M.sched[gk]; if(!s.lic) return;
+    zoomPlan(gk,s,days).forEach(o=>{ const nr=zoomNear(idx,s.lic,o); if(nr.length<2) return;
+      const gks=[...new Set([gk].concat(nr.map(x=>x.gk)))].sort();
+      const key=s.lic+"|"+gks.join(",");
+      if(!byKey.has(key)) byKey.set(key,{lic:s.lic,gks:gks,dates:new Set()});
+      byKey.get(key).dates.add(o.d); });
+  });
+  return [...byKey.values()].map(c=>Object.assign(c,{dates:[...c.dates].sort()}))
+    .sort((x,y)=>x.dates[0].localeCompare(y.dates[0])||x.lic.localeCompare(y.lic));
+}
+/* how to make the Zoom room on an account: the page can't, a person signs in and does it */
+function zoomSteps(lic){
+  return "<b>To make the Zoom room:</b> sign in at zoom.us as <b>"+esc(lic)+"</b> ("+esc(ZOOM_USER[lic]||"")+
+    "; the password is in the Outlook invite of any meeting on that account). Choose <b>Schedule</b>, tick "+
+    "<b>Recurring meeting</b>, set Recurrence to <b>No Fixed Time</b> and save. Copy the join link into Zoom Link here and save.";
+}
 async function saveMove(gk,d,mv){
   const cur=Object.assign({},movesOf(gk));
   if(mv) cur[d]=mv; else delete cur[d];
@@ -5074,6 +5262,33 @@ function openMovePane(gk,d){
     const sp0=spanOf(s)||[], hhmm=m=>m==null?"":String(Math.floor(m/60)).padStart(2,"0")+":"+String(m%60).padStart(2,"0");
     const iS=mk("Start Time (ET)","time",mv?mv.st:hhmm(sp0[0]));
     const iE=mk("End Time (ET)","time",mv?mv.en:hhmm(sp0[1]));
+    /* the same Zoom account check as the schedule: is the group's account free at the new time? */
+    const zv=el("div","banner"); zv.style.margin="16px 0 0"; zv.hidden=true; box.appendChild(zv);
+    const zs=el("div"); zs.style.cssText="display:flex;flex-wrap:wrap;gap:8px;margin-top:10px"; zs.hidden=true; box.appendChild(zs);
+    const ovl=el("label","tgl"); ovl.style.cssText="display:flex;gap:7px;font-size:13px;cursor:pointer;margin-top:10px";
+    const ov=el("input"); ov.type="checkbox";
+    ovl.append(ov,document.createTextNode("Special circumstances: move it anyway (your name is recorded)")); ovl.hidden=true; box.appendChild(ovl);
+    let zBlock="";
+    function zcheck(){
+      zBlock=""; zv.hidden=true; zs.hidden=true; zs.textContent=""; ovl.hidden=true;
+      const nd=iD.value, a=hm(iS.value), b=hm(iE.value), lic=s.lic||"";
+      if(!lic||!/^\d{4}-\d{2}-\d{2}$/.test(nd)||a==null||b==null||b<=a) return;
+      const dt=new Date(nd+"T12:00:00"), days=[[nd,dt]], idx=zoomIndex(gk,days);
+      const at=(st,en)=>[{gk:gk,d:nd,sp:[hm(st),hm(en)]}];
+      const bad=zoomBusy(idx,lic,at(iS.value,iE.value));
+      if(!bad.length){ zv.className="banner ok"; zv.innerHTML="<b>"+esc(lic)+" is free at that time.</b>"; zv.hidden=false; return; }
+      ovl.hidden=false;
+      const opts=zoomOpenTimes(idx,at,a,b,lic,4);
+      zv.className="banner warn-b";
+      zv.innerHTML="<b>"+esc(lic)+", this group’s Zoom account, is busy then</b> ("+esc(zoomWhy(bad))+
+        "). A Zoom account runs two meetings at once. "+(opts.length?"These times are free on "+esc(lic)+" that day:":"No other time between 8AM and 6PM is free on it that day.");
+      zv.hidden=false;
+      opts.forEach(o=>{ const bt=el("button","btn ghost",fmtSpan(o.st,o.en)); bt.type="button"; bt.style.cssText="padding:4px 11px;font-size:12px";
+        bt.addEventListener("click",()=>{ iS.value=o.st; iE.value=o.en; zcheck(); }); zs.appendChild(bt); });
+      zs.hidden=!opts.length;
+      if(!ov.checked) zBlock=lic+" is busy at that time. Pick another time, or tick Special circumstances.";
+    }
+    [iD,iS,iE].forEach(x=>x.addEventListener("change",zcheck)); ov.addEventListener("change",zcheck);
     const row=el("div","btnrow"); row.style.marginTop="16px";
     const sv=el("button","btn",mv?"Save the Change":"Move It"); sv.type="button";
     const cx=el("button","btn ghost","Cancel"); cx.type="button"; cx.addEventListener("click",closePane);
@@ -5086,14 +5301,18 @@ function openMovePane(gk,d){
       row.appendChild(un);
     }
     box.appendChild(row);
+    zcheck();
     sv.addEventListener("click",async()=>{
       const nd=iD.value, st=iS.value, en=iE.value;
       if(!/^\d{4}-\d{2}-\d{2}$/.test(nd)){ toast("Pick the new date.",true); return; }
       if(!/^\d{2}:\d{2}$/.test(st)||!/^\d{2}:\d{2}$/.test(en)||en<=st){ toast("Enter a start and an end time, with the end after the start.",true); return; }
       if(nd<todayISO()){ toast("That date has already passed.",true); return; }
       if(nd===d&&st===(s.st||"")&&en===(s.en||"")){ toast("That is the meeting\u2019s usual day and time \u2014 nothing to move.",true); return; }
+      zcheck(); if(zBlock){ toast(zBlock,true); return; }
       sv.disabled=true; sv.textContent="Saving\u2026";
-      const ok=await saveMove(gk,d,{d:nd,st:st,en:en,by:whoAmI(),at:new Date().toISOString()});
+      const mvRec={d:nd,st:st,en:en,by:whoAmI(),at:new Date().toISOString()};
+      if(ov.checked&&!ovl.hidden) mvRec.special=true;
+      const ok=await saveMove(gk,d,mvRec);
       if(!ok){ sv.disabled=false; sv.textContent=mv?"Save the Change":"Move It"; return; }
       toast("Moved to "+moveText({d:nd,st:st,en:en})+". Calendars update within a few hours.");
       closePane(); if(LOGGK) loadRoster();
@@ -5832,7 +6051,7 @@ async function writeBuckets(groupsMap){
       const nm=k=>{ const w=wants[k]||{}; return w.name||(had[k]&&had[k].name)||k; };
       const names=[...new Set(clashes.map(x=>nm(x.k)))];
       const keepMine=MG.ask(names.length===1?"\u201c"+names[0]+"\u201d":"these records",clashes.map(x=>x.c),
-        {ck:"Company",cat:"Category",p:"Who Attended",fac:"Facilitator",zoom:"Zoom Link",lic:"Zoom Account",st:"Start",en:"End",
+        {ck:"Company",cat:"Category",p:"Who Attended",fac:"Facilitator",zoom:"Zoom Link",lic:"Zoom Account",licWhy:"Special Circumstances",st:"Start",en:"End",
          hist:"Company History",alt:"Other Names",sum:"Summit",label:"Note",reps:"Voting Representatives",list:"Leadership"});
       if(!keepMine) clashes.forEach(x=>{ const ctx={clashes:[],theirs:{},quiet:QUIET};
         clashes.filter(y=>y.k===x.k).forEach(y=>{ ctx.theirs[y.c.key]=1; });
@@ -6291,9 +6510,10 @@ function issueSets(){
       if(NOTDUP.has(key)) continue;
       dups.push({a:a,b:b,an:(M.byP.get(a.k)||[]).length,bn:(M.byP.get(b.k)||[]).length}); } });
   dups.sort((x,y)=>(y.an+y.bn)-(x.an+x.bn));
-  return {noCo:noCo,noCat:noCat,added:added,dups:dups};
+  let zoom=[]; try{ zoom=zoomClashes(); }catch(e){ console.warn("Zoom check",e); }
+  return {noCo:noCo,noCat:noCat,added:added,dups:dups,zoom:zoom};
 }
-function issueCount(){ const I=issueSets(); return I.noCo.length+I.noCat.length+I.dups.length+I.added.length; }
+function issueCount(){ const I=issueSets(); return I.noCo.length+I.noCat.length+I.dups.length+I.added.length+I.zoom.length; }
 function refreshIssueBadge(){
   const e=$("#iss-n"); if(!e) return;
   const c=issueCount();
@@ -6305,10 +6525,12 @@ function sectK(key,title,count,build){ return sect(title,count,build,false,key);
 function renderIssues(root){
   const I=issueSets();
   root.appendChild(vhead("Issues",
-    "Anything a facilitator could only half-answer in the room ends up here \u2014 a person with no company, a company with no category, two records that look like one person. Nothing is wrong with the attendance; these are the gaps worth closing."));
+    "Anything a facilitator could only half-answer in the room ends up here \u2014 a person with no company, a company with no category, two records that look like one person \u2014 along with any Zoom account booked for more meetings than it can run. Nothing is wrong with the attendance; these are the gaps worth closing."));
 
   const t=el("div","tiles");
   t.append(
+    tile("Zoom Account Clashes",n(I.zoom.length),"One account, three meetings within the hour","var(--c5)",
+      ()=>openSect("iss-zoom")),
     tile("People With No Company",n(I.noCo.length),"They sit outside every company total","var(--warn)",
       ()=>openSect("iss-noco")),
     tile("Companies With No Category",n(I.noCat.length),"Their people show as Unknown","var(--c4)",
@@ -6322,9 +6544,31 @@ function renderIssues(root){
 
   if(!issueCount()){
     const b=el("div","banner ok");
-    b.innerHTML="<b>Nothing needs attention.</b> Every person has a company, every company has a category, and no two records look like the same person.";
+    b.innerHTML="<b>Nothing needs attention.</b> Every person has a company, every company has a category, no two records look like the same person, and no Zoom account is double-booked.";
     root.appendChild(b);
   }
+
+  /* ---- Zoom accounts with too many meetings at once ---- */
+  const s0=el("div"); s0.id="iss-zoom"; root.appendChild(s0);
+  s0.appendChild(sectK("iss-zoom","Zoom Account Clashes",I.zoom.length,()=>{
+    const d=el("div");
+    d.appendChild(el("div","hint","A Zoom account runs two meetings at once, so each account can take a meeting only if fewer than two of its other meetings fall within the hour either side. Checked over the next 12 months, with moved and cancelled meetings counted. Open one of the groups and pick another Zoom account or time — Meeting Schedule and Settings shows which accounts are free."));
+    if(!I.zoom.length){ d.appendChild(el("div","empty","No meeting has two others on its Zoom account within the hour either side, on any date in the next 12 months.")); return d; }
+    const w=el("div","tl");
+    I.zoom.forEach(c=>{
+      const r=el("div","tli"); r.style.cursor="default"; r.style.gridTemplateColumns="minmax(0,1fr) auto";
+      const left=el("span"); left.appendChild(el("b",null,c.lic+": "));
+      c.gks.forEach((gk,i)=>{ if(i) left.appendChild(document.createTextNode(i===c.gks.length-1?" and ":", "));
+        const b=el("button","linkb",zoomName(gk)); b.type="button";
+        b.addEventListener("click",()=>openGroup(gk,true)); left.appendChild(b); });
+      r.appendChild(left);
+      const dt=new Date(c.dates[0]+"T12:00:00");
+      r.appendChild(el("span","st",n(c.dates.length)+" date"+(c.dates.length===1?"":"s")+", first "+
+        DAYS[dt.getDay()].slice(0,3)+", "+MONF[dt.getMonth()].slice(0,3)+" "+dt.getDate()));
+      w.appendChild(r); });
+    d.appendChild(w);
+    return d;
+  }));
 
   /* ---- people with no company ---- */
   const s1=el("div"); s1.id="iss-noco"; root.appendChild(s1);
@@ -6687,9 +6931,17 @@ const HELP=[
    '<tr><td><b>Meeting Day</b> and <b>How Often</b></td><td>Every Week, or the weeks of the month it meets (1st and 3rd, say). Each week becomes its own Outlook series.</td></tr>'+
    '<tr><td><b>Starts (ET)</b> and <b>Ends (ET)</b></td><td>The meeting time. Always Eastern, the way the Zoom schedule keeps them.</td></tr>'+
    '<tr><td><b>Zoom Link</b></td><td>The invite’s location and the website’s join link.</td></tr>'+
-   '<tr><td><b>Zoom Account</b></td><td>Which MISMO Zoom login hosts the meeting. The invite shows the account, its username and its password.</td></tr>'+
+   '<tr><td><b>Zoom Account</b></td><td>Which MISMO Zoom login hosts the meeting. The invite shows the account, its username and its password. The page picks it for you (see below).</td></tr>'+
    '</tbody></table>'+
    '<p>Saving also stamps <b>Last Reviewed/Update</b> with today’s date and your name, which shows at the foot of every invite.</p>'+
+   '<h3>Choosing the Zoom Account</h3>'+
+   '<p>A Zoom account runs two meetings at once. So an account can take a meeting only if <b>fewer than two of its other meetings fall within the hour either side</b> of it (from an hour before the start to an hour after the end) on every date it meets over the next 12 months. Moved meetings count at their new time; cancelled ones don’t count.</p>'+
+   '<ul><li>Change the day, weeks or time and the Zoom Account fills itself with the first of MISMO 1, 2, 3 and 4 that is free, with a line saying why.</li>'+
+   '<li>If none is free, Save is blocked and the page offers the nearest free times. Pick one and it fills in the time and the account.</li>'+
+   '<li><b>MISMO Facilitators</b> is kept for one-off meetings. For a regular meeting, tick <b>Special circumstances</b> to use it; your name and the date are kept with the schedule.</li>'+
+   '<li><b>Move This Meeting</b> runs the same check for a single meeting, on the group’s own account.</li>'+
+   '<li>The whole schedule is checked again every time the page loads, and any clash is listed on <b>Issues → Zoom Account Clashes</b>.</li>'+
+   '<li>Making the Zoom room is still done by hand: sign in at zoom.us as the account the page picked, schedule a recurring meeting with Recurrence set to <b>No Fixed Time</b>, and paste the join link into Zoom Link. The page shows these steps after it picks an account.</li></ul>'+
    '<h3>The Zoom Logins</h3>'+
    '<table><thead><tr><th>Account</th><th>Username</th></tr></thead><tbody>'+
    '<tr><td><b>MISMO 1</b></td><td>info@mismo.org</td></tr>'+
