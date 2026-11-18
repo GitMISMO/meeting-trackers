@@ -491,21 +491,6 @@ LOCATION:https://mba-org.zoom.us/j/89444784294
 URL:https://mba-org.zoom.us/j/89444784294
 END:VEVENT
 BEGIN:VEVENT
-UID:title-pricing-api-dwg@mismo.org
-DTSTAMP:20261118T000000Z
-DTSTART;TZID=America/New_York:20261118T153000
-DTEND;TZID=America/New_York:20261118T163000
-RRULE:FREQ=WEEKLY;BYDAY=WE
-TRANSP:TRANSPARENT
-X-MICROSOFT-CDO-BUSYSTATUS:FREE
-SUMMARY:Title Pricing API DWG
-DESCRIPTION:Title & Closing · Every Wednesday\n\nJoin: https://mba-org.zo
- om.us/j/83150861941\n\nOpen to anyone who would like to participate. Mai
- ntained and updated by MISMO.
-LOCATION:https://mba-org.zoom.us/j/83150861941
-URL:https://mba-org.zoom.us/j/83150861941
-END:VEVENT
-BEGIN:VEVENT
 UID:va-docs-to-data-dwg@mismo.org
 DTSTAMP:20261118T000000Z
 DTSTART;TZID=America/New_York:20261118T150000

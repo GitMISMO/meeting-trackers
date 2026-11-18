@@ -169,7 +169,7 @@
     "title-pricing-api-dwg": {
       "key": "titlepricingapidwg",
       "name": "Title Pricing API DWG",
-      "status": "active"
+      "status": "empty"
     },
     "va-docs-to-data-dwg": {
       "key": "vadocstodatadwg",
