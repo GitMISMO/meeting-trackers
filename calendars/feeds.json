@@ -44,7 +44,7 @@
     "commercial-cop": {
       "key": "commercialcop",
       "name": "Commercial COP",
-      "status": "active"
+      "status": "empty"
     },
     "credit-reporting-cop": {
       "key": "creditreportingcop",

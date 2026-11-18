@@ -4,8 +4,8 @@ PRODID:-//MISMO//Workgroup Meetings//EN
 CALSCALE:GREGORIAN
 X-WR-CALNAME:Commercial COP (MISMO)
 X-WR-TIMEZONE:America/New_York
-X-WR-CALDESC:Meeting schedule for Commercial COP. Open to anyone who woul
- d like to participate. Maintained and updated by MISMO.
+X-WR-CALDESC:Commercial COP has no upcoming meetings on the MISMO schedul
+ e right now. This calendar updates automatically if that changes.
 REFRESH-INTERVAL;VALUE=DURATION:PT4H
 X-PUBLISHED-TTL:PT4H
 BEGIN:VTIMEZONE
@@ -25,19 +25,4 @@ DTSTART:19701101T020000
 RRULE:FREQ=YEARLY;BYMONTH=11;BYDAY=1SU
 END:STANDARD
 END:VTIMEZONE
-BEGIN:VEVENT
-UID:commercial-cop@mismo.org
-DTSTAMP:20261118T000000Z
-DTSTART;TZID=America/New_York:20261210T130000
-DTEND;TZID=America/New_York:20261210T140000
-RRULE:FREQ=MONTHLY;BYDAY=2TH
-TRANSP:TRANSPARENT
-X-MICROSOFT-CDO-BUSYSTATUS:FREE
-SUMMARY:Commercial COP
-DESCRIPTION:Originations · 2nd Thursday\n\nJoin: https://mba-org.zoom.us/
- j/85450117105\n\nOpen to anyone who would like to participate. Maintaine
- d and updated by MISMO.
-LOCATION:https://mba-org.zoom.us/j/85450117105
-URL:https://mba-org.zoom.us/j/85450117105
-END:VEVENT
 END:VCALENDAR

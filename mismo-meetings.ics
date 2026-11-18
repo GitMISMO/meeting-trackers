@@ -146,21 +146,6 @@ LOCATION:https://mba-org.zoom.us/j/89506376242
 URL:https://mba-org.zoom.us/j/89506376242
 END:VEVENT
 BEGIN:VEVENT
-UID:commercial-cop@mismo.org
-DTSTAMP:20261118T000000Z
-DTSTART;TZID=America/New_York:20261210T130000
-DTEND;TZID=America/New_York:20261210T140000
-RRULE:FREQ=MONTHLY;BYDAY=2TH
-TRANSP:TRANSPARENT
-X-MICROSOFT-CDO-BUSYSTATUS:FREE
-SUMMARY:Commercial COP
-DESCRIPTION:Originations · 2nd Thursday\n\nJoin: https://mba-org.zoom.us/
- j/85450117105\n\nOpen to anyone who would like to participate. Maintaine
- d and updated by MISMO.
-LOCATION:https://mba-org.zoom.us/j/85450117105
-URL:https://mba-org.zoom.us/j/85450117105
-END:VEVENT
-BEGIN:VEVENT
 UID:credit-reporting-cop@mismo.org
 DTSTAMP:20261118T000000Z
 DTSTART;TZID=America/New_York:20261119T160000
