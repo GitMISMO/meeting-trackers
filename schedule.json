@@ -243,7 +243,10 @@
       "day": "Wednesday",
       "cadence": "2nd & 4th Wednesday",
       "time": "1–2pm ET",
-      "join": "https://mba-org.zoom.us/j/87030588927"
+      "join": "https://mba-org.zoom.us/j/87030588927",
+      "cancelled": [
+        "2026-12-23"
+      ]
     },
     {
       "name": "TIE (Technology Impact and Enablement) COP",
