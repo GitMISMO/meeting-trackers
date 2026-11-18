@@ -462,6 +462,21 @@ LOCATION:https://mba-org.zoom.us/j/87030588927
 URL:https://mba-org.zoom.us/j/87030588927
 END:VEVENT
 BEGIN:VEVENT
+UID:servicing-transfers-dwg@mismo.org
+DTSTAMP:20261118T000000Z
+RECURRENCE-ID;TZID=America/New_York:20261125T130000
+DTSTART;TZID=America/New_York:20261118T130000
+DTEND;TZID=America/New_York:20261118T140000
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+SUMMARY:Servicing Transfers DWG
+DESCRIPTION:Moved from 2026-11-25.\n\nJoin: https://mba-org.zoom.us/j/870
+ 30588927\n\nOpen to anyone who would like to participate. Maintained and
+  updated by MISMO.
+LOCATION:https://mba-org.zoom.us/j/87030588927
+URL:https://mba-org.zoom.us/j/87030588927
+END:VEVENT
+BEGIN:VEVENT
 UID:tie-technology-impact-and-enablement-cop@mismo.org
 DTSTAMP:20261118T000000Z
 DTSTART;TZID=America/New_York:20261118T140000
