@@ -1,6 +1,6 @@
 {
   "note": "Public meeting schedule for the MISMO website. Maintained in MISMO’s meeting tracker and published automatically.",
-  "updated": "2026-11-18",
+  "updated": "2026-11-19",
   "groups": [
     {
       "name": "AI Governance Forum",
@@ -294,10 +294,7 @@
       "day": "Wednesday",
       "cadence": "3rd Wednesday",
       "time": "3–4pm ET",
-      "join": "https://mba-org.zoom.us/j/88489860437",
-      "cancelled": [
-        "2026-11-18"
-      ]
+      "join": "https://mba-org.zoom.us/j/88489860437"
     },
     {
       "name": "Verifiable SMART Doc® 3.0 Profile DWG",

@@ -27,7 +27,7 @@ END:STANDARD
 END:VTIMEZONE
 BEGIN:VEVENT
 UID:servicing-transfers-dwg@mismo.org
-DTSTAMP:20261118T000000Z
+DTSTAMP:20261119T000000Z
 DTSTART;TZID=America/New_York:20261125T130000
 DTEND;TZID=America/New_York:20261125T140000
 RRULE:FREQ=MONTHLY;BYDAY=2WE,4WE
@@ -38,21 +38,6 @@ SUMMARY:Servicing Transfers DWG
 DESCRIPTION:Servicing · 2nd & 4th Wednesday\n\nJoin: https://mba-org.zoom
  .us/j/87030588927\n\nOpen to anyone who would like to participate. Maint
  ained and updated by MISMO.
-LOCATION:https://mba-org.zoom.us/j/87030588927
-URL:https://mba-org.zoom.us/j/87030588927
-END:VEVENT
-BEGIN:VEVENT
-UID:servicing-transfers-dwg@mismo.org
-DTSTAMP:20261118T000000Z
-RECURRENCE-ID;TZID=America/New_York:20261125T130000
-DTSTART;TZID=America/New_York:20261118T130000
-DTEND;TZID=America/New_York:20261118T140000
-TRANSP:TRANSPARENT
-X-MICROSOFT-CDO-BUSYSTATUS:FREE
-SUMMARY:Servicing Transfers DWG
-DESCRIPTION:Moved from 2026-11-25.\n\nJoin: https://mba-org.zoom.us/j/870
- 30588927\n\nOpen to anyone who would like to participate. Maintained and
-  updated by MISMO.
 LOCATION:https://mba-org.zoom.us/j/87030588927
 URL:https://mba-org.zoom.us/j/87030588927
 END:VEVENT
