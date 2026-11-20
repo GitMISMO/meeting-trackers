@@ -2822,6 +2822,41 @@ function copyBtn(getPks,host,label,gk){
   });
   return b;
 }
+/* Download Excel (Perry, 20 Nov 2026): the same people as Copy for the Minutes, as a
+   spreadsheet — workgroup, date and count at the top, then one row per person with their
+   company and stakeholder type (and, for a voting workgroup, what they represent). */
+function attendanceWorkbook(pks,gk,d){
+  const g=M.gr.get(gk)||{}, q=gk?quorumOf(gk,pks):null;
+  const cols=["Name","Company","Stakeholder Type"].concat(q?["Represents"]:[]);
+  const rows=pks.map(pk=>M.pp.get(pk)).filter(Boolean)
+    .sort((a,b)=>a.name.localeCompare(b.name))
+    .map(p=>{ const co=compName(p.k); const r=[p.name, co==="\u2014"?"":co, catOf(p.k)];
+      if(q) r.push(isVoter(gk,p.k)?(copOf(gk,p.k)||"Voting representative"):"");
+      return r; });
+  const top=[[(g.name||"Workgroup")+" \u2014 Attendance"],["Meeting date",fmtD(d)],["Marked present",rows.length]];
+  if(q) top.push(["Voting representatives present",q.here+" of "+q.total+" \u2014 quorum "+(q.met?"met":"not met")+" ("+q.need+" needed)"]);
+  const aoa=top.concat([[]],[cols],rows);
+  const ws=XLSX.utils.aoa_to_sheet(aoa);
+  const hr=top.length+1;                       /* the header row, counting from 0 */
+  ws["!autofilter"]={ref:XLSX.utils.encode_range({s:{r:hr,c:0},e:{r:hr+rows.length,c:cols.length-1}})};
+  ws["!cols"]=[{wch:30},{wch:38},{wch:30},{wch:36}].slice(0,cols.length);
+  const wb=XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb,ws,"Attendance");
+  const safe=String(g.name||"Workgroup").replace(/[\\/:*?"<>|]+/g," ").replace(/\s+/g," ").trim();
+  return {wb:wb,file:safe+" Attendance "+d+".xlsx",count:rows.length};
+}
+function excelBtn(getPks,gk,d){
+  const b=el("button","btn ghost","Download Excel"); b.type="button";
+  b.title="Downloads everyone marked present as an Excel spreadsheet";
+  b.addEventListener("click",()=>{
+    const pks=getPks();
+    if(!pks.length){ toast("Nobody is marked present yet.",true); return; }
+    if(typeof XLSX==="undefined"){ toast("The Excel download is not available right now. Try reloading the page.",true); return; }
+    const x=attendanceWorkbook(pks,(typeof gk==="function")?gk():gk,(typeof d==="function")?d():d);
+    XLSX.writeFile(x.wb,x.file);
+    toast(n(x.count)+" names downloaded to "+x.file+".");
+  });
+  return b;
+}
 function isCancelled(m){ return !!(m&&m.cancelled); }
 function cancelledOn(gk,d){ const m=findMeeting(gk,d); return isCancelled(m)?m:null; }
 function findMeeting(gk,d){ const i=(M.byG.get(gk)||[]).find(x=>M.mt[x].d===d); return i==null?null:M.mt[i]; }
@@ -2889,6 +2924,7 @@ function openMeeting(gk,d){
       const cw=el("div"); cw.style.cssText="margin:2px 0 14px";
       const crow=el("div","btnrow"); crow.style.marginTop="0";
       crow.appendChild(copyBtn(()=>[...m.p],cw,null,gk));
+      crow.appendChild(excelBtn(()=>[...m.p],gk,m.d));
       cw.appendChild(crow);
       cw.appendChild(el("div","hint",votersOf(gk)
         ? "Copies a Name, Company and Represents table for your minutes, with the quorum count above it. It pastes into Word as a real table you can restyle."
@@ -4981,7 +5017,7 @@ function loadRoster(){
   if(cancelled){ sv.disabled=true; clr.disabled=true;
     sv.title="This meeting is recorded as cancelled. Reopen it first to log attendance.";
     sp.append(cb2,clr,sv); }
-  else sp.append(copyBtn(()=>[...LOG.present],host,null,()=>LOGGK),mvB,cb2,clr,sv);
+  else sp.append(copyBtn(()=>[...LOG.present],host,null,()=>LOGGK),excelBtn(()=>[...LOG.present],()=>LOGGK,()=>LOG.d),mvB,cb2,clr,sv);
   bar.appendChild(sp);
   host.appendChild(bar);
 
