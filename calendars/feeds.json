@@ -66,11 +66,6 @@
       "name": "Digital Interoperability COP",
       "status": "active"
     },
-    "eheloc-dwg": {
-      "key": "ehelocdwg",
-      "name": "eHELOC DWG",
-      "status": "active"
-    },
     "emortgage-cop": {
       "key": "emortgagecop",
       "name": "eMortgage COP",
@@ -175,6 +170,11 @@
       "key": "verifiablesmartdoc30profiledwg",
       "name": "Verifiable SMART Doc® 3.0 Profile DWG",
       "status": "active"
+    },
+    "eheloc-dwg": {
+      "key": "ehelocdwg",
+      "name": "eHELOC DWG",
+      "status": "retired"
     },
     "title-pricing-api-dwg": {
       "key": "titlepricingapidwg",
