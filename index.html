@@ -6952,6 +6952,7 @@ const HELP=[
    '<tr><td><b>Mark Cancelled</b> on one meeting</td><td>That date comes off the Outlook calendar and the website calendar files. The rest of the series stays.</td><td>Outlook in about a minute. Subscribers’ calendars when their app next refreshes, usually within a few hours.</td></tr>'+
    '<tr><td><b>Move This Meeting</b></td><td>Just that date moves, on Outlook and on the website calendar files. Attendance is still logged on the original meeting.</td><td>Same as above.</td></tr>'+
    '<tr><td><b>Attendance</b></td><td>Stats, drill-downs, Issues and the Member 360 figures. Never on the calendar or the website.</td><td>At once here; others see it within 30 seconds.</td></tr>'+
+   '<tr><td><b>Attendance</b> (overnight)</td><td>Leadership’s reading copy, and the CMS’s Certified Consultant points feed (the last 24 months, by person). Both read only.</td><td>The next morning.</td></tr>'+
    '<tr><td><b>Company category</b></td><td>Every person at that company, every chart and the Member 360 figures.</td><td>At once.</td></tr>'+
    '</tbody></table>'},
  {id:"log",k:"#5fd39a",name:"Logging Attendance",
@@ -7061,6 +7062,8 @@ const HELP=[
    '<tr><td><b>Calendar flow</b></td><td>Finds the MISMO Meetings Schedule calendar, retires the group’s current series and creates the new one.</td><td>Power Automate, “Meeting Trackers to MISMO Meetings Schedule”, on Jonna’s license and Outlook connection.</td></tr>'+
    '<tr><td><b>MISMO Meetings Schedule</b></td><td>The Outlook calendar the team uses.</td><td>The meetings@ mailbox, shared with the team. Jonna has edit and share rights.</td></tr>'+
    '<tr><td><b>Publish Meeting Schedule</b></td><td>Builds the public schedule and calendar files and copies them to the public repository.</td><td>meeting-trackers-data: .github/workflows/publish-schedule.yml and scripts/publish-schedule.mjs.</td></tr>'+
+   '<tr><td><b>Reading Copy</b></td><td>Every morning, plain spreadsheets of what the tracker holds, for leadership’s own Claude project. Worked out by this page’s own code, checked against the Stats tab first. Read only.</td><td>meeting-trackers-data: .github/workflows/reading-copy.yml and tools/reading-copy.mjs; the copy in the reading-copy folder.</td></tr>'+
+   '<tr><td><b>Cert Points Feed</b></td><td>Every morning, the CMS’s feed for the Certified Consultant points scorecard: for the last 24 months, each person’s company and company history, workgroup meetings held and attended by month, and the summits they attended. Worked out by this page’s own code and checked against Stats first. No emails. Read only; the CMS reads it with the person’s own sign-in.</td><td>meeting-trackers-data: .github/workflows/cert-points.yml and tools/cert-points.mjs; the feed is doc feeds/cert-points in data/feeds.json.</td></tr>'+
    '<tr><td><b>Website Edit Watch</b></td><td>Not part of meetings. Checks the editable MISMO website pages every two hours and logs changes and formatting to clean up.</td><td>meeting-trackers-data: .github/workflows/site-watch.yml, results in the site-watch folder.</td></tr>'+
    '<tr><td><b>Agendas</b></td><td>Not driven by the tracker. The What We Are Working On Now boxes on workgroup pages, refreshed monthly from posted agendas.</td><td>meeting-trackers: agendas.json.</td></tr>'+
    '</tbody></table>'+
