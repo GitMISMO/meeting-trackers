@@ -166,11 +166,6 @@
       "name": "Title and Closing Docs to Data DWG",
       "status": "empty"
     },
-    "title-pricing-api-dwg": {
-      "key": "titlepricingapidwg",
-      "name": "Title Pricing API DWG",
-      "status": "empty"
-    },
     "va-docs-to-data-dwg": {
       "key": "vadocstodatadwg",
       "name": "VA Docs to Data DWG",
@@ -180,6 +175,11 @@
       "key": "verifiablesmartdoc30profiledwg",
       "name": "Verifiable SMART Doc® 3.0 Profile DWG",
       "status": "active"
+    },
+    "title-pricing-api-dwg": {
+      "key": "titlepricingapidwg",
+      "name": "Title Pricing API DWG",
+      "status": "retired"
     }
   }
 }

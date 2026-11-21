@@ -1,6 +1,6 @@
 {
   "note": "Public meeting schedule for the MISMO website. Maintained in MISMO’s meeting tracker and published automatically.",
-  "updated": "2026-11-20",
+  "updated": "2026-11-21",
   "groups": [
     {
       "name": "AI Governance Forum",
@@ -274,14 +274,6 @@
     },
     {
       "name": "Title and Closing Docs to Data DWG",
-      "topic": "Title & Closing",
-      "day": "",
-      "cadence": "On hold",
-      "time": "",
-      "join": ""
-    },
-    {
-      "name": "Title Pricing API DWG",
       "topic": "Title & Closing",
       "day": "",
       "cadence": "On hold",
