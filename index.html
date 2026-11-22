@@ -3129,7 +3129,8 @@ function leadSection(gk,after){
         hn.append(a,document.createTextNode("; this list follows."));
         body.appendChild(hn);
       } else if(v&&(v.src||v.at)) body.appendChild(el("div","hint",
-        (v.src?"First filled in from the "+v.src+". ":"")+
+        /* Apply to the Roster writes "Elections HQ" (older items) or "Leadership HQ" (since Nov 22, 2026): one system */
+        (v.src?(/^(elections|leadership) hq/i.test(v.src)?"From Leadership HQ (Apply to the Roster). ":"First filled in from the "+v.src+". "):"")+
         (v.at?"Last updated "+fmtD(String(v.at).slice(0,10))+(v.by?" by "+v.by:"")+".":"")));
       if(CANWRITE&&!fromLHQ){
         const row=el("div","btnrow");
