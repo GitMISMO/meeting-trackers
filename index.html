@@ -1989,7 +1989,7 @@ function applyDbDocs(docs){
     VOTERS.set(k,mkVoters(d.reps||[],d.need,d.by,d.at)); });
   LEADERS.clear();
   (docs.leaders||[]).forEach(d=>{ const k=d.id; if(!k) return;
-    LEADERS.set(k,{list:(d.list||[]).filter(x=>x&&x.n),by:d.by||"",at:d.at||"",src:d.src||""}); });
+    LEADERS.set(k,{list:(d.list||[]).filter(x=>x&&x.n),by:d.by||"",at:d.at||"",src:d.src||"",lhq:d.lhq||""}); });
   (docs.companies||[]).forEach(d=>{ const k=d.id||nk(d.name);
     M.co.set(k,{k:k,name:d.name,cat:d.cat||"Unknown"}); });
   /* pairs somebody has already looked at and said are two different people */
@@ -3035,6 +3035,65 @@ async function saveLeaders(gk,list,after){
   if(after) after();
   return true;
 }
+/* ---- leadership kept in step with Leadership HQ (Jonna, November 22, 2026) ----
+   Leadership HQ (resources.mismo.org/elections-hq/) keeps MISMO's leadership roster, and each of its
+   groups names the Meeting Trackers group it is (mtName). For every linked group with at least one
+   active chair or vice-chair on that roster, this page keeps the same chair(s) and vice-chair(s), marked
+   as coming from Leadership HQ, so a change made there (an election, a new task force's co-chairs)
+   shows up here by itself. It runs whenever someone who can both read Leadership HQ and save here has
+   this page open: on opening, then every 30 minutes. Leadership HQ is only read, never written. Groups
+   not linked there, or with no chair or vice-chair on its roster, keep the list as entered here. Other
+   roster roles (Education Rep, IM Rep, AWG Rep, board seats) are not part of Workgroup Leadership. */
+const LHQ_SRC="Leadership HQ roster", LHQ_URL="https://resources.mismo.org/elections-hq/";
+function lhqRole(p){ p=String(p||""); return /vice/i.test(p)?"vice":/chair/i.test(p)?"chair":null; }
+async function lhqRead(name){
+  const cfg=window.__mtRelay&&window.__mtRelay.config, rs=window.ResourcesSession;
+  const tok=rs&&rs.token&&rs.token(); if(!cfg||!tok) return null;
+  const r=await fetch(cfg.RELAY_URL+"/elections-hq/data/"+name,{cache:"no-store",headers:{Authorization:"Bearer "+tok}});
+  if(!r.ok) return null;               /* no access to Leadership HQ: nothing to do */
+  const j=await r.json().catch(()=>null);
+  return (j&&j.data&&j.data.docs)||null;
+}
+/* the chair(s) and vice-chair(s) on Leadership HQ's roster for each linked group, by group key */
+function lhqLists(L,G){
+  const byName=new Map(); M.gr.forEach(g=>byName.set(nk(g.name),g.k));
+  const out=new Map();
+  Object.values(G||{}).forEach(gr=>{
+    if(!gr||!gr.mtName||!gr.name) return;
+    const gk=byName.get(nk(gr.mtName)); if(!gk) return;
+    const list=Object.values(L||{}).filter(d=>d&&d.status==="active"&&d.group===gr.name&&lhqRole(d.position))
+      .map(d=>({r:lhqRole(d.position),n:String(d.name||"").trim(),co:String(d.company||"").trim()})).filter(x=>x.n)
+      .sort((a,b)=>(a.r===b.r?0:a.r==="chair"?-1:1));
+    if(list.length) out.set(gk,{list:list,lhqName:gr.name});
+  });
+  return out;
+}
+const leadSig=list=>(list||[]).map(x=>x.r+"|"+x.n+"|"+(x.co||"")).sort().join("\n");
+let LHQ_BUSY=false;
+async function syncLeadersFromLHQ(){
+  if(LHQ_BUSY||!CANWRITE||!M.dbReady||!DB||!window.__mtRelay) return 0;
+  LHQ_BUSY=true;
+  try{
+    const [L,G]=await Promise.all([lhqRead("leaders"),lhqRead("groups")]);
+    if(!L||!G) return 0;
+    const now=new Date().toISOString(), writes=[];
+    lhqLists(L,G).forEach((v,gk)=>{
+      const cur=LEADERS.get(gk);
+      if(cur&&cur.src===LHQ_SRC&&leadSig(cur.list)===leadSig(v.list)) return;
+      writes.push({c:"leaders",id:gk,data:{list:v.list,by:"Leadership HQ",at:now,src:LHQ_SRC,lhq:v.lhqName}});
+    });
+    if(!writes.length) return 0;
+    const okr=await saveMany(writes);
+    if(!okr) return 0;
+    writes.forEach(w=>LEADERS.set(w.id,{list:w.data.list,by:w.data.by,at:w.data.at,src:w.data.src,lhq:w.data.lhq}));
+    renderAll(true);
+    return writes.length;
+  }catch(e){ console.warn("Leadership HQ",e); return 0; }
+  finally{ LHQ_BUSY=false; }
+}
+(function(){ let last=0;
+  setInterval(()=>{ if(!M.dbReady||!CANWRITE||Date.now()-last<30*60000) return; last=Date.now(); syncLeadersFromLHQ(); },15000);
+})();
 function leadSection(gk,after){
   const g=M.gr.get(gk)||{name:gk};
   const d=el("div"), body=el("div"); d.appendChild(body);
@@ -3061,10 +3120,18 @@ function leadSection(gk,after){
         });
         body.appendChild(w);
       }
-      if(v&&(v.src||v.at)) body.appendChild(el("div","hint",
+      const fromLHQ=!!(v&&v.src===LHQ_SRC);
+      if(fromLHQ){
+        const hn=el("div","hint");
+        hn.append(document.createTextNode("Kept in step with Leadership HQ"+(v.lhq?" ("+v.lhq+")":"")+
+          (v.at?", last updated "+fmtD(String(v.at).slice(0,10)):"")+". To change the leaders, change them in "));
+        const a=el("a",null,"Leadership HQ"); a.href=LHQ_URL; a.target="_blank"; a.rel="noopener";
+        hn.append(a,document.createTextNode("; this list follows."));
+        body.appendChild(hn);
+      } else if(v&&(v.src||v.at)) body.appendChild(el("div","hint",
         (v.src?"First filled in from the "+v.src+". ":"")+
         (v.at?"Last updated "+fmtD(String(v.at).slice(0,10))+(v.by?" by "+v.by:"")+".":"")));
-      if(CANWRITE){
+      if(CANWRITE&&!fromLHQ){
         const row=el("div","btnrow");
         const b=el("button","btn ghost",list.length?"Edit Leadership":"Add Leadership"); b.type="button";
         b.addEventListener("click",()=>{ reset(); if(!work.length) work.push({r:"chair",n:"",co:""}); editing=true; draw(); });
@@ -7062,6 +7129,7 @@ const HELP=[
    '<tr><td><b>Calendar flow</b></td><td>Finds the MISMO Meetings Schedule calendar, retires the group’s current series and creates the new one.</td><td>Power Automate, “Meeting Trackers to MISMO Meetings Schedule”, on Jonna’s license and Outlook connection.</td></tr>'+
    '<tr><td><b>MISMO Meetings Schedule</b></td><td>The Outlook calendar the team uses.</td><td>The meetings@ mailbox, shared with the team. Jonna has edit and share rights.</td></tr>'+
    '<tr><td><b>Publish Meeting Schedule</b></td><td>Builds the public schedule and calendar files and copies them to the public repository.</td><td>meeting-trackers-data: .github/workflows/publish-schedule.yml and scripts/publish-schedule.mjs.</td></tr>'+
+   '<tr><td><b>Leadership from Leadership HQ</b></td><td>Workgroup Leadership follows Leadership HQ’s roster: for each group Leadership HQ links to one here, its active chair(s) and vice-chair(s) replace the list here whenever they differ. Change leaders in Leadership HQ; groups it doesn’t link keep the list entered here. Leadership HQ is only read.</td><td>This page, whenever someone who can read Leadership HQ and save here has it open (on opening, then every 30 minutes). Reads the save relay elections-hq data/leaders and groups.</td></tr>'+
    '<tr><td><b>Reading Copy</b></td><td>Every morning, plain spreadsheets of what the tracker holds, for leadership’s own Claude project. Worked out by this page’s own code, checked against the Stats tab first. Read only.</td><td>meeting-trackers-data: .github/workflows/reading-copy.yml and tools/reading-copy.mjs; the copy in the reading-copy folder.</td></tr>'+
    '<tr><td><b>Cert Points Feed</b></td><td>Every morning, the CMS’s feed for the Certified Consultant points scorecard: for the last 24 months, each person’s company and company history, workgroup meetings held and attended by month, and the summits they attended. Worked out by this page’s own code and checked against Stats first. No emails. Read only; the CMS reads it with the person’s own sign-in.</td><td>meeting-trackers-data: .github/workflows/cert-points.yml and tools/cert-points.mjs; the feed is doc feeds/cert-points in data/feeds.json.</td></tr>'+
    '<tr><td><b>Website Edit Watch</b></td><td>Not part of meetings. Checks the editable MISMO website pages every two hours and logs changes and formatting to clean up.</td><td>meeting-trackers-data: .github/workflows/site-watch.yml, results in the site-watch folder.</td></tr>'+
