@@ -1,0 +1,571 @@
+{
+  "note": "Workgroup leadership for the MISMO website: each group’s chair(s) and vice-chair(s), name and company only. Groups are named as in schedule.json. Kept in MISMO’s meeting tracker (most groups follow Leadership HQ) and published automatically. Add fields only; never rename one.",
+  "updated": "2026-11-22",
+  "groups": [
+    {
+      "name": "API COP",
+      "leaders": [
+        {
+          "role": "Chair",
+          "name": "Mark Kleingers",
+          "company": "Actualize Consulting"
+        },
+        {
+          "role": "Vice-Chair",
+          "name": "Elizabeth Smith",
+          "company": "USAA Federal Savings Bank"
+        }
+      ]
+    },
+    {
+      "name": "Architecture Workgroup",
+      "leaders": [
+        {
+          "role": "Co-Chair",
+          "name": "Mark Kleingers",
+          "company": "Actualize Consulting"
+        },
+        {
+          "role": "Co-Chair",
+          "name": "Chris Trujillo",
+          "company": "Viant Eye"
+        }
+      ]
+    },
+    {
+      "name": "Artificial Intelligence (AI) COP",
+      "leaders": [
+        {
+          "role": "Co-Chair",
+          "name": "Brian Stucky",
+          "company": "Decision-X"
+        },
+        {
+          "role": "Co-Chair",
+          "name": "Praveen Chandramohan",
+          "company": "Cotality"
+        },
+        {
+          "role": "Co-Vice-Chair",
+          "name": "Timothy Marlowe",
+          "company": null
+        },
+        {
+          "role": "Co-Vice-Chair",
+          "name": "Devin Caster",
+          "company": "Cotality"
+        }
+      ]
+    },
+    {
+      "name": "Automated Valuation Model DWG",
+      "leaders": [
+        {
+          "role": "Co-Chair",
+          "name": "Reena Agrawal",
+          "company": "Veros Real Estate Solutions"
+        },
+        {
+          "role": "Co-Chair",
+          "name": "Carla Nott",
+          "company": "J.P. Morgan"
+        },
+        {
+          "role": "Co-Chair",
+          "name": "Erica Vigen",
+          "company": "Clear Capital"
+        }
+      ]
+    },
+    {
+      "name": "Business Glossary COP",
+      "leaders": [
+        {
+          "role": "Chair",
+          "name": "Rusty Emory",
+          "company": "PrimeLending"
+        },
+        {
+          "role": "Vice-Chair",
+          "name": "Richard Collins",
+          "company": "United Wholesale Mortgage"
+        }
+      ]
+    },
+    {
+      "name": "Business Process Model COP",
+      "leaders": [
+        {
+          "role": "Chair",
+          "name": "Tammy Pegg Kienlen",
+          "company": "Self-employed"
+        },
+        {
+          "role": "Vice-Chair",
+          "name": "Kenneth Chenault",
+          "company": "PrimeLending"
+        }
+      ]
+    },
+    {
+      "name": "Commercial and Other Real Estate Digital Notes DWG",
+      "leaders": [
+        {
+          "role": "Chair",
+          "name": "Vonda Renfrow",
+          "company": "Federal Home Loan Bank of Des Moines"
+        },
+        {
+          "role": "Vice-Chair",
+          "name": "Stephen Bradley",
+          "company": "Wolters Kluwer"
+        }
+      ]
+    },
+    {
+      "name": "Credit Reporting COP",
+      "leaders": [
+        {
+          "role": "Co-Chair",
+          "name": "Ruth Eller",
+          "company": "Equifax"
+        },
+        {
+          "role": "Co-Chair",
+          "name": "Shawn Jobe",
+          "company": "Credit Interlink, Inc."
+        },
+        {
+          "role": "Vice-Chair",
+          "name": "Heather Mowry",
+          "company": "Factual Data"
+        }
+      ]
+    },
+    {
+      "name": "Data Governance and Management COP",
+      "leaders": [
+        {
+          "role": "Chair",
+          "name": "Jonathan Pain",
+          "company": "Actualize Consulting"
+        },
+        {
+          "role": "Vice-Chair",
+          "name": "Howard Ellison",
+          "company": "United Wholesale Mortgage"
+        }
+      ]
+    },
+    {
+      "name": "Decision Modeling COP",
+      "leaders": [
+        {
+          "role": "Co-Chair",
+          "name": "Simon Ringuette",
+          "company": "Trisotech"
+        },
+        {
+          "role": "Co-Chair",
+          "name": "Brian Stucky",
+          "company": "Decision-X"
+        }
+      ]
+    },
+    {
+      "name": "Digital Interoperability COP",
+      "leaders": [
+        {
+          "role": "Chair",
+          "name": "Rachel Zaputil",
+          "company": "ICE Mortgage Technology"
+        },
+        {
+          "role": "Vice-Chair",
+          "name": "Brian Pannell",
+          "company": "DocMagic"
+        }
+      ]
+    },
+    {
+      "name": "eMortgage COP",
+      "leaders": [
+        {
+          "role": "Co-Chair",
+          "name": "Charles Epperson",
+          "company": null
+        },
+        {
+          "role": "Co-Chair",
+          "name": "Harry Gardner",
+          "company": "ICE Mortgage Technology"
+        },
+        {
+          "role": "Vice-Chair",
+          "name": "David Garrett",
+          "company": "DocMagic"
+        }
+      ]
+    },
+    {
+      "name": "eNote Master Control Agreement DWG",
+      "leaders": [
+        {
+          "role": "Co-Chair",
+          "name": "John Stoner",
+          "company": "Stoner Fox Law Group LLP"
+        },
+        {
+          "role": "Co-Chair",
+          "name": "Laura Troy",
+          "company": "Georgia Banking Company"
+        },
+        {
+          "role": "Co-Vice-Chair",
+          "name": "Evan Kaminski",
+          "company": "Planet Home Lending"
+        },
+        {
+          "role": "Co-Vice-Chair",
+          "name": "Nate Clear",
+          "company": "First Funding"
+        }
+      ]
+    },
+    {
+      "name": "Fed Housing Agency Servicing DWG",
+      "leaders": [
+        {
+          "role": "Chair",
+          "name": "Geran Combs",
+          "company": "Actualize Consulting"
+        },
+        {
+          "role": "Vice-Chair",
+          "name": "Mahesh Revuru",
+          "company": "Sagent"
+        }
+      ]
+    },
+    {
+      "name": "HERO (Housing Emerging Risks and Opportunities) COP",
+      "leaders": [
+        {
+          "role": "Chair",
+          "name": "Martha-Rosalind Stainton",
+          "company": "Potomac Point Group"
+        },
+        {
+          "role": "Co-Vice-Chair",
+          "name": "Samuel Chapin",
+          "company": "Potomac Point Group"
+        },
+        {
+          "role": "Co-Vice-Chair",
+          "name": "Meghan Tidgewell",
+          "company": "TReX (Tidgewell Results Experience)"
+        }
+      ]
+    },
+    {
+      "name": "Housing Counseling Data DWG",
+      "leaders": [
+        {
+          "role": "Chair",
+          "name": "David Young",
+          "company": "Housing Action Illinois"
+        },
+        {
+          "role": "Vice-Chair",
+          "name": "Tong Zhang",
+          "company": "Freddie Mac Single-Family"
+        }
+      ]
+    },
+    {
+      "name": "Information Management",
+      "leaders": [
+        {
+          "role": "Chair",
+          "name": "Colleen Flaxington",
+          "company": "Freddie Mac Single-Family"
+        },
+        {
+          "role": "Vice-Chair",
+          "name": "Becky (Liz) Griswold",
+          "company": "PhoenixTeam"
+        }
+      ]
+    },
+    {
+      "name": "Loan Application Data Exchange DWG",
+      "leaders": [
+        {
+          "role": "Co-Chair",
+          "name": "Sandra Griebe",
+          "company": "Self-employed"
+        },
+        {
+          "role": "Co-Chair",
+          "name": "Lynn Calahan",
+          "company": "Self-employed"
+        }
+      ]
+    },
+    {
+      "name": "MI Claim Submission DWG",
+      "leaders": [
+        {
+          "role": "Co-Chair",
+          "name": "Tong Zhang",
+          "company": "Freddie Mac Single-Family"
+        },
+        {
+          "role": "Co-Chair",
+          "name": "Philip Law",
+          "company": "Enact"
+        },
+        {
+          "role": "Co-Vice-Chair",
+          "name": "Kelli Maldonado",
+          "company": "Fannie Mae Single-Family"
+        },
+        {
+          "role": "Co-Vice-Chair",
+          "name": "Tina Stuart",
+          "company": "Mortgage Guaranty Insurance Corporation (MGIC)"
+        }
+      ]
+    },
+    {
+      "name": "Mortgage Compliance Dataset DWG",
+      "leaders": [
+        {
+          "role": "Chair",
+          "name": "Sonya McCumber",
+          "company": "SitusAMC"
+        },
+        {
+          "role": "Vice-Chair",
+          "name": "Michael Jackman",
+          "company": "Asurity"
+        }
+      ]
+    },
+    {
+      "name": "Mortgage Insurance COP",
+      "leaders": [
+        {
+          "role": "Chair",
+          "name": "Leslie Bensen",
+          "company": "Mortgage Guaranty Insurance Corporation (MGIC)"
+        },
+        {
+          "role": "Co-Vice-Chair",
+          "name": "Nayanika Sanyal",
+          "company": "Arch Mortgage Insurance Company"
+        },
+        {
+          "role": "Co-Vice-Chair",
+          "name": "Candy Hepfner",
+          "company": "Mortgage Guaranty Insurance Corporation (MGIC)"
+        }
+      ]
+    },
+    {
+      "name": "Origination COP",
+      "leaders": [
+        {
+          "role": "Chair",
+          "name": "Michelle Pogatchnik",
+          "company": "Fannie Mae Single-Family"
+        },
+        {
+          "role": "Co-Vice-Chair",
+          "name": "Todd White",
+          "company": "Xpanse"
+        },
+        {
+          "role": "Co-Vice-Chair",
+          "name": "David Garrett",
+          "company": "DocMagic"
+        }
+      ]
+    },
+    {
+      "name": "Property and Valuation Services COP",
+      "leaders": [
+        {
+          "role": "Chair",
+          "name": "Elizabeth Green",
+          "company": "ServiceLink"
+        },
+        {
+          "role": "Vice-Chair",
+          "name": "Darlene Swain",
+          "company": "Consolidated Analytics, Inc."
+        }
+      ]
+    },
+    {
+      "name": "Remote Online Notarization DWG",
+      "leaders": [
+        {
+          "role": "Co-Chair",
+          "name": "Eddie Oddo",
+          "company": "DocMagic"
+        },
+        {
+          "role": "Co-Chair",
+          "name": "Camelia Martin",
+          "company": "Snapdocs"
+        },
+        {
+          "role": "Vice-Chair",
+          "name": "Maria Ferrara",
+          "company": "Snapdocs"
+        }
+      ]
+    },
+    {
+      "name": "Reverse Mortgage DWG",
+      "leaders": [
+        {
+          "role": "Chair",
+          "name": "George Morales",
+          "company": "Self-employed"
+        }
+      ]
+    },
+    {
+      "name": "Secondary COP",
+      "leaders": [
+        {
+          "role": "Chair",
+          "name": "Mark Friend",
+          "company": "Fannie Mae Single-Family"
+        },
+        {
+          "role": "Co-Vice-Chair",
+          "name": "Rusty Emory",
+          "company": "PrimeLending"
+        },
+        {
+          "role": "Co-Vice-Chair",
+          "name": "Joseph Fernandes",
+          "company": "Wells Fargo Bank, N.A."
+        }
+      ]
+    },
+    {
+      "name": "Servicing COP",
+      "leaders": [
+        {
+          "role": "Co-Chair",
+          "name": "Geran Combs",
+          "company": "Actualize Consulting"
+        },
+        {
+          "role": "Co-Chair",
+          "name": "Thomas Sitzler",
+          "company": "PhoenixTeam"
+        },
+        {
+          "role": "Vice-Chair",
+          "name": "Renee Kirin",
+          "company": "Wintrust Mortgage, a Division of Barrington Bank & Trust Company, N.A."
+        }
+      ]
+    },
+    {
+      "name": "Servicing Transfers DWG",
+      "leaders": [
+        {
+          "role": "Chair",
+          "name": "Joseph Prince",
+          "company": "Newrez LLC"
+        },
+        {
+          "role": "Vice-Chair",
+          "name": "Rachael Macaulay",
+          "company": "ServiceMac, LLC"
+        }
+      ]
+    },
+    {
+      "name": "TIE (Technology Impact and Enablement) COP",
+      "leaders": [
+        {
+          "role": "Co-Chair",
+          "name": "Devin Caster",
+          "company": "Cotality"
+        },
+        {
+          "role": "Co-Chair",
+          "name": "Shawn Jobe",
+          "company": "Credit Interlink, Inc."
+        },
+        {
+          "role": "Vice-Chair",
+          "name": "Angel Romero",
+          "company": "Down Payment Resource"
+        }
+      ]
+    },
+    {
+      "name": "Title and Closing COP",
+      "leaders": [
+        {
+          "role": "Co-Chair",
+          "name": "Marvin Stone",
+          "company": "Stewart"
+        },
+        {
+          "role": "Co-Chair",
+          "name": "Steven Gold",
+          "company": "American Land Title Association"
+        }
+      ]
+    },
+    {
+      "name": "Title and Closing Docs to Data DWG",
+      "leaders": [
+        {
+          "role": "Vice-Chair",
+          "name": "Bryan Bedard",
+          "company": "Rocket Close"
+        }
+      ]
+    },
+    {
+      "name": "VA Docs to Data DWG",
+      "leaders": [
+        {
+          "role": "Co-Chair",
+          "name": "Nick Fisseler",
+          "company": "U.S. Department of Veterans Affairs"
+        },
+        {
+          "role": "Co-Chair",
+          "name": "Jose Ferrer",
+          "company": "U.S. Department of Veterans Affairs"
+        }
+      ]
+    },
+    {
+      "name": "Verifiable SMART Doc® 3.0 Profile DWG",
+      "leaders": [
+        {
+          "role": "Chair",
+          "name": "Charles Epperson",
+          "company": null
+        },
+        {
+          "role": "Vice-Chair",
+          "name": "Harry Gardner",
+          "company": "ICE Mortgage Technology"
+        }
+      ]
+    }
+  ]
+}
