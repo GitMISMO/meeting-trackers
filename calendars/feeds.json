@@ -41,11 +41,6 @@
       "name": "Commercial and Other Real Estate Digital Notes DWG",
       "status": "active"
     },
-    "commercial-cop": {
-      "key": "commercialcop",
-      "name": "Commercial COP",
-      "status": "empty"
-    },
     "credit-reporting-cop": {
       "key": "creditreportingcop",
       "name": "Credit Reporting COP",
@@ -170,6 +165,11 @@
       "key": "verifiablesmartdoc30profiledwg",
       "name": "Verifiable SMART Doc® 3.0 Profile DWG",
       "status": "active"
+    },
+    "commercial-cop": {
+      "key": "commercialcop",
+      "name": "Commercial COP",
+      "status": "retired"
     },
     "eheloc-dwg": {
       "key": "ehelocdwg",
