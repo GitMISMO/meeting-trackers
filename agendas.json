@@ -1,6 +1,6 @@
 {
   "note": "What each MISMO workgroup is working on, from its latest posted meeting agenda. Shown in the What We Are Working On Now boxes on the workgroup pages. Refreshed monthly.",
-  "updated": "2026-11-19",
+  "updated": "2026-11-23",
   "groups": {
     "digital-interoperability": {
       "date": "2026-11-12",
@@ -143,22 +143,22 @@
       ]
     },
     "mortgage-compliance-dataset": {
-      "date": "2026-11-05",
+      "date": "2026-11-19",
       "items": [
         [
-          "New",
+          "In Progress",
           "Next Version of the MCD",
-          "Planning the work request and approach for the next version of the dataset."
+          "Discussing the plan for creating the next version of the dataset."
         ],
         [
           "In Progress",
           "MCD Response File",
-          "Hearing updates from the subgroup building the MCD response file."
+          "Hearing an update from the subgroup building the MCD response file."
         ],
         [
-          "In Progress",
-          "Implementation Tracking",
-          "Identifying where the MCD is in use and documenting implementations."
+          "Under Review",
+          "MCD Implementations Format",
+          "Reviewing a new format for documenting MCD implementations."
         ]
       ]
     },
@@ -203,22 +203,22 @@
       ]
     },
     "servicing": {
-      "date": "2026-10-05",
+      "date": "2026-11-23",
       "items": [
         [
           "In Progress",
-          "GSE Reference Model Changes",
-          "Fannie Mae and Freddie Mac changes, including data points to support the Fannie Mae Cash Position future state."
+          "AWG and IM Feedback on Reference Model Changes",
+          "Working through Architecture and Information Management feedback on the proposed adjustment due date data points."
         ],
         [
-          "In Progress",
-          "Digital Identity Matrix",
-          "Working with the TIE CoP on the Digital Identity Matrix."
+          "Up Next",
+          "Additional Fannie Mae Changes",
+          "A December session will review more Fannie Mae changes to the servicing reference model."
         ],
         [
-          "Under Review",
-          "Reference Model v3.6.4 Build Package",
-          "The v3.6.4 build package is ready for workgroup review."
+          "Up Next",
+          "Winter Summit Joint Session",
+          "Meeting with the Servicing Transfers DWG at the Winter Summit in January."
         ]
       ]
     },
@@ -323,22 +323,22 @@
       ]
     },
     "credit-reporting": {
-      "date": "2026-11-05",
+      "date": "2026-11-19",
       "items": [
         [
           "Working Session",
           "Undisclosed Credit File Monitoring",
-          "Working on reference model changes, such as definitions and enumerations, for UCFM."
+          "Deciding how liabilities fit in the UCFM response and which reference model changes it needs."
+        ],
+        [
+          "New",
+          "FHA Credit Scoring Models",
+          "Discussing FHA’s implementation of new credit scoring models."
         ],
         [
           "In Progress",
           "Credit Reporting Maintenance Work Request",
-          "Tracking the status of a new credit reporting maintenance work request."
-        ],
-        [
-          "Ongoing",
-          "FHA Credit Scoring Models",
-          "Discussing FHA's implementation of new credit scoring models."
+          "Tracking the status of the new credit reporting maintenance work request."
         ]
       ]
     },
@@ -403,42 +403,42 @@
       ]
     },
     "business-process-model": {
-      "date": "2026-11-13",
+      "date": "2026-11-20",
       "items": [
         [
           "Working Session",
           "Life of Loan 2026.02 Release",
-          "Working on the 2026.02 release of the Life of Loan model."
+          "Continuing work on the 2026.02 release of the Life of Loan model."
+        ],
+        [
+          "Working Session",
+          "Life of Loan 2027.01 Release",
+          "Starting work on the 2027.01 release of the Life of Loan model."
         ],
         [
           "In Progress",
           "BPM Engineering",
-          "Engineering updates to the business process model."
-        ],
-        [
-          "Up Next",
-          "Workgroup Collaboration",
-          "Planning joint sessions with the Servicing and Origination CoPs during the next release."
+          "Hearing engineering updates on the business process model."
         ]
       ]
     },
     "tie": {
-      "date": "2026-10-21",
+      "date": "2026-11-18",
       "items": [
         [
           "In Progress",
           "Mortgage Stack Visualization",
-          "Adding systems, participants and services to the mortgage technology stack visual, with the next review on November 18."
+          "Reviewing updated drafts of the mortgage technology stack visual ahead of the Winter Summit."
         ],
         [
           "In Progress",
           "Digital Identity Matrix",
-          "Continuing the Digital Identity Matrix and asking other communities for input."
+          "Building out the Digital Identity Matrix, starting with outreach to the eMortgage CoP."
         ],
         [
-          "Ongoing",
-          "Emerging Risks",
-          "Tracking AI, quantum computing and disaster-prediction topics."
+          "Up Next",
+          "Winter Summit Session",
+          "Planning Summit discussions on AI-enabled fraud, encryption and data minimization."
         ]
       ]
     },
@@ -463,22 +463,22 @@
       ]
     },
     "data-governance": {
-      "date": "2026-10-21",
+      "date": "2026-11-18",
       "items": [
         [
           "In Progress",
           "DG&M Framework Update",
-          "Updating the Data Governance and Management framework, with updated artifacts reviewed on November 18 and publication planned for early 2027."
+          "Revising the framework’s templates and artifacts, with changes to be reviewed on December 16."
+        ],
+        [
+          "Up Next",
+          "Framework Work Request",
+          "Submitting a work request in December for ongoing upkeep of the framework."
         ],
         [
           "Up Next",
           "Winter Summit Planning",
           "Reviewing the updated framework at the Summit, including the role of AI and how it ties to FRAME."
-        ],
-        [
-          "New",
-          "FRAME Analysis",
-          "Looking at the group’s role with FRAME, which may lead to a general guidelines cheat sheet."
         ]
       ]
     },
@@ -503,8 +503,13 @@
       ]
     },
     "avm": {
-      "date": "2026-11-09",
+      "date": "2026-11-23",
       "items": [
+        [
+          "Under Review",
+          "AVM Model Name Type Values",
+          "Gathering feedback on reference model values for AVM Model Name Type."
+        ],
         [
           "Working Session",
           "AVM Fairness Testing Guidance Document",
@@ -578,22 +583,22 @@
       ]
     },
     "servicing-transfers": {
-      "date": "2026-10-28",
+      "date": "2026-11-18",
       "items": [
         [
           "In Progress",
+          "LBDS Adoption Efforts",
+          "Discussing ways to increase adoption of LBDS."
+        ],
+        [
+          "In Progress",
           "Financial Transactions and Investor Reporting",
-          "Working on financial transactions and investor reporting for servicing transfers."
+          "Continuing work on financial transactions and investor reporting for servicing transfers."
         ],
         [
           "Up Next",
-          "Winter Summit Planning",
-          "Planning the group’s Winter Summit working session."
-        ],
-        [
-          "Published",
-          "Servicing Transfer Catalog",
-          "A validated set of instructions and best practices for servicers planning and executing a transfer."
+          "Winter Summit Joint Session",
+          "Planning a joint Winter Summit session with the Servicing CoP in January."
         ]
       ]
     },
@@ -658,17 +663,12 @@
       ]
     },
     "information-management": {
-      "date": "2026-11-16",
+      "date": "2026-11-23",
       "items": [
         [
           "Under Review",
-          "AI Glossary V2",
-          "Reviewing and deciding on the second version of the AI glossary."
-        ],
-        [
-          "Under Review",
-          "v3.6.4 Reference Model Artifacts",
-          "Discussing feedback on the v3.6.4 reference model artifacts."
+          "iLAD Specification Maintenance",
+          "Reviewing and deciding on the iLAD specification maintenance work request."
         ],
         [
           "Up Next",
@@ -678,17 +678,17 @@
       ]
     },
     "reverse-mortgage": {
-      "date": "2026-11-05",
+      "date": "2026-11-19",
       "items": [
         [
           "Working Session",
-          "Reverse Secondary Marketing Analysis",
-          "Continued working sessions on the secondary marketing data analysis."
+          "SME Questions for Secondary Marketing",
+          "Reviewing and refining SME questions for the secondary marketing data analysis."
         ],
         [
           "Up Next",
           "MISMO Winter Summit",
-          "Planning the group's Winter Summit session."
+          "Planning the group’s Winter Summit session."
         ]
       ]
     }
