@@ -64,6 +64,20 @@ img{max-width:100%}
 @media(max-width:560px){.helpbody table,.helpbody tbody,.helpbody tr,.helpbody td{display:block;overflow:visible}.helpbody thead{display:none}.helpbody tr{padding:9px 0;border-bottom:1px solid var(--rule)}.helpbody td{padding:2px 0;border:0}.helpbody td:first-child{color:var(--ink)}}
 </style>
 <script src="/assets/session.js"></script>
+<script src="/assets/back.js"></script>
+<script>
+/* The browser's Back button (Jonna, Nov 25, 2026, CN-033): Back steps to the last page you were on
+   in the left menu, and first closes the right-hand panel if one is open. The shared helper is
+   /assets/back.js (owned by Forms and shared pages); this registers Meeting Trackers' one layer,
+   the right-hand panel, closed the same way its X closes it. */
+(function(){
+  if(!window.MismoBack) return;
+  MismoBack.layer({
+    isOpen:()=>!!document.body&&document.body.classList.contains("paneon"),
+    close:()=>{ const x=document.getElementById("pane-x"); if(x) x.click(); }
+  });
+})();
+</script>
 <script>
 /* ============================================================================
    MEETING TRACKERS ON resources.mismo.org — the same door Summit HQ uses
@@ -7195,6 +7209,7 @@ const HELP=[
    ["What happens when a group is archived?","Its future meetings come off Outlook and the website. Its meetings, people and attendance stay in every total for good."],
    ["Does Meeting Trackers email anyone?","No. It never sends email or messages. Changes reach people through the Outlook calendar and the website. If a facilitator or a new Zoom room needs a heads-up, send it yourself."],
    ["Where are the Zoom passwords kept?","Only in the GitHub secret MT_ZOOM_PASSWORDS. They appear in the invites and nowhere else."],
+   ["What does the browser's Back button do?","Back goes to the last page you were on and closes an open panel first; it never undoes a change."],
    ["Who do I ask?","Jonna Critchley."]]}
 ];
 let HCUR="start";
