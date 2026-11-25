@@ -2391,14 +2391,22 @@ function pendingFor(gk){
   const g0=M.gr.get(gk); if(g0&&(g0.hold||g0.archived)) return [];   /* on hold or archived: nothing is owed */
   const sc=(M.sched||{})[gk]; if(!sc||!sc.rule) return [];
   const have=new Set((M.byG.get(gk)||[]).map(i=>M.mt[i].d));
-  const now=etNow(), out=[];
-  for(let i=0;i<60;i++){
-    const d=new Date(now.getTime()); d.setDate(d.getDate()-i);
-    if(!meetsOn(sc.rule,d)) continue;
-    const iso=dISO(d);
-    if(i===0){ const sp=spanOf(sc); if(sp&&(now.getHours()*60+now.getMinutes())<sp[1]) continue; }
-    if(!have.has(iso)) out.push(iso);
-  }
+  const now=etNow(), out=[], today=dISO(now), mins=now.getHours()*60+now.getMinutes();
+  const mv=(sc.moves&&typeof sc.moves==="object")?sc.moves:{};
+  const from=new Date(now.getTime()); from.setDate(from.getDate()-59); const lo=dISO(from);
+  /* the meetings owed: every regular date in the last 60 days, plus any moved meeting held in them */
+  const dates=new Set();
+  for(let i=0;i<60;i++){ const d=new Date(now.getTime()); d.setDate(d.getDate()-i); if(meetsOn(sc.rule,d)) dates.add(dISO(d)); }
+  Object.keys(mv).forEach(k=>{ const m=mv[k]; if(m&&m.d&&m.d>=lo&&m.d<=today) dates.add(k); });
+  [...dates].sort().reverse().forEach(iso=>{
+    const m=(mv[iso]&&mv[iso].d)?mv[iso]:null;
+    const day=m?m.d:iso;                              /* when it actually happened */
+    if(day>today) return;                             /* moved later: not yet */
+    if(day===today){ const e=m?(hm(m.en)!=null?hm(m.en):(spanOf(sc)||[])[1]):(spanOf(sc)||[])[1];
+      if(e!=null&&mins<e) return; }                   /* still to come today */
+    /* logged on its own date, or on the day it moved to: either counts */
+    if(!have.has(iso)&&!(m&&have.has(m.d))) out.push(iso);
+  });
   return out;
 }
 function lastLogged(gk){
@@ -2411,8 +2419,7 @@ function nextDue(gk){
   const p=pendingFor(gk);
   if(p.length) return p[0];
   const sc=(M.sched||{})[gk];
-  if(sc&&sc.rule){ const now=etNow();
-    if(meetsOn(sc.rule,now)) return dISO(now); }
+  if(sc){ const oc=occOn(sc,etNow()); if(oc) return oc.from; }
   return todayISO();
 }
 function openLog(gk,iso){ LOGGK=gk; LOGISO=iso||nextDue(gk); go("ov"); window.scrollTo(0,0); }
@@ -2533,7 +2540,7 @@ function weekCount(gks,now){
     const d=new Date(d0.getTime()); d.setDate(d.getDate()+i);
     gks.forEach(k=>{ const sc=(M.sched||{})[k];
       const g=M.gr.get(k); if(g&&(g.archived||g.hold)) return;
-      if(sc&&sc.rule&&meetsOn(sc.rule,d)) t++; });
+      if(occOn(sc,d)) t++; });
   }
   return t;
 }
@@ -2563,7 +2570,7 @@ function countsReady(){ return !M.expectDb||!!M.dbReady; }
 function groupCard(gk){
   const g=M.gr.get(gk); if(!g) return null;
   const sc=(M.sched||{})[gk]||{}, pend=pendingFor(gk), last=lastLogged(gk);
-  const now=etNow(), isToday=sc.rule&&meetsOn(sc.rule,now);
+  const now=etNow(), isToday=!!occOn(sc,now);
   const c=el("button","pcard2"); c.type="button";
   c.style.setProperty("--tc", g.archived?"var(--ink-3)":pend.length?"var(--warn)":isToday?"var(--sky)":"var(--c1)");
   if(g.archived) c.classList.add("arch");
@@ -2612,7 +2619,7 @@ function drawPicker(){
     fl.forEach(([nm,gks])=>{
       const pend=gks.reduce((a,k)=>a+pendingFor(k).length,0);
       const now=etNow(), todayN=gks.filter(k=>{ const sc=(M.sched||{})[k], g=M.gr.get(k);
-        if(g&&(g.archived||g.hold)) return false; return sc&&sc.rule&&meetsOn(sc.rule,now); }).length;
+        if(g&&(g.archived||g.hold)) return false; return !!occOn(sc,now); }).length;
       const wk=weekCount(gks,now);
       const c=el("button","pcard2"); c.type="button";
       /* the stripe is the person's own colour, the same one their circle carries \u2014 the
@@ -6379,13 +6386,29 @@ function meetsOn(rule,d){
   if(rule.weeks==="*") return true;
   return rule.weeks.indexOf(Math.floor((d.getDate()-1)/7)+1)>=0;
 }
+/* A group's meeting on day d as it actually happens (November 25, 2026): the regular one, unless
+   Move This Meeting moved it away, or a meeting moved onto d from another date, at its new time.
+   from = the date the meeting belongs to, which is where its attendance is logged. Before this the
+   Today band, the cards and the to-log counts went by the cadence alone, so a moved meeting still
+   showed Today on its old date. */
+function occOn(sc,d){
+  if(!sc) return null;
+  const iso=dISO(d), mv=(sc.moves&&typeof sc.moves==="object")?sc.moves:{};
+  for(const k of Object.keys(mv)){ const m=mv[k];
+    if(m&&m.d===iso) return {from:k,st:m.st||sc.st||"",en:m.en||sc.en||"",moved:k!==iso}; }
+  if(sc.rule&&meetsOn(sc.rule,d)&&!(mv[iso]&&mv[iso].d)) return {from:iso,st:sc.st||"",en:sc.en||"",moved:false};
+  return null;
+}
 function onDay(d,liveSort){
   const out=[];
   Object.keys(M.sched||{}).forEach(gk=>{ const sc2=M.sched[gk];
     if(sc2.status&&sc2.status.toLowerCase()!=="active") return;
     /* archived, or on hold: not meeting, whatever cadence is still on file for it */
     const g2=M.gr.get(gk); if(g2&&(g2.archived||g2.hold)) return;
-    if(meetsOn(sc2.rule,d)) out.push(Object.assign({gk:gk},sc2)); });
+    const oc=occOn(sc2,d); if(!oc) return;
+    const it=Object.assign({gk:gk},sc2,{_log:oc.from,_moved:oc.moved});
+    if(oc.moved&&oc.st&&oc.en){ it.st=oc.st; it.en=oc.en; }
+    out.push(it); });
   out.sort((a,b)=>(startOf(a)-startOf(b))||String(a.gk).localeCompare(String(b.gk)));
   if(liveSort){
     const rank=x=>{ const k=statusOf(x,liveSort).k; return k==="now"?0:k==="done"?2:1; };
@@ -6474,13 +6497,15 @@ function mtgChip(it,iso,compact,live){
   nmb.title=name+(it.fac?" \u2014 "+it.fac:"")+(it.cadence?" \u00b7 "+it.cadence:"");
   nmb.addEventListener("click",()=>openGroup(it.gk));
   w.appendChild(nmb);
-  if(live){ const st=el("span","td-st"); w.appendChild(st); w.__st=st; w.__it=it; w.__iso=iso; TICKERS.push(w); }
+  const liso=it._log||iso;   /* a moved meeting is logged on the date it belongs to */
+  if(it._moved) nmb.title+=" \u00b7 moved from "+fmtD(it._log);
+  if(live){ const st=el("span","td-st"); w.appendChild(st); w.__st=st; w.__it=it; w.__iso=liso; TICKERS.push(w); }
   if(!compact&&it.fac&&!live) w.appendChild(el("span","td-f",it.fac));
   if(it.zoom&&/^https?:/i.test(it.zoom)){
     const a=el("a","td-j","Join"); a.href=it.zoom; a.target="_blank"; a.rel="noopener noreferrer";
     a.title="Open the Zoom room for "+((M.gr.get(it.gk)||{}).name||it.gk); w.appendChild(a); }
   const lg=el("button","td-g","Log"); lg.type="button"; lg.title="Log attendance for this meeting";
-  lg.addEventListener("click",()=>openLog(it.gk,iso)); w.appendChild(lg);
+  lg.addEventListener("click",()=>openLog(it.gk,liso)); w.appendChild(lg);
   return w;
 }
 const TICKERS=[];
@@ -6575,9 +6600,10 @@ function buildToday(host){
       q.appendChild(document.createTextNode((M.gr.get(it.gk)||{}).name||it.gk));
       if(it.fac){ const fz=el("span"); fz.style.cssText="color:rgba(255,255,255,.45);font-size:10.5px";
         fz.textContent=it.fac; q.appendChild(fz); }
-      if(cancelledOn(it.gk,di)){ q.classList.add("canc"); q.appendChild(el("span","tag canc","Cancelled")); }
-      q.title="Log attendance for this meeting"+(it.cadence?" \u00b7 "+it.cadence:"");
-      q.addEventListener("click",()=>openLog(it.gk,di));
+      const ldi=it._log||di;
+      if(cancelledOn(it.gk,ldi)){ q.classList.add("canc"); q.appendChild(el("span","tag canc","Cancelled")); }
+      q.title="Log attendance for this meeting"+(it._moved?" \u00b7 moved from "+fmtD(it._log):(it.cadence?" \u00b7 "+it.cadence:""));
+      q.addEventListener("click",()=>openLog(it.gk,ldi));
       ds.appendChild(q); });
     else ds.appendChild(el("span","td-q none","Nothing scheduled"));
     row.appendChild(ds); wk.appendChild(row);
