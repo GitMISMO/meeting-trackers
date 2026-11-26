@@ -7,7 +7,7 @@
 <link rel="icon" type="image/png" sizes="48x48" href="https://resources.mismo.org/assets/favicon-48x48.png">
 <style>
 :root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
-html{scroll-padding-top:env(safe-area-inset-top,0px)}
+html{scroll-padding-top:calc(var(--hq-h) + env(safe-area-inset-top,0px))}
 body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#f1f6fa;color:#0d314c}
 img{max-width:100%}
 [hidden]:not([hidden=until-found i]){display:none!important}
@@ -866,7 +866,7 @@ img{max-width:100%}
   --display:"IBM Plex Sans",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
   --ui:var(--display);
   --mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
-  --hq-h:64px; --rail-w:240px; --rail-mini:62px;
+  --hq-h:68px; --rail-w:240px; --rail-mini:62px;
   color-scheme:light;
 }
 @media (prefers-color-scheme: dark){
@@ -900,22 +900,23 @@ button,input,select,textarea{font:inherit;color:inherit}
 .num{font-family:var(--mono);font-variant-numeric:tabular-nums}
 
 /* ---------- masthead + rail ---------- */
-.hqtop{position:sticky;top:env(safe-area-inset-top,0px);z-index:97;height:var(--hq-h);background:var(--navy);color:#fff;display:flex;align-items:center;padding:0 22px;box-shadow:0 1px 0 rgba(116,191,235,.28);margin-left:calc(0px - var(--rail-w));width:calc(100% + var(--rail-w));transition:margin-left .2s cubic-bezier(.4,0,.2,1),width .2s cubic-bezier(.4,0,.2,1)}
+.hqtop{position:sticky;top:env(safe-area-inset-top,0px);z-index:97;height:var(--hq-h);background:var(--navy);color:#fff;display:flex;align-items:center;gap:14px;padding:13px 22px;box-shadow:0 1px 0 rgba(80,164,219,.28);margin-left:calc(0px - var(--rail-w));width:calc(100% + var(--rail-w));transition:margin-left .2s cubic-bezier(.4,0,.2,1),width .2s cubic-bezier(.4,0,.2,1)}
 body.railmini .hqtop{margin-left:calc(0px - var(--rail-mini));width:calc(100% + var(--rail-mini))}
-.hqtop .mastrule{display:block;width:2px;height:34px;flex:0 0 auto;margin-inline:20px;border-radius:1px;background:var(--sky)}
-.hqtop .hqname{font-family:var(--display);font-size:15.5px;font-weight:700;letter-spacing:-.005em;color:var(--sky);white-space:nowrap}
+.hqtop .mastrule{display:block;width:1px;align-self:stretch;flex:0 0 auto;background:rgba(80,164,219,.4)}
+.hqtop .hqname{font-family:var(--display);font-size:16px;font-weight:500;letter-spacing:0;color:#94c8e9;white-space:nowrap}
 .hqtop-r{margin-left:auto;display:flex;align-items:center;gap:13px}
 .hqtop .eyebrow-m{font-size:10.5px;letter-spacing:.11em;text-transform:uppercase;color:rgba(255,255,255,.62);font-weight:600;white-space:nowrap}
 /* The shared sign-in draws its account chip as a 40px pill. Team HQ and the other MISMO
    pages square it off to sit with the logo plate, so this one does the same. */
 .hqtop .rs-who{border-radius:7px;height:36px;padding:0 11px 0 6px}
 .hqtop .rs-av{width:24px;height:24px;font-size:10.5px}
-@media(max-width:700px){.hqtop .eyebrow-m{display:none}.hqtop .mastrule{margin-inline:12px}}
-.logoplate{background:#fff;border-radius:7px;padding:8px 14px;display:flex;align-items:center;line-height:0;flex:0 0 auto;position:relative}
+@media(max-width:700px){.hqtop .eyebrow-m{display:none}}
+.logoplate{background:#fff;border-radius:5px;padding:9px 13px;display:flex;align-items:center;line-height:0;flex:0 0 auto;position:relative;box-shadow:0 1px 0 rgba(80,164,219,.35)}
 .logoplate .wordmark{height:24px;width:auto;display:block}
-@media(max-width:480px){.logoplate{padding:6px 9px}.logoplate .wordmark{height:17px}.hqtop{padding:0 14px}}
-.logoplate .santa{position:absolute;display:none;pointer-events:none;left:-9px;top:-12px;width:31px;height:31px}
-html[data-season="december"] .logoplate .santa{display:block}
+/* Phone width: Certification Management's own phone sizes, so the logo, rule and name stay on one
+   line and the logo box sits where the CMS's does (its bar is 62px tall there). --hq-h follows, so
+   the menu and panels below still meet the bar exactly. */
+@media(max-width:560px){:root{--hq-h:62px}.hqtop{padding:11px 16px;gap:11px}.logoplate{padding:7px 10px}.logoplate .wordmark{height:19px}.hqtop .hqname{font-size:13px;overflow:hidden;text-overflow:ellipsis;min-width:0}.hqtop-r{gap:10px}}
 .hq.rail{position:fixed;left:0;top:calc(var(--hq-h) + env(safe-area-inset-top,0px));bottom:0;width:var(--rail-w);z-index:95;background:var(--navy);color:#fff;display:flex;flex-direction:column;padding:0;overflow:hidden auto;overscroll-behavior:contain;box-shadow:1px 0 0 rgba(116,191,235,.22),4px 0 18px rgba(6,32,47,.14);transition:width .2s cubic-bezier(.4,0,.2,1)}
 body{padding-left:var(--rail-w);transition:padding-left .2s cubic-bezier(.4,0,.2,1)}
 @media (prefers-reduced-motion:reduce){.hq.rail,body,.hqtop{transition:none}}
@@ -1601,18 +1602,10 @@ c57 -33 76 -84 76 -200 0 -116 -19 -167 -76 -200 -32 -19 -52 -20 -294 -20
 46 29 c79 50 122 121 139 231 21 140 -19 248 -111 299 -79 44 -134 50 -555 62
 -220 5 -410 14 -422 19 -29 12 -30 43 -3 70 19 19 33 20 288 20 277 0 331 -6
 355 -41 13 -18 24 -19 218 -17 l204 3 3 44 c4 60 -31 168 -70 215 -17 21 -52
-52 -77 67 l-45 29 -550 0 c-440 -1 -557 -3 -581 -14z"/></g></symbol><symbol id="mismo-hat" viewBox="0 0 100 100">
-  <path d="M17,73 C9,44 20,17 42,9 C59,3 72,10 80,22 C85,30 86,38 81,41
-           C76,44 70,40 65,32 C60,46 57,60 57,73 Z" fill="#c0392f"/>
-  <path d="M17,73 C9,44 20,17 42,9 C48,7 53,6 58,7 C41,19 30,45 30,73 Z"
-        fill="#0f314c" opacity=".17"/>
-  <rect x="10" y="65" width="56" height="20" rx="10" fill="#ffffff"/>
-  <rect x="10" y="75" width="56" height="10" rx="5" fill="#0f314c" opacity=".07"/>
-  <circle cx="86" cy="45" r="11.5" fill="#ffffff"/>
-</symbol></defs></svg>
+52 -77 67 l-45 29 -550 0 c-440 -1 -557 -3 -581 -14z"/></g></symbol></defs></svg>
 
 <header class="hqtop">
-  <span class="logoplate"><svg class="wordmark" role="img" aria-label="MISMO" viewBox="0 0 708 108"><use href="#mismo-logo"/></svg><svg class="santa" viewBox="0 0 100 100" aria-hidden="true"><use href="#mismo-hat"/></svg></span>
+  <span class="logoplate"><svg class="wordmark" role="img" aria-label="MISMO" viewBox="0 0 708 108"><use href="#mismo-logo"/></svg></span>
   <span class="mastrule"></span>
   <span class="hqname">Meeting Trackers</span>
   <span class="hqtop-r"><span class="eyebrow-m">Programs &amp; Operations</span><span id="rs-account"></span></span>
@@ -1704,7 +1697,7 @@ c57 -33 76 -84 76 -200 0 -116 -19 -167 -76 -200 -32 -19 -52 -20 -294 -20
   try{var s=localStorage.getItem("mismo.portal.theme"); if(s)document.documentElement.setAttribute("data-theme",s);}catch(e){}
   paint();
 })();
-(function season(){ if(new Date().getMonth()===11) document.documentElement.setAttribute("data-season","december"); })();
+
 
 /* ======================= helpers ======================= */
 const $=(s,r)=>(r||document).querySelector(s), $$=(s,r)=>Array.from((r||document).querySelectorAll(s));
