@@ -1,6 +1,6 @@
 {
   "note": "Public meeting schedule for the MISMO website. Maintained in MISMO’s meeting tracker and published automatically.",
-  "updated": "2026-11-27",
+  "updated": "2026-11-28",
   "groups": [
     {
       "name": "AI Governance Forum",
@@ -192,7 +192,6 @@
       "time": "1–2pm ET",
       "join": "https://mba-org.zoom.us/j/86087635705",
       "cancelled": [
-        "2026-11-27",
         "2026-12-25"
       ]
     },
